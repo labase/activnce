@@ -1,0 +1,29 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+
+    <form name="criarpagina" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+  	{{modules.ShowMolduraInicio("Alterar post")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+	<h2>{{ _("Post title") }}: </h2><input name="titulo" value="{{ escape(BLOGDATA["titulo"]) }}" type="text" size="40"/>
+	<p>
+	<h2>{{ _("Tags") }}:</h2> 
+		   {{ modules.InputTags(BLOGDATA["tags"]) }}
+	</p>
+	<textarea name="conteudo">{{ escape(BLOGDATA["conteudo"]) }}</textarea>
+	<script type="text/javascript">
+            CKEDITOR.replace( 'conteudo',
+             {
+                 allowedContent: true,
+                 filebrowserBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=wiki',
+                 filebrowserImageBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=image',
+                 filebrowserFlashBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=flash'
+             });                
+	</script>
+
+	{{modules.ShowMolduraFim("criarpagina") }}
+    </form>
+{% end %}

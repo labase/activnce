@@ -1,0 +1,36 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+      	var escolheu = false;
+
+		$(function () {
+			// Load users
+			source = {{ AUTOCOMPLETE_COMMUNITIES }};
+			communitiesArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+			
+			// Initialize autocomplete with local lookup
+			$('#comu_description').autocomplete({
+				source: communitiesArray,
+				minLength: 3,
+				
+				select: function (event, ui) {
+				    escolheu = true;
+					$('#comu_description').val(ui.item.value);
+					$('#buscar').submit();
+				}
+			});
+		});
+	</script>    
+{% end %}
+
+{% block body-right %}
+	<form name="buscar" id="buscar" action="{{ request.path }}" method="post"
+	 onsubmit="if (!escolheu) { alert('selecione o nome na lista'); return false }">
+		{% raw xsrf_form_html() %}
+		<h1>Busca de Comunidades</h1>
+		{{ modules.ShowMolduraInicio("Digite aqui o nome ou descrição da comunidade a ser encontrada") }}
+		<input type="text" name="comu_description" id="comu_description" size=80/>
+		{{ modules.ShowMolduraFim() }}
+	</form>
+{% end %}

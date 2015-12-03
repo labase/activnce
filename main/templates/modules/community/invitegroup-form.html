@@ -1,0 +1,102 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+		{{ modules.ShowMolduraInicio("Gerenciar participantes") }}
+		{{ modules.ShowTabs(TABS) }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+		{% if USERSLIST %}
+			<h2>Usuários encontrados no {{PLATAFORMA}}</h2>
+			<p><i>Os seguintes usuários foram encontrados no cadastro do {{PLATAFORMA}} com os e-mails que você informou.<br/>
+			{% if FORMCONVIDAR %}
+			Selecione-os e clique no botão abaixo para convidá-los para esta comunidade.
+			{% end %}
+			</i></p> 			
+			<form name="convidar" id="convidar" action="/members/invitegroup/{{ REGISTRY_ID }}" method="post">
+			{% raw xsrf_form_html() %}
+			<input type="hidden" name="emails" value="{{EMAILS}}"/>
+			
+			<table cellpadding="8" width="800">
+			{% for user in USERSLIST %}
+				<tr>
+				<td width="50">
+			    {% if user[2]=="convidar" %}
+				<input type="checkbox" name="users" value="{{user[0]}}" checked="checked" /> 
+				{% end %}
+				</td>
+				<td>
+				<img src="/photo/{{user[0]}}?size=P" align="left" /> {{user[1]}} ({{user[0]}})<br/>
+				{{user[3]}}
+				</td>
+				<td width="200">
+				{% if user[2]!="convidar" %}
+				<i>{{user[2]}}</i>
+				{% end %}
+				</td>
+				</tr>
+			{% end %}
+			{% if FORMCONVIDAR %}
+				<tr><td colspan="3">
+				<input type="submit" value="Convidar estes usuários para a comunidade" />
+				</td></tr>
+			{% end %}
+			</table>
+			</form>
+			<br/><br/>
+		{% end %}
+		
+		{% if NOTUSERSLIST %}
+			<h2>E-mails não encontrados no {{PLATAFORMA}}</h2>
+			<p><i>Não foram encontrados usuários cadastrados no {{PLATAFORMA}} com os e-mails abaixo.<br/>
+			Para participar desta comunidade eles precisam primeiro se cadastrar através da Intranet da UFRJ.<br/>
+			{% if FORMCHAMAR %}
+			Selecione-os e clique no botão abaixo para enviar uma mensagem chamando-os para o {{PLATAFORMA}}.<br/>
+			{% else %}
+			Você já chamou-os para o {{PLATAFORMA}}.<br/>
+			{% end %}
+			Quando se cadastrarem, eles serão convidados automaticamente para esta comunidade.
+			</i></p> 
+			<form name="convidar" id="convidar" action="/members/callgroup/{{ REGISTRY_ID }}" method="post">
+			{% raw xsrf_form_html() %}
+			<input type="hidden" name="emails" value="{{EMAILS}}"/>
+
+			<table cellpadding="8" width="800">
+			{% for user in NOTUSERSLIST %}
+				<tr>
+				<td width="50">
+				{% if user[1]=="chamar" %}				
+					<input type="checkbox" name="users" value="{{user[0]}}" checked="checked" /> 
+				{% end %}
+				</td>
+				<td>
+				{{user[0]}}
+				</td>
+				<td width="200">
+				{% if user[1]!="chamar" %}
+				{{user[1]}}
+				{% end %}
+				</td>
+				</tr>
+			{% end %}
+			{% if FORMCHAMAR %}
+				<tr><td colspan="3">
+				<input type="submit" value="Enviar mensagem para estes e-mails chamando-os para o {{PLATAFORMA}}" />
+				</td></tr>
+			{% end %}
+			</table>
+			</form>
+			<br/><br/>
+		{% end %}
+	
+		{% if ERRORLIST %}
+			<h2>E-mail(s) inválido(s)</h2>
+			{% for user in ERRORLIST %}
+				{{user}}<br/>
+			{% end %}
+			<br/><br/>
+		{% end %}
+
+		{{ modules.ShowMolduraFim() }}
+	</form>
+
+{% end %}

@@ -1,0 +1,11 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+<p><form name="cadastro" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(u"Enviar recado para TODOS os usuários")}}
+	<h2>Recado:</h2><br/>
+	<p><textarea rows=4 cols=50 id="scrap" name="scrap"></textarea></p>
+	{{ modules.ShowMolduraFim("cadastro") }}
+</form></p>
+{% end %}

@@ -1,0 +1,66 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+	{% if MSG %}
+	    <div class="tnmMSG">{{ MSG }}</div>	
+	{% end %}
+	</br>
+	
+	{{modules.ShowMolduraInicio()}}
+	
+	<table>
+		<tr>
+			<td><b>Número de habilidades distintas mapeadas no sistema: </b></td>
+			<td> {{NUM_HABILIDADES}} </td>
+			<td><a href="/admin/skillstats/skills"> Ver Habilidades </a></td>
+		</tr>
+		<tr>
+			<td><b>Número total (com repetição) de habilidades mapeadas no sistema: </b></td>
+			<td> {{TOTAL_HABILIDADES}} </td>
+		</tr>
+		<tr>
+			<td><b>Número de usuários que preencheram os formulários: </b></td>
+			<td> {{NUM_USUARIOS}} </td>
+		</tr>
+		<tr>
+			<td><b>Número de usuários que preencheram o formulário de Formações Acadêmicas:</b></td>
+			<td> {{NUM_USUARIOS_FORMACAO}} </td>
+		</tr>
+		<tr>
+			<td><b>Número de usuários que preencheram o formulário de Experiências Profissionais:</b></td>
+			<td> {{NUM_USUARIOS_EXPERIENCIAS}} </td>
+		</tr>
+		<tr>
+			<td><b>Número de usuários que importaram produções do Lattes:</b></td>
+			<td> {{NUM_USUARIOS_LATTES}} </td>
+		</tr>
+		<tr>
+			<td><b>Número de produções importadas do Lattes (com repetição):</b></td>
+			<td> {{NUM_PRODUCOES}} </td>
+		</tr>
+		<tr>
+			<td><b>Número de confirmações de habilidades: </b></td>
+			<td> {{NUM_CONFIRMACOES}} </td>
+		</tr>
+	</table>
+	<table border="1" cellspacing="5">
+		<tr>
+			<td><b> Nome de usuário </b></td>
+			<td><b> Número de Habilidades </b></td>
+			<td><b> Número de Habilidades Pendentes </b></td>
+			<td><b> Número de Habilidades Recusadas </b></td>
+			<td><b> Número de Habilidades Inválidas </b></td>
+		</tr>
+		{% for item in HABILS_POR_USUARIO %}
+		<tr>
+			<td align="center"><a href="/admin/skillstats/user/{{item[0]}}"> {{item[0]}} </a></td>
+			<td align="center"> {{item[1]}} </td>
+			<td align="center"> {{item[2]}} </td>
+			<td align="center"> {{item[3]}} </td>
+			<td align="center"> {{item[4]}} </td>
+		</tr>
+		{% end %}
+	</table>
+	{{ modules.ShowMolduraFim() }}	
+{% end %}

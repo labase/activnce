@@ -1,0 +1,103 @@
+<div style="max-height: 160px;padding: 0px 5px 0px 5px">
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		var prox_habilidade = 4;
+		var num_habils_inicial = {{len(SKILLS_TO_VALIDATE)}};
+		function validaHabilidade(contador, tipo){
+			var xmlhttp;
+			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					//Codigo de sucesso
+					if( xmlhttp.responseText == "success"){
+						//document.getElementById("opcoes_habilidade_pendente"+contador).style.display = 'none';
+						$("#opcoes_habilidade_pendente"+contador).slideToggle(200, function(){
+							if(prox_habilidade <= num_habils_inicial){
+								$("#opcoes_habilidade_pendente"+prox_habilidade).slideToggle(400);
+								prox_habilidade++;
+							}	
+						});
+					}
+					if( xmlhttp.responseText == "final success"){
+						document.getElementById("habilidades_pendentes").style.display = 'none';
+					}
+				}
+			}
+			_xsrf=getCookie("_xsrf");
+			nivel = document.getElementById("nivel_habilidade_pendente"+contador).value;
+			var certeza = true;
+			if((tipo != "confirmar") || (tipo == "confirmar" && nivel!="")){
+				if (tipo == "invalidar"){
+						 certeza = confirm("Tem certeza de que isso não é uma habilidade?");
+					}
+				if(certeza){ 
+					nome = document.getElementById("nome_habilidade_pendente"+contador).innerHTML;
+					data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome=" + nome + "&tipo=" + tipo;
+					xmlhttp.open("POST","/profile/skills/validate/pending",true);
+					xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+					xmlhttp.send(data);
+				}
+			}
+		}
+
+		function closeJS()
+		{
+		    location.href = "{{request.path}}?{{request.query}}";
+		    //history.go(0);
+		}
+	</script>
+	<div id="habilidades_pendentes">
+	{% if SKILLS_TO_VALIDATE %}	
+				<p> Você possui habilidades que aguardam confirmação. {% if len(SKILLS_TO_VALIDATE) > MAX_HABILIDADES_PENDENTES_WIDGET %} <a href="/profile/skills/{{USERDATA['user']}}">Ver lista completa.</a></p> {% end %}
+				<table width="100%">
+					<tr>
+						<td align="center"><b>Habilidade</b></td>
+						<td align="center"><b>Nível</b></td>
+						<td align="center" colspan="3"><b>Opções</b></td>
+					</tr>
+					{% for contador in range(len(SKILLS_TO_VALIDATE)) %}
+					
+					<tr id="opcoes_habilidade_pendente{{contador}}" {% if contador >= MAX_HABILIDADES_PENDENTES_WIDGET %} style="display: none;" {% end %}>
+						<td align="center"><a href="#" id="nome_habilidade_pendente{{contador}}" onclick="TINY.box.show({iframe:'/profile/skills/productions/references/pending/{{USERDATA['user']}}/{{contador}}',width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40}); return false;">{{escape(SKILLS_TO_VALIDATE[contador]["nome_habilidade"])}}</a></td>
+						<td align="center"><select id="nivel_habilidade_pendente{{contador}}">
+							<option value=""> </option>
+							<option value="novato">Novato</option>
+							<option value="iniciante">Iniciante Avançado</option>
+							<option value="apto">Apto</option>
+							<option value="proficiente">Proficiente</option>
+							<option value="especialista">Especialista</option>
+						</select></td>
+						<td align="center">
+							<a href="#" onclick="validaHabilidade({{contador}}, 'confirmar')" data-toggle="tooltip" title="Confirmar Habilidade">
+						        <div id="confirmar{{contador}}">
+						        	<span class="glyphicon glyphicon glyphicon-ok black" aria-hidden="true" > </span>
+						        </div>
+							</a>
+						</td>
+						<td align="center" style="border-left:1px solid; border-right:1px solid;">
+							<a href="#" onclick="validaHabilidade({{contador}}, 'recusar')" data-toggle="tooltip" title="Recusar Habilidade">
+						        <div id="recusar{{contador}}">
+						        	<span class="glyphicon glyphicon glyphicon-remove black" aria-hidden="true" > </span>
+						        </div>
+							</a>
+						</td>
+						<td align="center">
+							<a href="#" onclick="validaHabilidade({{contador}}, 'invalidar')" data-toggle="tooltip" title="Não é Habilidade">
+						        <div id="invalidar{{contador}}">
+						        	<span class="glyphicon glyphicon glyphicon-ban-circle black" aria-hidden="true" > </span>
+						        </div>
+							</a>
+						</td>
+					</tr>
+					{% end %}
+				</table>
+		{% end %}
+	</div>
+</div>

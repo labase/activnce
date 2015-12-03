@@ -1,0 +1,19 @@
+
+			<input name="formacao_habilidades" id="formacao_habilidades" value="{{ escape(",".join(skills)) }}"/>
+        
+			<script type="text/javascript">
+				$(function () {	
+					source = function(request, response) {																			
+						var results = $.ui.autocomplete.filter({{AUTOCOMPLETE_ALL_SKILLS}}, request.term);
+						// limita exibição em 10 itens
+						response(results.slice(0, 5));
+					};	
+					$('#formacao_habilidades').tagsInput(
+						{	defaultText:'',
+							width:'303px',
+							height:'60px',
+							autocomplete_url: source
+					  	 }
+					);
+				});
+			</script>

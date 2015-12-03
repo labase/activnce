@@ -1,0 +1,127 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+     <link rel="stylesheet" href="/static/desenhos/templates.css" type="text/css" />
+{% end %}
+
+{% block body-right %}
+    
+    {{modules.ShowMolduraInicio()}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+     
+    <form onsubmit="insertQuery(this)" name="desenhos" id="form_settings_pictures" action="{{ request.path }}" method="post">
+	{{ xsrf_form_html() }}
+        <center>
+        <div id="middle1">
+	<input id="templates"   type="radio" name="templates" value="img0" class="checkbox"/><a target="_blank" href=# class="large_thumb"><img src="/../../static/desenhos/img0.svg" border="0" class="thumb"/></a>
+ 
+        <input id="templates"   type="radio" name="templates" value="img49" class="checkbox"/><a target="_blank" href=# class="large_thumb"><img src="/../../static/desenhos/img49.svg" border="0" class="thumb"/></a>
+        </div>
+        
+        <br />
+        
+        <div class="middle1">
+        <input id="templates"   type="radio" name="templates" value="img32" class="checkbox"/><img src="/../../static/desenhos/img32.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img12" class="checkbox"/><img src="/../../static/desenhos/img12.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img27" class="checkbox"/><img src="/../../static/desenhos/img27.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img16" class="checkbox"/><img src="/../../static/desenhos/img16.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img30" class="checkbox"/><img src="/../../static/desenhos/img30.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img20" class="checkbox"/><img src="/../../static/desenhos/img20.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img26" class="checkbox"/><img src="/../../static/desenhos/img26.png" border="0" class="thumb"/>
+        </div>
+        
+        <br />
+        
+        <div class="middle1">
+        <input id="templates"   type="radio" name="templates" value="img44" class="checkbox"/><img src="/../../static/desenhos/img44.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img6" class="checkbox"/><img src="/../../static/desenhos/img6.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img50" class="checkbox"/><img src="/../../static/desenhos/img50.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img11" class="checkbox"/><img src="/../../static/desenhos/img11.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img47" class="checkbox"/><img src="/../../static/desenhos/img47.svg" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img3" class="checkbox"/><img src="/../../static/desenhos/img3.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img42" class="checkbox"/><img src="/../../static/desenhos/img42.png" border="0" class="thumb"/>
+        </div>
+        
+        <br />
+        
+        <div class="middle1">
+        <input id="templates"   type="radio" name="templates" value="img36" class="checkbox"/><img src="/../../static/desenhos/img36.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img23" class="checkbox"/><img src="/../../static/desenhos/img23.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img37" class="checkbox"/><img src="/../../static/desenhos/img37.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img19" class="checkbox"/><img src="/../../static/desenhos/img19.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img33" class="checkbox"/><img src="/../../static/desenhos/img33.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img15" class="checkbox"/><img src="/../../static/desenhos/img15.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img25" class="checkbox"/><img src="/../../static/desenhos/img25.png" border="0" class="thumb"/>
+        </div>
+        
+        <br />
+        
+        <div class="middle1">
+        <input id="templates"   type="radio" name="templates" value="img7" class="checkbox"/><img src="/../../static/desenhos/img7.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img51" class="checkbox"/><img src="/../../static/desenhos/img51.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img4" class="checkbox"/><img src="/../../static/desenhos/img4.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img41" class="checkbox"/><img src="/../../static/desenhos/img41.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img9" class="checkbox"/><img src="/../../static/desenhos/img9.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img52" class="checkbox"/><img src="/../../static/desenhos/img52.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img1" class="checkbox"/><img src="/../../static/desenhos/img1.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img46" class="checkbox"/><img src="/../../static/desenhos/img46.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img10" class="checkbox"/><img src="/../../static/desenhos/img10.png" border="0" class="thumb"/>
+        </div>
+        
+        <br />
+        
+        <div class="middle1">
+        <input id="templates"   type="radio" name="templates" value="img35" class="checkbox"/><img src="/../../static/desenhos/img35.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img13" class="checkbox"/><img src="/../../static/desenhos/img13.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img29" class="checkbox"/><img src="/../../static/desenhos/img29.svg" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img17" class="checkbox"/><img src="/../../static/desenhos/img17.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img39" class="checkbox"/><img src="/../../static/desenhos/img39.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img22" class="checkbox"/><img src="/../../static/desenhos/img22.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img31" class="checkbox"/><img src="/../../static/desenhos/img31.png" border="0" class="thumb"/>
+        </div>
+        
+        <br />
+        
+        <div class="middle1">
+        <input id="templates"   type="radio" name="templates" value="img48"  class="checkbox"/><img src="/../../static/desenhos/img48.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img2"  class="checkbox"/><img src="/../../static/desenhos/img2.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img45"  class="checkbox"/><img src="/../../static/desenhos/img45.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img8"  class="checkbox"/><img src="/../../static/desenhos/img8.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img40"  class="checkbox"/><img src="/../../static/desenhos/img40.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img5"  class="checkbox"/><img src="/../../static/desenhos/img5.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img43"  class="checkbox"/><img src="/../../static/desenhos/img43.png" border="0" class="thumb"/>
+        </div>
+        
+        <br />
+        
+        <div class="middle1">
+        <input id="templates"   type="radio" name="templates" value="img24"  class="checkbox"/><img src="/../../static/desenhos/img24.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img18"  class="checkbox"/><img src="/../../static/desenhos/img18.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img38"  class="checkbox"/><img src="/../../static/desenhos/img38.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img21"  class="checkbox"/><img src="/../../static/desenhos/img21.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img28"  class="checkbox"/><img src="/../../static/desenhos/img28.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img14"  class="checkbox"/><img src="/../../static/desenhos/img14.png" border="0" class="thumb"/>
+        <input id="templates"   type="radio" name="templates" value="img34"  class="checkbox"/><img src="/../../static/desenhos/img34.svg" border="0" class="thumb"/>
+        </div>
+        
+        <br />
+        
+        <div>
+       <!-- <input id="templates"   type="radio" name="templates" value="img0"  class="checkbox"/><img src="/../../static/desenhos/img0.png" border="0" class="thumb"/>-->
+        </div>
+        </center>
+        
+        <br /><!--&nbsp;&nbsp;&nbsp;-->
+        
+        </center>
+        
+        <!--<div class="continuar">
+        <input type="submit" value="continuar" id="botao_cont"/>
+        </div>-->
+	
+	{{ modules.ShowMolduraFim("desenhos") }}
+        
+    </form>
+
+{% end %}

@@ -1,0 +1,72 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(u"Listar tópico", width="100%", links=LINKS)}}
+    <table>
+    <tr><td>
+    <h2>{{ escape(LISTA[0]["titulo"]) }}</h2>
+    <div style="float:left; width:95%; padding: 5pt; background-color:#f8f8f8;">
+        {{ modules.ShowFoto("/photo/"+escape(LISTA[0]["owner"])+"?size=P","",escape(LISTA[0]["owner"]),"/user/"+escape(LISTA[0]["owner"]),True)}}
+        <p>{{ escape(LISTA[0]["conteudo"]).replace('\n','<br/>') }}<br/><br/>
+        <i>Postado por <a href="/user/{{ escape(LISTA[0]["owner"]) }}">{{ escape(LISTA[0]["owner"]) }}</a> em {{ LISTA[0]["data_cri_fmt"] }}
+        {% if LISTA[0]["data_cri"] != LISTA[0]["data_alt"] %}
+        <br/>Alterado por <a href="/user/{{ escape(LISTA[0]["alterado_por"]) }}">{{ escape(LISTA[0]["alterado_por"]) }}</a> em {{ LISTA[0]["data_alt_fmt"] }}
+        {% end %}
+        </i>
+         &nbsp;&nbsp;
+        {% if LISTA[0]["apagar"] %}
+            <a onclick="return confirm('Confirma a remoção deste tópico? Esta operação não poderá ser desfeita.');" href="/forum/delete/{{ REGISTRY_ID }}/{{TOPIC_ID}}" title="remover">
+            <img src="/static/imagens/icones/delete16.png" border="0" alt="remover" />
+            </a>
+        {% end %}
+        {% if LISTA[0]["alterar"] %}
+            <a href="/forum/edit/{{ REGISTRY_ID }}/{{TOPIC_ID}}" title="alterar">
+            <img src="/static/imagens/icones/edit16.png" border="0" alt="alterar" />
+            </a>
+        {% end %}
+        
+        <br/><br/>
+        {% if LISTA[0]["tags"] %}
+           <i>Tags:</i><br/>
+           {{ modules.ShowTags(LISTA[0]["tags"]) }}
+        {% end %}        
+        </p>
+    </div>
+    <div style="float:left; width:95%; padding: 5pt;">
+    <br/>
+	</div>
+    {% if len(LISTA) == 1 %}
+        <div style="float:left; width:95%; padding: 5pt;">
+        <p><b>Até o momento ninguém respondeu a este tópico.</b></p>
+        </div>
+    {% end %}
+    {% for i in range(1, len(LISTA)) %}
+        <div style="float:left; width:95%; padding: 5pt;">
+        {{ modules.ShowFoto("/photo/"+escape(LISTA[i]["owner"])+"?size=P","",escape(LISTA[i]["owner"]),"/user/"+escape(LISTA[i]["owner"]),True)}}
+        <b>{{ escape(LISTA[i]["titulo"]) }}</b><br/>
+        <p>{{ escape(LISTA[i]["conteudo"]).replace('\n','<br/>') }}<br/><br/>
+        <i>Postado por <a href="/user/{{ escape(LISTA[i]["owner"]) }}">{{ escape(LISTA[i]["owner"]) }}</a> em {{ LISTA[i]["data_cri_fmt"] }}
+        {% if LISTA[i]["data_cri"] != LISTA[i]["data_alt"] %}
+        <br/>Alterado por <a href="/user/{{ escape(LISTA[i]["alterado_por"]) }}">{{ escape(LISTA[i]["alterado_por"]) }}</a> em {{ LISTA[i]["data_alt_fmt"] }}
+        {% end %}
+        </i>
+        &nbsp;&nbsp;
+        {% if LISTA[i]["apagar"] and "***** Mensagem Removida *****" not in LISTA[i]["titulo"] %}
+            <a onclick="return confirm('{{ "Confirma a remoção desta mensagem? Esta operação não poderá ser desfeita." }}');" href=/forum/reply/delete/{{ REGISTRY_ID }}?id={{LISTA[i]["_id"]}} title="remover">
+            <img src="/static/imagens/icones/delete16.png" border="0" alt="remover" />
+            </a>
+        {% end %}
+        {% if LISTA[i]["alterar"] and "***** Mensagem Removida *****" not in LISTA[i]["titulo"] %}
+            <a href=/forum/reply/edit/{{ REGISTRY_ID }}?id={{LISTA[i]["_id"]}} title="alterar">
+            <img src="/static/imagens/icones/edit16.png" border="0" alt="alterar" />
+            </a>
+        {% end %}
+        <br/><br/>
+        </p>
+        </div>
+    {% end %}
+    </td></tr>
+    </table>
+    {{ modules.ShowMolduraFim() }}     
+    
+{% end %}

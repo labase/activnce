@@ -1,0 +1,21 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	{{ modules.ShowMolduraInicio(u"Resultado do teste de múltipla escolha: "+QUIZ['titulo'], width="100%", links=LINKS) }}
+	<table width="400">
+		<tr>
+		<td style="border-bottom: 1px solid #b0b0b0"><b>Aluno</b></td>
+		<td style="border-bottom: 1px solid #b0b0b0"><b>Nota</b></td>
+		</tr>
+		{% for answer in ANSWERS %}
+			{% if answer %}
+				<tr>
+				<td>{{ modules.ShowFoto(src="/photo/"+answer['owner']+"?size=P", link="/user/"+answer['owner'], pequeno=True) }} <br/>
+				    {{ answer['owner'] }}</td>
+				<td>{{ answer['nota'] }}</td>
+				</tr>
+			{% end %}
+		{% end %}
+	</table>
+	{{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,43 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Participantes de "+REGISTRY_ID, width="100%", links=LINKS)}}
+    {% if THIS_GROUP %}
+    	<h2>Grupo {{ THIS_GROUP }}:</h2>
+    {% end %}
+
+    {% if MEMBERS %}
+    
+	    {% for part in MEMBERS %}
+	        {% if GROUPS and IS_OWNER %}
+            	{{ modules.ShowFoto("/photo/"+escape(part[0])+"?size=M",escape(part[0]),escape(part[1]), "/user/"+escape(part[0]),False,False,part[2], icone='<a href="#" title="alterar grupos de ' + escape(part[0]) + '" onclick="TINY.box.show({iframe:\'/groups/'+ REGISTRY_ID +'?part=' + part[0] +'\',width:640,height:300,fixed:false,maskid:\'bluemask\',maskopacity:40,closejs:function(){closeJS()} }); return false;"><img src="/static/imagens/icones/group16.png" border="0" /></a>') }}
+            {% else %}
+            	{{ modules.ShowFoto("/photo/"+escape(part[0])+"?size=M",escape(part[0]),escape(part[1]), "/user/"+escape(part[0]),False,False,part[2]) }}
+            {% end %}
+	    {% end %}
+        	    
+    {% else %}
+    	{{ MSG }}
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+    {{ modules.Paginator(PAGE, PAGESIZE, MEMBERS_COUNT) }}
+        
+{% end %}
+
+{% block body-left %}
+        
+        {{modules.ShowMolduraInicio(width="100%", titulo="Grupos")}}
+    
+        <p>
+        {% for group in GROUPS %}
+            <a href="/members/{{ REGISTRY_ID }}?group={{ group }}" title="Grupo {{ group }}">{{ group }}</a><br/>
+        {% end %}
+        <a href="/members/{{ REGISTRY_ID }}" title="Todos os participantes">Todos</a>
+        </p>
+        {% if IS_OWNER %}
+	        <a href="#" title="Criar novo grupo" onclick="TINY.box.show({iframe:'/groups/new/{{ REGISTRY_ID }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+			+criar novo
+			</a>
+        {% end %}
+        {{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+	<title>{{ PAGETITLE }}</title>
+	<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+
+	<link rel="stylesheet" href="/static/activ_new/dist/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/static/activ_new/dist/css/hover.css">
+
+
+    <!-- Javscript -->
+    <script src="/static/jquery/jquery-1.11.1.min.js"></script>
+    <script src="/static/activ_new/dist/js/head.js"></script>
+    <script src="/static/activ_new/dist/js/bootstrap.min.js"></script>
+    <script src="/static/activ_new/dist/js/bootstrap.js"></script>
+    <script src="/static/activ_new/dist/js/dropdown.js"></script>
+
+	<!-- JQuery UI -->
+	<script src="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.css">
+
+	<!-- Bootstrap -->
+	<link rel="stylesheet" type="text/css" href="/static/activ_new/dist/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="/static/activ_new/dist/css/styles2.css">
+    
+    <!-- CSS do Activ -->
+	<link rel="stylesheet" href="/static/activ/activ.css" type="text/css" />
+
+ 	{% block head %}{% end %}
+</head>
+
+<body>
+ <div class="tnmConteudoPopup tnmEstiloInterno">
+     {% block body %}{% end %}
+ </div>
+</body>
+</html>

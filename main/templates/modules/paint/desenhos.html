@@ -1,0 +1,34 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+     <link rel="stylesheet" href="/static/desenhos/templates.css" type="text/css" />
+{% end %}
+
+{% block body-right %}
+    
+    <!--{{modules.ShowMolduraInicio()}} -->
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    
+	{% if PERMISSAO %}
+	    <a href="/paint/templates/{{ REGISTRY_ID }}">Criar novo desenho</a>
+	{% end %}
+    
+    {% if DESENHOS %}
+       {% for desenho in DESENHOS %}
+    	    {{ desenho[0] }}:
+    	    {% if PERMISSAO %}
+        		<a href="edit/{{ REGISTRY_ID }}/{{ escape(desenho[0]) }}">Alterar</a>
+        		| <a href="{{ escape(desenho[1]) }}" target="_new">view</a>
+        		| <a onclick="return confirm('Deseja realmente apagar este desenho?');" href="delete/{{ REGISTRY_ID }}/{{ escape(desenho[0]) }}">apagar</a>
+        	    <br/>
+    	    {% end %}
+    	    <EMBED type="image/svg+xml" src="{{ escape(desenho[1]) }}"> </EMBED>
+    	    <br/>
+       {% end %}
+   {% else %}
+       Nesta página ainda não existem desenhos.
+   {% end %}
+     
+	<!--{{ modules.ShowMolduraFim("desenhos") }}-->
+
+{% end %}

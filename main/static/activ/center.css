@@ -1,0 +1,74 @@
+/* conteudo central */
+
+#localizacao {
+	width:60px; /* tamanho fixo do canto esquerdo - largura */
+	height:600px;  /* tamanho fixo do canto esquerdo - altura */
+	margin:0px;
+	padding:0px;
+	float:left; 
+	
+	/* background:lime; marcacao de teste */
+}
+
+#rotate {
+	font-family: arial;
+	font-size:2.4em;  /* tamanho da fonte */
+	font-weight:bold; /* peso da fonte */
+	vertical-align:middle;/* alinhamento pelo centro vertical do container */
+	line-height:600px;
+	/* rotacao vertical para texto do lado esquerdo */
+		transform: rotate(-90.0deg);		/* padrao css 3 */
+	     -moz-transform: rotate(-90.0deg);  /* FF3.5+ */
+	       -o-transform: rotate(-90.0deg);  /* Opera 10.5 */
+	  -webkit-transform: rotate(-90.0deg);  /* Saf3.1+, Chrome */
+	/* primeira letra maiuscula */
+	text-transform:capitalize;
+}
+
+#principal{
+	min-width:910px; /* tamanho mínimo da parte central */
+	height:100%; /* altura variavel */
+	position:relative;
+	float:left;
+	margin:0px;
+	padding:0px;
+	display:inline-block;
+	
+	/* calculando o tamanho restante da pagina descontando a parte fixa inicial de 60 px da parte vertical */
+	/* Firefox */
+	width: -moz-calc(100% - 60px);
+	/* WebKit */
+	width: -webkit-calc(100% - 60px);
+	/* Opera */
+	width: -o-calc(100% - 60px);
+	/* Standard */
+	width: calc(100% - 60px); 
+}
+
+#conEsquerdo{
+	font-family: Arial;
+	font-size: 14px;
+	height:100%;
+	width:104px;
+	position:relative;
+	float:left;
+}
+
+#conDireito{
+	position:relative;
+	float:left;
+	height:100%;
+	/* calculando o tamanho restante da pagina descontando a parte fixa do menu da foto + indice */
+	width: -moz-calc(100% - 120px);
+	/* WebKit */
+	width: -webkit-calc(100% - 120px);
+	/* Opera */
+	width: -o-calc(100% - 120px);
+	/* Standard */
+	width: calc(100% - 120px); 
+}
+
+
+
+
+

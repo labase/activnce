@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{{ PAGETITLE }}</title>
+<link rel="stylesheet" href="/static/tnm.css" type="text/css" />
+<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="/static/activ_new/dist/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/static/activ_new/dist/css/styles2.css">
+
+<style type="text/css">
+	html {
+	    display: table;
+	    height: 100%;
+	    width: 100%;
+	}
+
+	body {
+	    display: table-cell;
+	    padding-top: 84px; /* .navbar height */
+	    vertical-align: middle;
+	}
+	
+	#barra-brasil {
+	    position: absolute;
+	    left: 0;
+	    top: 0;
+	    width: 100%;
+	}
+	
+	#barra-ufrj {
+	    position: absolute;
+	    left: 0;
+	    top: 32px;
+	    width: 100%;
+	}
+
+	.grade-img {
+		height: 360px;
+	    background-image: url("/static/imagens/activUFRJ2/grade3.png");
+	    background-repeat: repeat-y;
+	}
+
+	.home-txt {
+	    font-family: 'Arial', serif;
+	    font-size: 14px;
+	}
+	
+	a:link {
+	   text-decoration: none;
+	   color:#606060;
+	}	
+	a:visited  {
+	   color:#606060;
+	}
+	a:hover {
+	   color:#202020;
+	}
+	a:active  {
+	   color:#606060;
+	}	
+	
+	body {
+	    background-image: url("/static/imagens/activUFRJ2/fundo.png");
+	    background-repeat: no-repeat;
+		background-position: -150px 86px;
+	} 	
+</style>
+</head>
+
+    
+<body>
+	<!-- barra do governo -->
+	<div id="barra-brasil" class="fontBrasil" style="background:#7F7F7F; height: 20px; padding:0 0 0 10px;display:block;">
+          <ul id="menu-barra-temp" style="list-style:none;">
+			<li style="display:inline; float:left;padding-right:10px; margin-right:10px; border-right:1px 	solid #EDEDED">
+				<a href="http://brasil.gov.br" style="font-family:sans,sans-serif; text-decoration:none; color:white;">
+					Portal do Governo Brasileiro
+				</a>
+			</li>
+			<li>
+				<a style="font-family:sans,sans-serif; text-decoration:none; color:white;" href="http://epwg.governoeletronico.gov.br/barra/atualize.html">
+					Atualize sua Barra de Governo
+				</a>
+			</li>
+		</ul>
+	</div>
+  
+	<!-- barra da ufrj -->
+	<nav id="barra-ufrj" class="navbar navbar-default" role="navigation">
+		<a href="#">
+			<img class="minerva" src="/static/activ_new/imagens/minerva.png">
+		</a>
+		<a target="_blank" href="http://www.ufrj.br" id="univ">
+			Universidade Federal do Rio Janeiro
+		</a>
+	</nav>
+    
+    <!-- formulário de login -->
+	<div class="container-full">
+	    <div class="row row-login">
+	    	<div class="col-md-6 col-md-offset-1 col-md-offset-1-login">
+	    		<img src="/static/imagens/activUFRJ2/activ.png" width="600" class="img-responsive" />
+	    	</div>
+
+	    	<div class="col-md-4 col-md-4-login">
+	    		<img src="/static/imagens/activUFRJ/ambientecolaborativo_index.png" class="img-responsive" />
+	    		{% if MSG %} <div class="tnmMSG">{{MSG}}</div> <br/><br/>{% end %}
+
+				<form name="logar" action="/login" method="post">
+					{% raw xsrf_form_html() %}
+					<input type="hidden" name="next" value="{{ escape(NEXT) }}"/>
+					
+					<table class="form_preencher">
+					
+					<td class="home-txt">Login</td>
+					<td><input type="text" name="user" size="20"/></td>
+					<td></td>
+					</tr>
+					
+					<tr>
+					<td class="home-txt">Senha</td>
+					<td><input type="password" name="passwd" size="20"/></td>
+					<td><input type="image" src="/static/imagens/activUFRJ/ok.png" border="0" class="form_enviar"/></td>
+					</tr>
+					
+					<tr>
+					<td></td>
+					<td class="home-txt" colspan="2">
+					
+					<!---- links abaixo do login------>
+					
+					<a href="/forgotpasswd">Esqueceu a senha?</a>
+					<br/><br/>
+					
+					<a href="/new/user">Cadastre-se</a>
+					<br/><br/>
+					
+					<a href="about">Sobre o ActivUFRJ</a>
+					<br/><br/>
+					
+					<a href="/wiki/Bem_Vindo/FAQ_cadastro">FAQ</a>
+					<br/><br/>
+
+					</td>
+					</tr>
+					
+					</table>
+				</form>
+	    	</div>
+	    	<div class="col-md-1 grade grade-img">
+	    	</div>
+	    </div>
+	</div>
+
+    		<footer class="footer-login">
+    			<div class="container-login">
+    				<a href="http://www.nce.ufrj.br" id="footer_ince_posicao" target="_blank" title="NCE"><img src="/static/imagens/activUFRJ2/nce.png" border="0" class="footer_ince" alt="Instituto T&eacute;cio Pacitti de Aplica&ccedil;&otilde;es e Pesquisas Computacionais "/>
+    			</div>
+    		</footer>
+
+
+
+<!-- Placed at the end of the document so the pages load faster -->
+<!-- script src="http://barra.brasil.gov.br/barra.js" type="text/javascript" -->
+<script src="/static/barra_brasil/barra.js" type="text/javascript">
+</script>
+		
+</body>
+</html>

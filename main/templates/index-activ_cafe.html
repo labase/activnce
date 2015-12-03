@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>{{ PAGETITLE }}</title>
+    <link rel="stylesheet" href="/static/cafeecerebro.css" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Habibi' rel='stylesheet' type='text/css'>
+</head>
+
+<body class="corpo">
+    
+    <div class="conteudo">
+        
+        <div class="contem_formulario">
+            
+            <div id="logotipo_formulario">
+            </div>
+            
+            <div class="formulario">
+                <form name="logar" action="/login" method="post" id="form">
+                    {% raw xsrf_form_html() %}
+                    <input type="hidden" name="next" value="{{ escape(NEXT) }}"/>
+                    
+                    <p id="logsenha">Login</p>
+                    <input type="text" name="user" id="input" /><br /><br />
+                    
+                    <p id="logsenha">Senha</p>
+                    <input type="password" name="passwd" id="input" /><br />
+                    
+                    <input type="submit" value="ENVIAR" id="enviar"/> 
+ 
+                </form>
+            </div>
+            
+        </div>
+        
+    </div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Votos dos participantes")}}    
+    {% for aval_id in EVALUATIONRESULTS %}
+        <h2><a href="/evaluation/{{ escape(aval_id) }}">{{ escape(aval_id).split("/")[1] }}</a></h2>
+        <div style="padding-left:10px">
+        {% for usuario in EVALUATIONRESULTS[aval_id] %}
+           {{ usuario }} -
+           {% if not EVALUATIONRESULTS[aval_id][usuario] %}
+              <b>Não votou</b>
+           {% else %}
+              {% for voto in EVALUATIONRESULTS[aval_id][usuario] %}
+                 {{ voto }} 
+              {% end %}
+           {% end %}
+           <br/>
+        {% end %}
+        <br/>
+        </div>
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

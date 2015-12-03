@@ -1,0 +1,42 @@
+{% extends "../../base.html" %}
+
+{% block body %}
+{{modules.ShowMolduraInicio(width="95%", titulo=TUTORIAL['titulo'])}}
+	<h2>{{TUTORIAL['telas'][INDEX_TELA]['titulo']}}</h2> 
+	{% if 'subtitulo' in TUTORIAL['telas'][INDEX_TELA] %}
+		<p><i>{{TUTORIAL['telas'][INDEX_TELA]['subtitulo']}}</i></p>
+	{% end %}
+	{% if 'texto' in TUTORIAL['telas'][INDEX_TELA] %}
+		<p>{{TUTORIAL['telas'][INDEX_TELA]['texto']}}</p>
+	{% end %}
+	{% if 'imagem' in TUTORIAL['telas'][INDEX_TELA] %}
+		<div style="text-align:center">	
+		<img src="/static/imagens/tutorial/{{SERVICE}}/{{TUTORIAL['telas'][INDEX_TELA]['imagem']}}" border="1" />
+		</div>
+	{% end %}
+	{% if 'video' in TUTORIAL['telas'][INDEX_TELA] %}
+		<div id="player">
+		<video controls="controls" height="480" width="640">
+		<source src="/static/imagens/tutorial/{{SERVICE}}/{{TUTORIAL['telas'][INDEX_TELA]['video']}}?disp=attachment" type="video/mp4" /> 
+		Seu navegador n&atilde;o suporta HTML5.
+		</video>
+		</div>
+	{% end %}
+	
+{{ modules.ShowMolduraFim() }}	
+<br/>
+<div style="text-align:center">
+{% if int(INDEX_TELA) > 0 %}
+<a href="/tutorial/{{SERVICE}}/{{INDEX_TUTORIAL}}/{{(int(INDEX_TELA)-1) % len(TUTORIAL['telas'])}}"><img title="tela anterior" src="/static/imagens/icones/back_arrow_black24.png"/></a>
+{% end %} 
+{% if VOLTAR %}
+<a href="/tutorial/{{SERVICE}}"><img title="voltar ao menu de tutoriais" src="/static/imagens/icones/school24.png" /></a> 
+{% end %}
+{% if int(INDEX_TELA) < len(TUTORIAL['telas'])-1 %}
+<a href="/tutorial/{{SERVICE}}/{{INDEX_TUTORIAL}}/{{(int(INDEX_TELA)+1) % len(TUTORIAL['telas'])}}"><img title="próxima tela" src="/static/imagens/icones/forward_arrow_black24.png"/></a>
+{% end %}
+</div>
+<br/>
+{% end %}
+
+

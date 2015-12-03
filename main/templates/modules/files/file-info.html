@@ -1,0 +1,67 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+    {{modules.ShowMolduraInicio( titulo=PATH, width="100%", links=LINKS)}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h1>&lt;{{ FILE["_id"] }}&gt;</h1> 
+        <p>
+        <br/>
+        <b>Descrição:</b> {{ FILE["description"] }}
+        <br/><br/>
+        <b>Tipo de Arquivo:</b> {{ FILE['content_type'] }}
+        <br/>
+        <b>Tamanho:</b> {{ FILE['length'] }}
+        <br/>
+        </p>
+        
+        <span style="color:#999;font-size:small;">
+        <p>{{ _("Created by") }} <a href="/user/{{ escape(FILE["owner"]) }}">{{ escape(FILE["owner"]) }}</a> {{ _("at") }} {{ FILE["data_upload"] }}</p>
+        {% if FILE["data_alt"] != FILE["data_upload"] %}
+            <p>{{ _("Updated by") }} <a href="/user/{{ escape(FILE["alterado_por"]) }}">{{ escape(FILE["alterado_por"]) }}</a> {{ _("at") }} {{ FILE["data_alt"] }}</p>
+        {% end %}
+        </span>
+        
+        {% if FILE["tags"] %}
+           <i>Tags:</i><br/>
+           {{ modules.ShowTags(FILE["tags"]) }}
+        {% end %}
+        <br/><br/><br/>
+        <a name="comment"></a>
+        
+        <h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+        {% if FILE["comentarios"] %}
+            {% for comment in FILE["comentarios"] %}
+                <p>
+                {{ comment["comment"] }}
+                <br/><span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">{{ comment["owner"] }}</a> em {{ comment["data_fmt"] }}</span>
+                    {% if comment["apagar"] %}
+                    <a href="/file/comment/delete/{{ escape(FILE["_id"])}}?owner={{ comment['owner'] }}&data={{ comment['data_cri'] }}" title="apagar">
+                    <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" />
+                    </a>
+                    {% end %}
+                </p>
+            {% end %}
+        {% else %}
+            Nenhum comentário até o momento.
+        {% end %}
+        <br/><br/>
+        
+    {% if FILE["comentar"] %}
+        <h2>{{ _("Post a comment") }}:</h2>
+        <form name="postcomment"  action="/file/comment/{{ escape(FILE["_id"]) }}" method="post">
+        {% raw xsrf_form_html() %}
+    
+        <textarea rows="6" cols="70" name="comment"></textarea>
+        {{ modules.ShowMolduraFim("postcomment") }}
+        </form>
+    {% else %}
+        {% if TIPO_REGISTRY=="member" %}
+            <span style="color:#999;font-size:small;">Somente os amigos de {{ REGISTRY_ID }} podem comentar.</span>
+        {% elif TIPO_REGISTRY=="community" %}
+            <span style="color:#999;font-size:small;">Somente os participantes de {{ REGISTRY_ID }} podem comentar.</span>
+        {% end %}
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+
+{% end %}

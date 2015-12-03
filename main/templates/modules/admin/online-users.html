@@ -1,0 +1,26 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+<h1>Usuários Online</h1>
+
+<p>{{ MSG }}</p>
+
+{% if LOGADOS %}
+    <table border="1" width="450" cellspacing="1" cellpadding="8">
+        <tr><td><b>Nome</b></td>
+            <td><b>Último acesso</b></td>
+        </tr>
+            
+        {% for user in LOGADOS %}
+            <tr>
+                <td><img src="/photo/{{ user[0] }}?size=P"/> <img src="/static/imagens/icones/bullet_{{ user[2] }}16.png" /> {{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+            </tr>
+        {% end %}
+    </table>
+{% else %}
+    <p>Nenhum usuário encontra-se logado.</p>
+{% end %}
+
+{% end %}

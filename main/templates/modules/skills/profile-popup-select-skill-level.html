@@ -1,0 +1,87 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+	<script src="/static/jquery/jquery-1.6.2.js"></script>
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+{% end %}
+
+{% block body %} 
+    <br/>
+
+	{{modules.ShowMolduraInicio()}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		{% if SKILLDATA %}
+			<p>Você incluiu algumas habilidades, mas ainda precisamos saber o nível que você considera ter! Por favor, escolha abaixo o nível que melhor descreve sua aptidão sobre estas habilidades. Você poderá editar esta seleção mais tarde, na aba "Habilidades" da edição do seu perfil no ActivUFRJ.</p>
+			<p id="msg_niveis_enviados" style="display: none;"><b> Você enviou o nível de todas as suas habilidades com sucesso! </b></p>
+			<table width="100%" id="table_habilidades">
+				<tr><td align="center"><b>Habilidade</b></td>
+					<td align="center"><b>Nível</b></td>
+					<td width="20%"></td>
+				</tr>
+				{% for contador in range(len(SKILLDATA)) %}
+				
+				<tr id="opcoes_habilidade{{contador}}"><td align="center" id="nome_habilidade{{contador}}">{{escape(SKILLDATA[contador]["nome_habilidade"])}}</td>
+					<td align="center"><select id="nivel_habilidade{{contador}}" onchange="enviaNivel({{contador}})">
+						<option value="" selected></option>
+						<option value="novato">Novato</option>
+						<option value="iniciante">Iniciante Avançado</option>
+						<option value="apto">Apto</option>
+						<option value="proficiente">Proficiente</option>
+						<option value="especialista">Especialista</option>
+					</select>
+					<a align="center" id="habilidade_enviada{{contador}}" style="color:green;display:none;">Nível enviado!</a>
+				</tr>
+				{% end %}
+			</table>
+			<script type="text/javascript">
+				var numHabilidades = {{len(SKILLDATA)}};
+
+				function enviaNivel(linha){
+					var xmlhttp;
+					if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+						xmlhttp=new XMLHttpRequest();
+					}
+					else{// code for IE6, IE5
+						xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					xmlhttp.onreadystatechange=function(){
+						if (xmlhttp.readyState==4 && xmlhttp.status==200){
+							//Codigo ao receber resposta da aplicação
+							if( xmlhttp.responseText == "success"){
+								if (document.getElementById("habilidade_enviada"+linha).style.display == 'none'){
+									$('#nivel_habilidade'+linha).fadeOut(100, function(){
+										$('#habilidade_enviada'+linha).fadeIn(400, function(){ 
+											$('#habilidade_enviada'+linha).fadeOut(800, function(){
+												$('#opcoes_habilidade'+linha).slideToggle(400)
+											});
+										});
+									});
+								}
+								numHabilidades--;
+								if (numHabilidades == 0){
+									document.getElementById("table_habilidades").style.display = "none";
+									document.getElementById("msg_niveis_enviados").style.display = "inline";
+									
+								}
+							}
+						}
+					}
+					_xsrf = getCookie("_xsrf");
+					nivel = document.getElementById("nivel_habilidade"+linha).value;
+					nome = document.getElementById("nome_habilidade"+linha).innerHTML;
+					if(nivel != ""){
+						data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome=" + nome;
+						xmlhttp.open("POST","/profile/skills/edit/skills/0",true);
+						xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+						xmlhttp.send(data);
+					}
+				}
+			</script>
+		{% else %}
+			<p> Você não tem habilidades sem escolha de nível já feita. </p>
+		{% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}
+
+

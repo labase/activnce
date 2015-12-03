@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Caf&eacute; na Merenda</title>
+    <link rel="stylesheet" href="/static/cafenamerenda.css" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Habibi' rel='stylesheet' type='text/css'>
+</head>
+
+<body class="corpo">
+    
+    <div class="conteudo">
+        
+        <div id="logotipo">
+            </div>
+        
+        <div class="contem_formulario">
+            
+            
+            <div class="formulario">
+                <form name="logar" action="/login" method="post" id="form">
+                    {% raw xsrf_form_html() %}
+                    <input type="hidden" name="next" value="{{ escape(NEXT) }}"/>
+                
+                    <!--<img src="imgs/login.png" id="logsenha"/><br />-->
+                    <p id="logsenha">Login</p>
+                    <input type="text" name="user" id="input" /><br /><br />
+                    
+                    <!--<img src="imgs/senha.png" id="logsenha"/><br />-->
+                    <p id="logsenha">Senha</p>
+                    <input type="password" name="passwd" id="input" /><br />
+                    
+                    <input type="submit" value="ENVIAR" id="enviar"/> 
+ 
+                </form>
+            </div>
+            
+        </div>
+        
+    </div>
+
+
+
+</body>
+</html>

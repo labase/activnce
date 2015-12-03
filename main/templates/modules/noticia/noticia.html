@@ -1,0 +1,22 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", titulo=NOTICIA.titulo)}}
+        {% if TR == "s" %}
+                <div style="float:right; vertical-align:top"><a href="javascript:history.back()">retornar</a></div>
+        {% end %}        
+        <br/>
+        {% if NOTICIA.resumo %}
+            <i>{{ NOTICIA.resumo }}</i><br/>
+            <br/>
+        {% end %}
+        {% if NOTICIA.texto %}        
+        	{{ NOTICIA.texto }}<br/>
+        {% end %}
+        {% if NOTICIA.fonte %}
+	        Fonte:{{ NOTICIA.fonte }}
+	        <br/>
+	    {% end %}
+        <i>Publicado em {{ NOTICIA.dt_publicacao }}</i><br/>
+    {{ modules.ShowMolduraFim() }}
+{% end %}

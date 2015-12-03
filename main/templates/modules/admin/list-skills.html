@@ -1,0 +1,35 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+	{% if MSG %}
+	    <div class="tnmMSG">{{ MSG }}</div>	
+	{% end %}
+	</br>
+	
+	{{modules.ShowMolduraInicio()}}
+	<div id="habilidades">
+		<h2>Habilidades (em ordem decrescente de número de repetições):</h2>
+		<b>Total de habilidades distintas:</b> {{len(HABILIDADES)}}
+		<ul>
+			{% for item in HABILIDADES %}
+			<li>
+				<h3>{{escape(item["nome_habilidade"])}}</h3>
+				<ul>
+					<li>
+						<b>Habilidade presente em</b> {{len(item["usuarios"])}} <b> usuário(s).</b>
+						<ul>
+							{% for user in item["usuarios"] %}
+							<li>
+								<a href="/admin/skillstats/user/{{user}}">{{user}}</a>
+							</li>
+							{% end %}
+						</ul>
+					</li>	
+				</ul>
+			</li>
+			{% end %}
+		</ul>
+	</div>
+	{{ modules.ShowMolduraFim() }}	
+{% end %}

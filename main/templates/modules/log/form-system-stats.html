@@ -1,0 +1,65 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        
+        // Período default: últimos 15 dias
+		var end = new Date();
+		var start = new Date();
+		start.setDate(end.getDate()-15);
+        
+        $('#data_start').datepicker({
+        	maxDate: 0
+        }).datepicker('setDate', start);
+        
+        $('#data_end').datepicker({
+        	maxDate: 0
+        }).datepicker('setDate', end);
+    });
+    </script>
+
+{% end %}
+
+{% block body-right %}
+<form action="" name="stats" method="post">
+    {% raw xsrf_form_html() %}
+    
+    {{modules.ShowMolduraInicio(width="100%", titulo=u"Estatísticas de acesso à plataforma")}}
+	{{ modules.ShowTabs(TABS) }}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}    
+
+        <table>
+		    <tr><td>
+			<label for="tipo">Tipo:</label>
+			</td>
+			<td colspan="3">
+			<select name="tipo">
+				<option value="Dia"> Por Dia </option>
+        		<option value="Hora"> Por Hora &nbsp;</option>
+			</select>
+			</td></tr>
+
+			<tr><td>
+            <label for="data_start">Data Inicial:</label>
+            </td>
+            <td>
+            <input id="data_start" name="data_inicio" maxlength="16" size="16" type="text" value="" />
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_end">Data Final:</label>
+            </td>
+            <td>
+            <input id="data_end" name="data_encerramento" maxlength="16" size="16" type="text" value="" />
+            </td></tr>
+                
+        </table>
+    {{ modules.ShowMolduraFim("stats") }}
+    
+</form>
+{% end %}

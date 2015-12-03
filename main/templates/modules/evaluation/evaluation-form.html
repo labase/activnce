@@ -1,0 +1,39 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    <form name="avaliacao" action="{{ request.path }}" method="post">
+        {% raw xsrf_form_html() %}
+        
+        {{modules.ShowMolduraInicio(u"Avaliar " + escape(AVALDATA["tipo"]))}}    
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    
+        <h1>{{ AVAL_ID }}</h1>    
+        <br/>
+        <p>
+        {% if AVALDATA["descricao"] %}
+            {{ escape(AVALDATA["descricao"]) }}<br/><br/>
+        {% end %}
+        <i>Avaliação de <br/>
+        Período: {{ escape(AVALDATA["data_inicio"]) }} até {{ escape(AVALDATA["data_encerramento"]) }}</i>
+        </p>
+            <table>
+                {% for i in range(len(AVALDATA["pontuacao"])) %}        
+                    <tr><td>
+                    {% if len(AVALDATA["pontuacao"])>1 %}
+                        <label for="opcao{{ i+1 }}">{{ i+1 }}&ordm;</label>
+                    {% end %}
+                    </td>
+                    <td>
+                    <select name="opcao{{ i+1 }}">
+                        <option value=""></option>
+                        {% for item in AVALDATA["avaliados"] %}
+                            <option value="{{ item }}">{{ item }}</option>
+                        {% end %}
+                    </select>
+                    </td></tr>
+                {% end %}
+            </table>
+        {{ modules.ShowMolduraFim("avaliacao") }}
+    </form>
+
+{% end %}

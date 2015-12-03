@@ -1,0 +1,14 @@
+	<script>
+		$(function() {
+			$( "#forms-exp-form" ).tooltip({
+				position: {
+					my: "left+15 center",
+					at: "right center",
+					using: function( position ) {
+						$( this ).css( position );
+						$( "<div>" ).appendTo( this );
+					}
+				}
+			});
+	  	});
+  	</script>

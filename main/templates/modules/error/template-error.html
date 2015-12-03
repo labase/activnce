@@ -1,0 +1,43 @@
+{% extends "../../base-nova.html" %}
+{% block body-right %}  
+
+<style type="text/css">
+table {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+p.plataforma{
+	color: rgb(0,75,130);
+	font-size: 40px;
+	font-weight: bold;
+	font-family:verdana;
+}
+
+p.mensagem{
+	font-size: 26px;
+	color: rgb(0,75,130);
+	font-family:verdana;
+}
+p.erro{
+	font-size: 14px;
+	color: rgb(0,75,130);
+	font-family:verdana;
+}
+</style>
+
+
+	<table>
+	<tr><td>
+    <img src={{escape(IMG_SRC)}}></td>
+	<td><p class="plataforma"> {{ escape(PLATAFORMA) }}</p>
+	<p class="erro">Erro {{escape(STATUS_CODE)}}</p>
+	<p class="mensagem"> {{escape(MSG)}}</p>
+	</td></tr>
+	</table>
+
+    <br/>
+    
+{% end %}
+ 

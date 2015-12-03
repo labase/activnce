@@ -1,0 +1,34 @@
+{% extends "base-nova.html" %}
+
+{% block foto %}
+	<!-- foto -->
+    <div class="media">
+      <a class="media-left" href="#">
+        {% if TIPO_REGISTRY=="member" %}
+        	{{ modules.ShowMolduraFoto("/photo/"+escape(USERDATA['user']),escape(USERDATA["name"])+" "+escape(USERDATA["lastname"]),"/user/"+escape(USERDATA['user'])) }}
+        {% elif TIPO_REGISTRY=="community" %}
+        	{{ modules.ShowMolduraFoto("/photo/"+escape(USERDATA['name']),escape(USERDATA["description"]),"/community/"+escape(USERDATA['name'])) }}
+	    {% else %}
+	        {{ modules.ShowMolduraFoto("/static/imagens/LogoHome.png", PLATAFORMA, "http://"+PLATAFORMA_URL) }}
+	    {% end %}
+      </a>
+    </div>
+
+	<!-- nomepag -->
+	<h3>
+		{% if URL_RETORNO %}
+		<a href="{{URL_RETORNO}}">
+			{{NOMEPAG}}
+		</a>
+		{% else %}
+			{{NOMEPAG}}
+		{% end %}
+	</h3>
+
+	<!-- nome do usuário ou da comunidade -->
+	{% if TIPO_REGISTRY=="member" %}
+		<h5>{{ USERDATA["name"] }} {{ USERDATA["lastname"] }}</h5>
+	{% elif TIPO_REGISTRY=="community" %}
+		<h5>{{ USERDATA["description"] }}</h5>
+	{% end %}    
+{% end %}

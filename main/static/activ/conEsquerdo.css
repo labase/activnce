@@ -1,0 +1,19 @@
+/* barra da esquerda */
+
+
+#foto{
+width: 120px;
+height:160px;
+margin-bottom:20px; /* espaco entre a foto e o indice */
+
+/* background:gray; marcacao de fundo para testes */
+
+}
+
+
+#conIndice {
+width:104px; /* menor por conta da margem interna */
+min-height:120px; /* altura livre com mínimo de 120 px */
+
+/* background:gray; marcacao de fundo para testes */
+}

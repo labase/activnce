@@ -1,0 +1,365 @@
+{% extends "../../base-foto.html" %}
+
+<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+<!-- PAINEL DE CONTROLE DO USUÁRIO -->
+<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+
+{% block head %}
+    <!-- código para produzir popup com notícias -->
+    <script type="text/javascript" src="/static/noticia.js"></script>
+
+	<!-- código para produzir o tagcloud do usuário -->
+    <script type="text/javascript" src="/static/tagcloud/tagcloud.js"></script>
+	<script type="text/javascript">
+		var tags = new Array();
+		{% for tag in TAGCLOUD %}
+			tags['{{ tag }}'] = {{ TAGCLOUD[tag] }};
+		{% end %}
+	</script>    
+	
+	{% if REGISTRY_ID == LOGADO %}    
+		<!-- JQuery UI -->
+		<script src="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.js"></script>
+		<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.css">
+	
+		<script type="text/javascript">
+			$(function () {
+			
+				// Carrega numero de notificações de Chat
+				// --------------------------------------
+				
+				$.ajax({url: "/chat/{{LOGADO}}/notifications",
+				type: "GET",
+				success: function(response) {
+					id = document.getElementById("Notificações de Chat");
+					
+					var numero = document.createElement('span');
+					numero.innerHTML = response.result;
+					id.appendChild(numero);				    
+				}});
+	
+	        					
+				// Carrega listas para o autocomplete
+				// ----------------------------------
+				
+				var selectType = $( "#tipo" ).find( "option" ).filter( ":selected" ).attr( "value" );
+				var usersArray, communitiesArray, tagsArray;
+				var registry_id_copiado = false;
+				
+				// Load users
+				source = {{ AUTOCOMPLETE_USERS }};
+				usersArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+				
+				// Load communities
+				source = {{ AUTOCOMPLETE_COMMUNITIES }};
+				communitiesArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+				
+				// Load tags
+				source = {{ AUTOCOMPLETE_TAGS }};
+				tagsArray = $.map(source, function (value, key) { return { value: key, data: key }; });
+
+
+				// inicializa o jquery ui autocomplete com a lista de tags
+				$('#str_busca').autocomplete({
+					//source: tagsArray,
+					// minLength: 3,
+				    source: function(request, response) {
+				        var results = $.ui.autocomplete.filter(tagsArray, request.term);
+				        // limita exibição em 10 itens
+				        response(results.slice(0, 10));
+				    },				
+					
+					select: function (event, ui) {
+						$('#str_busca').val(ui.item.value);
+						$('#busca').submit();
+					}
+				});
+	
+				// reinicializa autocomplete se o tipo de busca for alterado
+				$( "#tipo" ).change(function () {
+					selectType = $( "#tipo" ).find( "option" ).filter( ":selected" ).attr( "value" );
+					if (selectType == "P")
+						searchArray = usersArray 
+					else if (selectType == "C")
+						searchArray = communitiesArray
+					else if (selectType == "T")
+						searchArray = tagsArray;
+					
+					// limpa str_busca
+					$('#str_busca').val('');
+	
+					// Initialize autocomplete with local lookup:
+					$('#str_busca').autocomplete( "destroy" );					
+					$('#str_busca').autocomplete({
+						//source: searchArray,				
+						//minLength: 3,
+					    source: function(request, response) {
+					        var results = $.ui.autocomplete.filter(searchArray, request.term);
+					        // limita exibição em 10 itens
+					        response(results.slice(0, 10));
+					    },	
+				    						
+						select: function (event, ui) {
+							$('#str_busca').val(ui.item.value);
+							$('#busca').submit();
+						}
+					});
+				});
+				
+				// reinicializa o form de busca ao carregar a página
+				// necessário quando o usuário clica em "voltar" no navegador
+				$( window ).load(function() {
+					$( "#tipo" ).prop('selectedIndex', 0);
+					$('#str_busca').val('');
+				});
+				 								      
+			});
+		</script> 
+	{% end %}	
+{% end %}
+
+
+{% block body-right %}
+
+{% if REGISTRY_ID == LOGADO %}
+	<script type="text/javascript">
+		loadXMLNoticiaSistema();
+	</script>
+{% end %}
+
+<!-- LINHA 1 -->
+<div id="controlPanelLineLarge">
+	<div style="display:inline-block; float:left; min-width:360px; width:48%; margin-right:13px; position:relative;">
+		<div>
+			<!-- XXXXXX -->
+			<!--  EMAIL -->
+			<!-- XXXXXX -->
+			{% if USERDATA["email"] %}
+				<span style="font-size:80%;">               
+					<a href="mailto:{{ escape(USERDATA["email"]) }}">{{ escape(USERDATA["email"]) }}</a>
+				</span>
+			{% end %}
+			{% if REGISTRY_ID == LOGADO %}
+				<!-- XXXXXX -->
+				<!--  BUSCA -->
+				<!-- XXXXXX -->
+				<form name="busca" id="busca" action="/search" method="post">
+					<!-- Comentário para o teste da BUSCA na pagina do perfil -->
+					{% raw xsrf_form_html() %}
+					{{ modules.ShowMolduraInicio("Busca","right","98%", links=LINKS) }}
+						<select name="tipo" id="tipo">
+							<option value="T" selected="selected"> Por Tags </option>
+							<option value="P"> Por Pessoas </option>
+							<option value="C"> Por Comunidades </option>
+						</select>
+						<input name="str_busca" id="str_busca" class="autocomplete" value="" size="40" type="text"/>
+					{{ modules.ShowMolduraFim("busca") }}
+				</form>
+				<br>
+				
+				<!-- XXXXXXX -->
+				<!-- ATENÇÃO -->
+				<!-- XXXXXXX -->			
+				<div id="controlPanelMSG"></div> 		
+						
+			{% else %}
+				{{ modules.ShowMenuLinks(width="100%", links=LINKS) }}
+				{% if SKILLS != 0 %} {# Se SKILLS for 0, quer dizer que o usuário logado está olhando o perfil de um usuário que não é seu amigo #}
+					{{ modules.ShowSkillsToValidate(cor=COR, userdata=USERDATA, skills=SKILLS, autocomplete_all_skills=AUTOCOMPLETE_ALL_SKILLS) }}
+				{% end %}
+			{% end %}
+
+		</div>
+	</div>
+	<div style="display:inline-block;float:left;min-width:360px;width:48%;margin-right:10px;position:relative;">
+		<!-- XXXXXXXXXX -->
+		<!-- TAG + CHAT -->
+		<!-- XXXXXXXXXX -->
+		
+		<div style="padding: 0px">
+			<br>
+			{{ modules.ShowMolduraInicio("<a href='/tagcloud/"+REGISTRY_ID+"'>Minhas Tags</a>","left","98%") }}
+				<div id="cloud" style="height:160px;overflow:hidden;background-color:#f0f0f0;padding: 0px 5px 0px 5px">
+				</div>
+			{{ modules.ShowMolduraFim() }}
+		</div> 
+	</div>
+</div>
+
+<!-- LINHA 2 -->
+
+
+<div id="controlPanelBlockLarge">
+
+		<!-- XXXXXX -->
+		<!-- AMIGOS -->
+		<!-- XXXXXX -->
+		{{ modules.ShowMolduraInicio("<a href='/friends/"+REGISTRY_ID+"'>Amigos</a>","","98%") }}
+		<!-- modules.ShowMolduraInicio("<a href='/friends/"+REGISTRY_ID+"'>Amigos</a>","","98%", REGISTRY_ID==LOGADO) -->
+			<div id="controlPanelBlockThin"> <!-- overflow:auto para mostrar scrollbar --> 
+				{% if FRIENDS %}
+					{% for item in FRIENDS %}
+						{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=P", escape(item[0]), escape(item[1]), "/user/"+escape(item[0]),True,item[2],False, chat=item[3]) }}
+					{% end %}
+				{% else %}
+					Não tem nenhum amigo.
+				{% end %}
+			</div>
+	    {{ modules.ShowMolduraFim() }}
+
+   
+	<!-- XXXXXXXXXXX -->
+	<!-- COMUNIDADES -->
+	<!-- XXXXXXXXXXX -->
+    {{ modules.ShowMolduraInicio("<a href='/communities/"+REGISTRY_ID+"'>Comunidades</a>","","98%") }}
+        <div id="controlPanelBlockThin">
+			{% if COMMUNITIES %}
+				{% for item in COMMUNITIES %}
+					{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=P",escape(item[0]),escape(item[1]),"/community/"+escape(item[0]),True,False,item[2]) }}
+				{% end %}
+			{% else %}
+				Não participa de nenhuma comunidade.
+			{% end %}
+        </div>
+    {{ modules.ShowMolduraFim() }}
+
+
+	<!-- XXXXXXXXXX -->
+	<!--  NOVIDADES -->
+	<!-- XXXXXXXXXX -->
+    {{ modules.ShowMolduraInicio("<a href='/news/"+REGISTRY_ID+"'>Novidades</a>","","98%") }}
+	<div id="controlPanelBlockThin">
+	{% if NEWS %}
+		{% for data in NEWS %}
+			{{ escape(data["data_inclusao"]) }} -
+			<a href="/user/{{ escape(data["sujeito"]) }}">{{ escape(data["sujeito"]) }}</a>
+			{{ escape(data["verbo"]) }}
+			{% if data["objeto"] %}
+			   {% if "link" in data and data["link"] %}
+					{% if len(data["objeto"])>100 %}
+						<a href="{{ escape(data["link"]) }}">{{ escape(data["objeto"][:100]) }}...</a>
+					{% else %}
+						<a href="{{ escape(data["link"]) }}">{{ escape(data["objeto"]) }}</a>
+					{% end %}
+			   {% elif data["tipo"]=="none" %}
+					{% if len(data["objeto"])>100 %}
+						{{ escape(data["objeto"][:100]) }}...
+					{% else %}
+						{{ escape(data["objeto"]) }}
+					{% end %}
+			   {% else %}
+					{% if len(data["objeto"])>100 %}
+						<a href="/{{ escape(data["tipo"]) }}/{{ escape(data["objeto"]) }}">{{ escape(data["objeto"][:100]) }}...</a>
+					{% else %}
+						<a href="/{{ escape(data["tipo"]) }}/{{ escape(data["objeto"]) }}">{{ escape(data["objeto"]) }}</a>
+					{% end %}
+			   {% end %}
+			{% end %}
+			<br/>
+		{% end %}
+	{% else %}
+		Não tem nenhuma novidade.
+	{% end %}
+	</div>          
+    {{ modules.ShowMolduraFim() }} 
+
+
+	<!-- XXXXXXXX -->
+	<!--  AGENDA -->
+	<!-- XXXXXXXX -->    
+    <div style="padding-bottom:5px">
+		{{ modules.ShowMolduraInicio("<a href='/agenda/"+REGISTRY_ID+"'>Agenda</a>","","98%") }}
+			<div id="controlPanelBlockThin">
+				{% if EVENTOS %}					  
+				    {% for item in EVENTOS %}						
+						<div>
+							{{ item["data"] }} às {{ item["hora"] }} - {{ item["msg"] }}
+						</div>
+				    {% end %}					 
+				{% else %}
+					Nenhum evento.
+				{% end %}
+			</div>
+		{{ modules.ShowMolduraFim() }}
+    </div>
+
+
+
+    {% if MBLOGS!=None %}
+	<!-- XXXXX -->
+	<!-- MBLOG -->
+	<!-- XXXXX -->
+	
+      <div>
+          {{ modules.ShowMolduraInicio("<a href='/mblog/"+REGISTRY_ID+"'>Microblog</a>","","98%") }}
+            <div id="controlPanelBlockThin">
+              	{% if MBLOGS %}                
+                  {% for item in MBLOGS %}                   
+				{{ modules.ShowFoto("/photo/"+escape(item["owner"])+"?size=P",escape(item["owner"]),escape(item["owner"]),"/user/"+escape(item["owner"]),True) }}
+			<div>
+				{{ item["conteudo"] }}
+				{% if item["owner"] != item["registry_id"] %}
+					<br/>
+					<i><span style="color:#999;font-size:small;">na comunidade {{ item["registry_id"] }}</span></i>
+				{% end %}
+			</div>
+		<span style="color:#999;font-size:small;">{{ item["data_cri"] }}</span>                    
+                {% end %}                 
+            {% else %}
+                Não tem nenhum post.
+            {% end %}
+           </div>
+        {{ modules.ShowMolduraFim() }}
+    </div>
+    {% end %}
+   
+
+	<!-- XXXXXXXX -->
+	<!--  RECADOS -->
+	<!-- XXXXXXXX -->    
+    <div style="padding-bottom:5px">
+		{{ modules.ShowMolduraInicio("<a href='/scrap/"+REGISTRY_ID+"'>Recados</a>","","98%") }}
+			<div id="controlPanelBlockThin">
+				{% if SCRAPS %}					  
+				    {% for item in SCRAPS %}						
+						{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=P",escape(item[0]),escape(item[0]),"/user/"+escape(item[0]),True) }}
+						<div>
+							{{ item[1] }}
+						</div>
+						<span style="color:#999;font-size:small;">{{ item[3] }}</span>						 
+				    {% end %}					 
+				{% else %}
+					Não tem nenhum recado.
+				{% end %}
+			</div>
+		{{ modules.ShowMolduraFim() }}
+    </div>
+
+	    
+    
+	{% if APPS %}
+		<!-- XXXXXX        -->
+		<!-- APPS          -->
+		<!-- XXXXXX        -->
+		
+		{{ modules.ShowMolduraInicio("<a href='/admin/myapps'>Aplicações</a>","","98%") }}
+			<div id="controlPanelBlockThin"> <!-- overflow:auto para mostrar scrollbar --> 
+				{% for item in APPS %}
+					<a href="{{item}}" title="{{APPS[item]}}"><img src="/static/imagens/icones/privileges/{{item.replace('/','_')}}.jpg" alt="{{APPS[item]}}"/></a>
+				{% end %}
+			</div>
+	    {{ modules.ShowMolduraFim() }}
+	{% end %}
+	    
+
+		
+    <script type='text/javascript'>
+    document.getElementById("cloud").innerHTML = generateCloud(tags, '/search/{{ REGISTRY_ID }}?tags=', false);
+    </script>
+	
+</div>
+
+
+{% if MSG %}<script>alert("{{ MSG }}");</script>{% end %}
+
+{% end %}  		<!-- fecha block body-right -->

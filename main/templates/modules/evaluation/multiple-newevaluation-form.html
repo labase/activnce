@@ -1,0 +1,47 @@
+{% extends "../../base.html" %}
+
+{% block body %}
+
+<p>{{ MSG }}</p>
+<p><form id="form_settings_profile" class="form_settings" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+	{% raw xsrf_form_html() %}
+	<fieldset>
+	<legend>Digite as Informações das Avaliações a serem Criadas</legend>
+        <ul class="form_data">
+             <li>
+                <label for="comunidades">Nome das comunidades</label>
+                <p><input name="comunidades" id="comunidades" size="6" value="{{ escape(EVALUATIONDATA["comunidades"]) }}" type="text"/></p.
+                <p class="form_guide">Entre com os primeiros caracteres (pelo menos 2) que definam o nome das comunidades.
+                Serão criadas avaliações para todas as comunidades criadas por você que possuam estes nomes.</p>
+            </li>
+            <li>
+                <label for="nome">Nome da avaliação</label>
+                <p><input name="nome" id="nome" size="30" value="{{ escape(EVALUATIONDATA["nome"]) }}" type="text"/></p>
+            </li>
+            <li>
+                <label for="pontuacao">Pontuação para os votados</label>
+                <p><input name="pontuacao" id="pontuacao" size="30" type="text"/></p>
+                <p class="form_guide">Entre com uma lista de números, separados por vírgulas, indicando a pontuação que será atribuída a cada um dos votos a partir do primeiro colocado.</p>
+            </li>            
+            <li>
+                <label for="dia1">Data/hora de início</label>
+                <input id="dia1" name="dia1" maxlength="2" size="2" type="text"/> / 
+                <input id="mes1" name="mes1" maxlength="2" size="2" type="text"/> / 
+                <input id="ano1" name="ano1" maxlength="4" size="4" type="text"/> 
+                <input id="hora1" name="hora1" maxlength="2" size="2" type="text"/> :
+                <input id="min1" name="min1" maxlength="2" size="2" type="text"/>
+            </li>
+            <li>
+                <label for="dia2">Data/hora de encerramento</label>
+                <input id="dia2" name="dia2" maxlength="2" size="2" type="text"/> / 
+                <input id="mes2" name="mes2" maxlength="2" size="2" type="text"/> / 
+                <input id="ano2" name="ano2" maxlength="4" size="4" type="text"/> 
+                <input id="hora2" name="hora2" maxlength="2" size="2" type="text"/> :
+                <input id="min2" name="min2" maxlength="2" size="2" type="text"/>
+            </li>            
+        </ul>
+        <input id="save" name="save" class="submit" value="{{ _("Submit") }}" title="" type="submit"/>
+    </fieldset>
+</form>
+
+{% end %}

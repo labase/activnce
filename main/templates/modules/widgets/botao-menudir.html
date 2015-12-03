@@ -1,0 +1,18 @@
+<div class="tnmBotaoDir">
+ <div class="tnmImgBtnDir">
+  <img src="/static/imagens/botaodir/{{icone}}.png"
+   onmouseover="document.getElementById('md{{icone}}').style.display='block';this.src='/static/imagens/botaodir/{{icone}}_over.png';"
+   onmousedown="document.getElementById('md{{icone}}').style.display='block';this.src='/static/imagens/botaodir/{{icone}}_down.png';"
+   onmouseup  ="document.getElementById('md{{icone}}').style.display='block';this.src='/static/imagens/botaodir/{{icone}}_over.png';"
+   onmouseout ="document.getElementById('md{{icone}}').style.display='none'; this.src='/static/imagens/botaodir/{{icone}}.png';"
+   {% if link != "" %}
+      onclick="top.location='{{link}}'"
+   {% else %}
+      onclick="alert('Você deve fazer o login ou o cadastro primeiro!');"
+   {% end %}
+  />
+ </div>
+ <div id="md{{icone}}" class="tnmBolhaDir tnm{{cor}}" style="background-image: url('/static/imagens/bolha/{{cor}}.png')" >
+  {{texto}}
+ </div>
+</div>

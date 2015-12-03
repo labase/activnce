@@ -1,0 +1,161 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+
+		function validaHabilidade(contador, tipo){
+		var xmlhttp;
+		if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp=new XMLHttpRequest();
+		}
+		else{// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function(){
+			if (xmlhttp.readyState==4 && xmlhttp.status==200){
+				//Codigo de sucesso
+				if( xmlhttp.responseText == "success"){
+					document.getElementById("opcoes_habilidade"+contador).style.display = 'none';
+				}
+				if( xmlhttp.responseText == "final success"){
+					document.getElementById("habilidades_pendentes").style.display = 'none';
+				}
+			}
+		}
+		_xsrf=getCookie("_xsrf");
+		nivel = document.getElementById("nivel_habilidade"+contador).value;
+		if((tipo != "confirmar") || (tipo == "confirmar" && nivel!="")){
+			nome = document.getElementById("nome_habilidade_pendente"+contador).innerHTML;
+			data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome=" + nome + "&tipo=" + tipo;
+			xmlhttp.open("POST","/profile/skills/validate/pending",true);
+			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xmlhttp.send(data);
+		}
+	}
+	</script>
+
+{% end %}
+
+{% block body-right %} 
+	{{modules.ShowMolduraInicio(escape("Produções"))}}
+	{{ modules.ShowTabs(TABS) }}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	<br/>
+	<p align="justify"> Para aprimorar ainda mais o seu perfil, você pode importar suas principais publicações da Plataforma Lattes através desta ferramenta.</br> 
+		Você poderá associar palavras-chave das publicações à habilidades, que serão listadas para seus amigos e pares da rede, alimentando também nossos
+		 mecanismos de recomendação de conteúdo e combinação social.</p>
+	{% if HABILIDADES_NO_XML == 2 %}
+	{# HABILIDADES_NO_XML == 2 significa que o usuário já subiu seu xml do lattes, mas não há habilidades encontradas nele #}
+	<div id="nao_ha_habilidades">
+		{{modules.ShowMolduraInicio()}}
+			<h1>Por que não há habilidades?</h1>
+			<p> Apesar de você nos ter enviado o arquivo XML do seu currículo Lattes, não foram encontradas possíveis habilidades lá. Isto pode ter ocorrido porque não há
+				 nada na seção de "Artigos Publicados" do Currículo Lattes, ou ainda porque não há palavras-chave em nenhum dos artigos encontrados nesta seção.</p>
+		{{ modules.ShowMolduraFim() }}
+	</div>
+	{% end %}
+	<div id="habilidades_pendentes">
+	{% if HABILIDADES_PENDENTES %}
+		{{modules.ShowMolduraInicio()}}
+			<p> A partir dos dados do seu Currículo Lattes ou de sugestões de seus amigos, foram detectadas algumas possíveis habilidades que você possua. Dê uma olhada abaixo e nos ajude a confirmar estas habilidades!</p>
+			
+			<table width="100%">
+				<tr><td align="center"><b>Habilidade</b></td>
+					<td align="center"><b>Nível</b></td>
+					<td align="center"><b>Confirmar Habilidade</b></td>
+					<td align="center"><b>Recusar Habilidade</b></td>
+					<td align="center"><b>Não é Habilidade</b></td>
+				</tr>
+				{% for contador in range(len(HABILIDADES_PENDENTES)) %}
+				<tr id="opcoes_habilidade{{contador}}"><td align="center"><a href="#" id="nome_habilidade_pendente{{contador}}" onclick="TINY.box.show({iframe:'/profile/skills/productions/references/pending/{{LOGADO}}/{{contador}}',width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40}); return false;">{{escape(HABILIDADES_PENDENTES[contador]["nome_habilidade"])}}<a></td>
+					<td align="center"><select id="nivel_habilidade{{contador}}">
+						<option value=""> </option>
+						<option value="novato">Novato</option>
+						<option value="iniciante">Iniciante Avançado</option>
+						<option value="apto">Apto</option>
+						<option value="proficiente">Proficiente</option>
+						<option value="especialista">Especialista</option>
+					</select></td>
+					<td align="center">
+						<a href="#" onclick="validaHabilidade({{contador}}, 'confirmar')" data-toggle="tooltip" title="Confirmar Habilidade">
+					        <div id="confirmar{{contador}}">
+					        	<span class="glyphicon glyphicon glyphicon-ok black" aria-hidden="true" > </span>
+					        </div>
+						</a>
+					</td>
+					<td align="center">
+						<a href="#" onclick="validaHabilidade({{contador}}, 'recusar')" data-toggle="tooltip" title="Recusar Habilidade">
+					        <div id="recusar{{contador}}">
+					        	<span class="glyphicon glyphicon glyphicon-remove black" aria-hidden="true" > </span>
+					        </div>
+						</a>
+					</td>
+					<td align="center">
+						<a href="#" onclick="validaHabilidade({{contador}}, 'invalidar')" data-toggle="tooltip" title="Não é Habilidade">
+					        <div id="invalidar{{contador}}">
+					        	<span class="glyphicon glyphicon glyphicon-ban-circle black" aria-hidden="true" > </span>
+					        </div>
+						</a>
+					</td>
+				</tr>
+				{% end %}
+			</table>
+
+		{{ modules.ShowMolduraFim() }}
+	{% end %}
+	</div>
+
+
+		{{modules.ShowMolduraInicio()}}
+			<h2>Produções e publicações importadas da Plataforma Lattes</h2>
+			{% if PRODUCOES %}
+				<table>
+					{% for item in PRODUCOES %}
+						<tr><td>
+							<b><a href="#" onclick="TINY.box.show({iframe:'/profile/skills/productions/edit/{{ escape(item['SEQUENCIA-PRODUCAO']) }}',width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40}); return false;" title="Mais detalhes...">{{ escape(item["TITULO-DO-ARTIGO"]) }} ({{ escape(item["ANO-DO-ARTIGO"]) }})</b>&nbsp;Mais detalhes...</a>
+						</tr></td>
+						<tr><td>
+							{% for autor in item["AUTORES"] %}
+								&nbsp;&nbsp;&nbsp;{{ escape(autor["NOME-COMPLETO-DO-AUTOR"]) }}</br>
+							{% end %}
+						</br>
+						</td></tr>
+					{% end %}
+				</table>
+			{% else %}
+				<h3> Você ainda não informou nenhuma produção.</h3>
+			{% end %}
+
+		{{ modules.ShowMolduraFim() }}
+		</br>
+		
+		<form name="producoes" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+			{% raw xsrf_form_html() %}
+			{{modules.ShowMolduraInicio()}}
+				<h2>Importar arquivo XML da Plataforma Lattes</h2>
+				<p>O arquivo aqui escolhido deve ser do formato xml.</p>
+				{% if FILE_DATA %}
+					<table cellspacing="10" >
+						<tr><td align="center"><b>Nome do Arquivo já Enviado</b></td>
+							<td align="center"><b>Data de Atualização</b></td>
+							<td align="center"><b>Remover Arquivo</b></td>
+						</tr>
+						<tr><td align="center">{{ escape(FILE_DATA[0]) }}</td>
+							<td align="center">{{ escape(FILE_DATA[2]) }} às {{ escape(FILE_DATA[1]) }}</td>
+							<td align="center"><a onclick="return confirm('Deseja mesmo remover este arquivo?');" href="/profile/skills/productions/delete/{{ escape(FILE_DATA[0]) }}" title="Remover">
+                        		<img src="/static/imagens/icones/delete16.png" alt="Remover" style="hspace:5px;" />
+                       		</a></td>
+						</tr>
+					</table>
+				{% end %}
+       			<input type="file" name="arquivo" id="arquivo"/>
+		 
+			{{ modules.ShowMolduraFim("producoes") }}
+		</br>
+
+
+    {{ modules.ShowMolduraFim() }}
+{% end %}

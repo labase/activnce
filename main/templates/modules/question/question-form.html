@@ -1,0 +1,74 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+<script src="/static/jquery/tagsinput/jquery.tagsinput.js"></script>
+
+<script type="text/javascript">
+function alteraDependencias(f) {
+	 pesquisa = (f.subtype.selectedIndex==1);
+	 for (i=0; i<f.resp_certa.length; i++){
+	 	f.resp_certa[i].checked = false;
+	 	f.resp_certa[i].disabled = pesquisa;
+	 }
+	 
+     f.nivel.disabled = pesquisa;
+     f.nivel.selectedIndex = 0;  
+}
+</script>
+{% end %}
+
+{% block body-right %}
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+    <form name="criarquestion" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(u"Criar questão")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	
+	<h2>Enunciado da questão:</h2> 
+	<textarea name="enunciado">{{ escape(QUESTIONDATA["enunciado"]) }}</textarea>
+	<script type="text/javascript">
+            CKEDITOR.replace( 'enunciado',
+             {
+                 allowedContent: true,
+             });                
+	</script><br/>
+	
+	<h2>Tipo de questão:</h2>
+	<p>
+	Especifique se esta questão será usada num teste de múltipla escolha ou numa pesquisa de opinião.
+	<br/>Questões do tipo "pesquisa de opinião" não possuem resposta correta nem nível de dificuldade.
+	</p>
+	<select name="subtype" onchange="alteraDependencias(this.form)">
+	<option value="Teste" {% if QUESTIONDATA["subtype"]=="Teste" %} selected="selected" {% end %}>Teste de múltipla escolha</option>
+	<option value="Survey" {% if QUESTIONDATA["subtype"]=="Survey" %} selected="selected" {% end %}>Pesquisa de opinião</option>
+	</select>	
+	
+	<h2>Respostas:</h2>	
+	{% for i in range(5) %}
+		{% if i<len(QUESTIONDATA["respostas"]) %}
+		<input type="radio" name="resp_certa" value="{{i}}"/>
+		<input type="text" name="resposta" size="70" maxlengh="300" value='{{ escape(QUESTIONDATA["respostas"][i]) }}'/> <br/>
+  		{% else %}
+		<input type="radio" name="resp_certa" value="{{i}}"/> <input type="text" name="resposta" size="70" maxlengh="300" /> <br/>
+	  	{% end %}
+
+	{% end %}
+    	
+	<h2>Nível de dificuldade:</h2> 
+	<select name="nivel" >
+	<option value=""></option>
+	<option value="Fácil" {% if QUESTIONDATA["nivel"]=="Fácil" %} selected="selected" {% end %}>Fácil</option>
+	<option value="Médio" {% if QUESTIONDATA["nivel"]=="Médio" %} selected="selected" {% end %}>Médio</option>
+	<option value="Difícil" {% if QUESTIONDATA["nivel"]=="Difícil" %} selected="selected" {% end %}>Difícil</option>
+	</select>	
+	
+	<p>
+        <h2>Tags:</h2> 
+		   {{ modules.InputTags(QUESTIONDATA["tags"]) }}
+	</p>
+
+	{{ modules.ShowMolduraFim("criarquestion") }}
+    </form>
+{% end %}
+
+

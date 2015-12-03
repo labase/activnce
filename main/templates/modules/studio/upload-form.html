@@ -1,0 +1,14 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+<br/>
+	<form name="upload" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+		{% raw xsrf_form_html() %}
+		{{ modules.ShowMolduraInicio() }}
+			<h2>Descrição:</h2> <input name="description" value="" type="text" size="40"/>
+			<h2>Tags:</h2> {{ modules.InputTags([]) }}
+			<h2>Arquivo:</h2>
+		    <input type="file" value="Procurar..." name="arquivo"/><br/>
+		    {{ modules.ShowMolduraFim("upload") }}
+	</form>
+{% end %}

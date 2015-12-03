@@ -1,0 +1,34 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %} 
+
+<form name="logar" action="/login" method="post">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(escape("Entre com seu login e senha"))}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div><br/>{% end %}
+		<input type="hidden" name="next" value="{{ escape(NEXT) }}">
+		<p>
+			<input name="user" value="{{ _("login") }}" autocomplete="off" 
+				type="text" size="20" onfocus="this.value=''" 
+				onblur="if (this.value=='') this.value=this.defaultValue"
+        	/>
+
+			<input name="passwd"  size="20" value="{{ _("password") }}" 
+				type="password" onfocus="this.value=''"
+				onblur="if (this.value=='') this.value=this.defaultValue"
+				onKeyPress="if (event.keyCode == 13) {this.form.submit();}"	       
+			/>
+		</p>
+		<p>
+			<input type="checkbox" id="remember" name="remember" value="1" 
+				tabindex="6"
+			/>
+			<label for="remember">{{ _("Remember me") }}!
+			</label>
+		</p>
+	{{ modules.ShowMolduraFim("logar") }}
+</form>
+
+<a href="/new/user">{{ _("Create your account") }}.</a>
+<a href="/forgotpasswd">{{ _("Forgot my password") }}.</a>    
+{% end %}

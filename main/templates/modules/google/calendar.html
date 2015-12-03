@@ -1,0 +1,20 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", titulo="Agenda de "+REGISTRY_ID+" ( Conta Google: "+GOOGLE_ACCOUNT+" )", links=LINKS)}}
+
+    {% if GOOGLE_ACCOUNT %}
+      <p>Você está autenticado no Google como {{ LOGGED_NAME }} ({{ LOGGED_EMAIL }}).
+      <br/>
+      Se você não é {{ LOGGED_FIRSTNAME }}, <a href="/google/logoff">clique aqui</a>.</p>
+      <br/>
+      <img src="/static/imagens/google/GoogleCalendar64.jpg" />
+      <br/><br/>
+      
+      <iframe src="https://www.google.com/calendar/embed?src={{GOOGLE_ACCOUNT}}&ctz=America/Sao_Paulo" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    {% else %}
+      <h2>{{ REGISTRY_ID }} ainda não registrou sua conta no Google.</h2>
+    {% end %}
+    
+    {{modules.ShowMolduraFim()}}
+{% end %}

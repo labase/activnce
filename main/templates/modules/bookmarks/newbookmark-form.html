@@ -1,0 +1,15 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+    <form name="criarfavorito" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+
+        {{modules.ShowMolduraInicio("Criar favorito")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h2>URL:</h2><input name="url" value="" type="text" size="60"/>
+        <h2>Título:</h2><input name="title" value="" type="text" size="60"/>
+        <h2>Descrição:</h2><textarea name="description" rows="8" cols="60"></textarea>
+        <h2>Tags:</h2> {{ modules.InputTags([]) }}
+        {{ modules.ShowMolduraFim("criarfavorito") }}
+    </form>
+{% end %}

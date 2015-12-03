@@ -1,0 +1,85 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+<script type="text/javascript">
+	function changeFiles(folder, select_id) {
+		// alert ("/file/json/{{REGISTRY_ID}}?folder="+folder);
+		$.ajax({url: "/file/json/{{REGISTRY_ID}}?folder="+folder+"&type=video",
+			type: "GET",
+			success: function(response) {
+				// obj = JSON && JSON.parse(response.files) || $.parseJSON(response.files);
+				// select to be modified
+				sel = document.getElementById(select_id)
+					
+				// remove all old options
+				$('#'+select_id).empty();
+				
+				// and then create the new ones
+				for(file in response.files) {
+				   var opt = document.createElement("option");
+				   opt.value = response.files[file];
+				   opt.innerHTML = response.files[file];
+				   sel.appendChild(opt);
+				}
+			}
+		});
+	}	
+	
+	function critica(f) {
+		if (f.name.value=="") {
+			alert ("Nome da Videoaula não preenchido");
+			return false;
+		}
+		if (f.arqvideo.value=="") {
+			alert ("Arquivo de vídeo não selecionado");
+			return false;
+		}
+		return true;
+	}		
+	
+	
+	$().ready(function() {
+		changeFiles("", "arqvideo");
+	});		
+</script>
+{% end %}
+
+{% block body-right %}
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+    
+    <form name="criar" action="{{ request.path }}" method="post" onsubmit="return critica(this);">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Criar videoaula")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    
+	<h2>Nome da Videoaula:</h2> 
+	<input type="text" name="name" size="70" maxlength="300" value='{{ escape(VIDEODATA["titulo"]) }}'/> <br/>
+	
+	<h2>Arquivo de video:</h2> 
+	<!--
+	<input type="text" name="arqvideo" size="70" maxlength="300" value='{{ escape(VIDEODATA["arqvideo"]) }}'/> <br/>
+	-->
+	<select name="folder" onchange="changeFiles(this.options[this.selectedIndex].value, 'arqvideo')">
+		{% for item in FOLDERS %}
+		<option value='{{item[0]}}'>{{item[1]}}</option>
+		{% end %}
+	</select>
+	<select name="arqvideo" id="arqvideo"></select>	
+	<br/><br/>
+	<b>Atenção:</b><br/>
+	    - Antes de criar a videoaula, você precisa fazer o <i>upload</i> do vídeo no <a href="/file/{{REGISTRY_ID}}">repositório de Arquivos</a>. <br/>
+	    - O vídeo será exibido em tamanho 400x300 e deverá ter duração menor que uma hora. <br/>
+	    - A utilização de resoluções maiores pode acarretar em demora para sua exibição. <br/>
+	    - Os formatos aceitos são: "mp4", "ogg", "ogv" e "webm" (utilize preferencialmente "mp4"). <br/>
+	    - Dependendo do formato de vídeo utilizado e da versão do navegador do usuário, pode ser que seja necessário instalar algum plugin para que o video seja exibido.
+	
+	<br/>
+			
+    <h2>Tags:</h2> 
+	   {{ modules.InputTags(VIDEODATA["tags"]) }}
+
+	{{ modules.ShowMolduraFim("criar") }}
+    </form>
+{% end %}
+
+

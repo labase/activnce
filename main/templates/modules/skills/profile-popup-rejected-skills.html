@@ -1,0 +1,140 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		function validaHabilidade(contador, tipo){
+		var xmlhttp;
+		if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp=new XMLHttpRequest();
+		}
+		else{// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function(){
+			if (xmlhttp.readyState==4 && xmlhttp.status==200){
+				//Codigo ao receber resposta do python
+				if( xmlhttp.responseText == "success"){
+					document.getElementById("opcoes_habilidade"+contador).style.display = 'none';
+				}
+				if( xmlhttp.responseText == "final success"){
+					document.getElementById("habilidades_recusadas").style.display = 'none';
+					document.getElementById("aviso_fim").style.display = 'inline';
+				}
+			}
+		}
+		_xsrf=getCookie("_xsrf");
+		nivel = document.getElementById("nivel_habilidade"+contador).value;
+		if((tipo != "confirmar") || (tipo == "confirmar" && nivel!="")){
+			nome = document.getElementById("nome_habilidade"+contador).value;
+			data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome=" + nome + "&tipo=" + tipo;
+			xmlhttp.open("POST","/profile/skills/validate/refused",true);
+			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xmlhttp.send(data);
+		}
+	}
+
+		function buscaProducoesReferencia(contador){
+			var xmlhttp;
+			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					//Codigo ao receber resposta do python
+					//alert(xmlhttp.responseText);
+					$('#tr_referencias_habilidade'+contador).toggle();
+					var dict_resposta = JSON.parse(xmlhttp.responseText);
+					var string_resposta = "";
+					if(dict_resposta["producoes_referencia"].length > 0){
+						string_resposta = "<b>Esta habilidade foi encontrada nas seguintes produções:</b></br>";
+						for (prod in dict_resposta["producoes_referencia"]){
+							string_resposta = string_resposta + dict_resposta["producoes_referencia"][prod] + "</br>";
+						}
+					}
+					if(dict_resposta["academico_referencia"].length > 0){
+						string_resposta = string_resposta +"<b>Esta habilidade foi encontrada nas seguintes formações acadêmicas:</b></br>";
+						for (acad in dict_resposta["academico_referencia"]){
+							string_resposta = string_resposta + "<b>Instituição: </b>" + dict_resposta["academico_referencia"][acad]["instituicao"] 
+							+ "<b> Nível: </b>" + dict_resposta["academico_referencia"][acad]["nivel"];
+							if(dict_resposta["academico_referencia"][acad]["curso"] != ""){
+								string_resposta = string_resposta + "<b> Curso: </b>" + dict_resposta["academico_referencia"][acad]["curso"];
+							}
+							string_resposta = string_resposta + "<b> Data de começo: </b>" + dict_resposta["academico_referencia"][acad]["data_ini"] + "</br>";
+						}
+					}
+					if(dict_resposta["profissional_referencia"].length > 0){
+						string_resposta = string_resposta + "<b>Esta habilidade foi encontrada nas seguintes experiências profissionais:</b></br>";
+						for (prof in dict_resposta["profissional_referencia"]){
+							string_resposta = string_resposta + "<b>Empresa: </b>" + dict_resposta["profissional_referencia"][prof]["empresa"];
+							if(dict_resposta["profissional_referencia"][prof]["cargo"] != ""){
+								string_resposta = string_resposta + "<b> Cargo: </b>" + dict_resposta["profissional_referencia"][prof]["cargo"];
+							}
+							string_resposta = string_resposta + "<b> Data de começo: </b>" + dict_resposta["profissional_referencia"][prof]["data_ini"] + "</br>";
+						}
+					}
+					if (dict_resposta["num_usuarios"] > 0){
+						string_resposta = string_resposta + "<b>Esta habilidade foi atestada por " + 
+						dict_resposta["num_usuarios"] + " usuário(s).</b>";
+					}
+					document.getElementById("td1_referencias_habilidade"+contador).innerHTML = string_resposta;
+				}
+			}
+			if(document.getElementById("tr_referencias_habilidade"+contador).style.display != 'none'){
+				$('#tr_referencias_habilidade'+contador).toggle();
+			}
+			else{
+				xmlhttp.open("GET","/profile/skills/validate/refused/"+"{{LOGADO}}"+"/"+contador,true);
+				xmlhttp.send();
+			}
+		}
+	</script>
+{% end %}
+
+{% block body %} 
+	{{modules.ShowMolduraInicio()}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	<div id="habilidades_recusadas">
+		{% if HABILIDADES_RECUSADAS %}
+			<table width="100%">
+				<tr><td align="center"><b>Habilidade</b></td>
+					<td align="center"><b>Nome Correto da Habilidade</b></td>
+					<td align="center"><b>Nível</b></td>
+					<td align="center"><b>Confirmar Habilidade</b></td>
+					<td align="center"><b>Não é Habilidade</b></td>
+				</tr>
+				{% for contador in range(len(HABILIDADES_RECUSADAS)) %}
+				
+				<tr id="opcoes_habilidade{{contador}}"><td align="center"><a href="#" onclick="buscaProducoesReferencia({{contador}})">{{escape(HABILIDADES_RECUSADAS[contador]["nome_habilidade"])}}</a></td>
+					<td align="center"><input type="text" id="nome_habilidade{{contador}}" value="{{escape(HABILIDADES_RECUSADAS[contador]['nome_habilidade'])}}"/>
+					<td align="center"><select id="nivel_habilidade{{contador}}">
+						<option value=""> </option>
+						<option value="novato">Novato</option>
+						<option value="iniciante">Iniciante Avançado</option>
+						<option value="apto">Apto</option>
+						<option value="proficiente">Proficiente</option>
+						<option value="especialista">Especialista</option>
+					</select></td>
+					<td align="center">
+						<input type="image"  id="confirmar{{contador}}" src="/static/imagens/icones/join16.png" alt="Confirmar Habilidade" onclick="validaHabilidade({{contador}}, 'confirmar')"/>
+					</td>
+					<td align="center">
+						<input type="image"  id="invalidar{{contador}}" src="/static/imagens/icones/remove16.png" alt="Não é Habilidade" onclick="validaHabilidade({{contador}}, 'invalidar')"/>
+					</td>
+				</tr>
+				<tr id="tr_referencias_habilidade{{contador}}" style="display: none;">
+					<td align="center" colspan="5" id="td1_referencias_habilidade{{contador}}"></td>
+				</tr>
+				{% end %}
+			</table>
+		{% end %}
+	</div>
+	<div id="aviso_fim" style="display:none;">
+			<p> Não há mais habilidades recusadas. </p>
+	</div>
+    {{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,64 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    <form name="cadastro" action="/new/user" method="post" enctype="multipart/form-data">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(u"Primeiro Acesso ao ActivUFRJ através da Intranet")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+                <div style="margin-right: 20%">
+                <img src="/static/imagens/intranetufrjfundobranco.gif"/>
+				<p><b>Você não foi encontrado na base de usuários do ActivUFRJ. </b>
+				<br/>
+				Cadastre-se agora, criando um novo login e senha. 
+				Este procedimento permitirá que, no futuro, você possa fazer login diretamente no ActivUFRJ, mesmo que a Intranet esteja fora do ar.
+				<br/><br/>
+				</p>
+				</div>
+
+                <input name="mkey" id="mkey" value="" type="hidden" />
+                <input name="origin" id="origin" value="intranet" type="hidden" />
+                <input name="criar_comunidades" id="criar_comunidades" value="{{ CRIARCOMUNIDADES }}" type="hidden" />
+                <input name="vinculos" id="vinculos" value='{{ json_encode(REGISTRYDATA["vinculos"]) }}' type="hidden" />
+				
+                <h2 for="user">Login</h2>
+                <i>Escolha um nome pelo qual você será reconhecido na plataforma. Evite números como CPF, DRE, etc.</i>
+                <br/>
+                <input name="user" id="user" value="{{ escape(REGISTRYDATA["user"]) }}" type="text"/>
+				<br/><br/>
+				
+                <h2 for="passwd">Senha</h2>
+                <input name="passwd" id="passwd" value="{{ escape(REGISTRYDATA["passwd"]) }}" type="password"/>
+				<br/><br/>
+				
+                <h2 for="npasswd">Repita a Senha</h2>
+                <input name="npasswd" id="npasswd" value="{{ escape(REGISTRYDATA["passwd"]) }}" type="password"/>
+				<br/><br/>
+				
+                <h2 for="name">Nome</h2>
+                <input name="name" id="name" value="{{ escape(REGISTRYDATA["name"]) }}" type="text" size="50"/>
+				<br/><br/>
+				
+                <h2 for="lastname">Sobrenome</h2>
+                <input name="lastname" id="lastname" value="{{ escape(REGISTRYDATA["lastname"]) }}" type="text" size="50"/>
+				<br/><br/>
+				
+                <h2 for="cpf">CPF</h2>
+                <input name="cpf" id="cpf" value="{{ escape(REGISTRYDATA["cpf"]) }}" type="hidden" />
+				{{ escape(REGISTRYDATA["cpf"]) }}
+				<br/><br/>
+				
+                <h2 for="photo">Foto</h2>
+                <input id="photo" name="photo" type="file"/>
+				<br/><br/>
+				
+                <h2 for="email">E-Mail</h2>
+                {{ escape(REGISTRYDATA["email"]) }}
+                <input name="email" value="{{ escape(REGISTRYDATA["email"]) }}" type="hidden"/>
+                
+                <br/><br/>
+                <input type="submit" value="Enviar" />
+                <br/><br/>
+                
+		{{ modules.ShowMolduraFim() }}
+	</form>
+{% end %}

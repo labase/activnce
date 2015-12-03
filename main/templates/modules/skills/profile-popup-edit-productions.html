@@ -1,0 +1,158 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		function enviaUsername(id, indice){
+		var xmlhttp;
+		if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp=new XMLHttpRequest();
+		}
+		else{// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function(){
+			if (xmlhttp.readyState==4 && xmlhttp.status==200){
+				if( xmlhttp.responseText == "usuario invalido"){
+					document.getElementById("error-msg").style.display = 'inline';
+				}
+				else{
+					document.getElementById("autor"+indice).style.display = 'none';
+					document.getElementById("username-autor"+indice).innerHTML = xmlhttp.responseText;
+					document.getElementById("username-autor"+indice).style.display = 'inline';
+					document.getElementById("username-autor"+indice).href = "/profile/"+xmlhttp.responseText;
+					document.getElementById("enviar-autor"+indice).style.display = 'none';
+					document.getElementById("editar-autor"+indice).style.display = 'inline';
+					document.getElementById("error-msg").style.display = 'none';
+				}
+			}
+		}
+		_xsrf=getCookie("_xsrf");
+		username = document.getElementById("autor"+indice).value;
+		data = "_xsrf="+_xsrf + "&username=" + username;
+		xmlhttp.open("POST","/profile/skills/productions/edit/"+id+"/"+indice,true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlhttp.send(data);
+		}
+
+		function editaUsername(indice){
+			document.getElementById("autor"+indice).style.display = 'inline';
+			document.getElementById("username-autor"+indice).style.display = 'none';
+			document.getElementById("enviar-autor"+indice).style.display = 'inline';
+			document.getElementById("editar-autor"+indice).style.display = 'none';
+		}
+	</script>
+
+{% end %}
+
+{% block body %} 
+	{{modules.ShowMolduraInicio()}}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<table>
+			<tr><td><b>Título do Artigo:</b></td>
+				<td>{{ escape(PRODUCAO["TITULO-DO-ARTIGO"]) }}</td>
+			</tr>
+			<tr><td><b>Ano de Publicação:</b></td>
+				<td>{{ escape(PRODUCAO["ANO-DO-ARTIGO"]) }}</td>
+			</tr>
+
+			<tr><td><b>Título do Períodico ou Revista:</b></td>
+				<td>{{ escape(PRODUCAO["TITULO-DO-PERIODICO-OU-REVISTA"]) }}</td>
+			</tr>
+
+			<tr><td><b>Idioma:</b></td>
+				<td>{{ escape(PRODUCAO["IDIOMA"]) }}</td>
+			</tr>
+			{% try %}
+				{% if PRODUCAO["PALAVRA-CHAVE-1"] %}
+					<tr><td><b>Palavra-chave 1:</b></td>
+						<td>{{ escape(PRODUCAO["PALAVRA-CHAVE-1"]) }}</td>
+					</tr>
+				{% end %}
+			{% except %}
+			{% end %}
+			
+			{% try %}
+				{% if PRODUCAO["PALAVRA-CHAVE-2"] %}
+					<tr><td><b>Palavra-chave 2:</b></td>
+						<td> {{ escape(PRODUCAO["PALAVRA-CHAVE-2"]) }} </td>
+					</tr>
+				{% end %}
+			{% except %}
+			{% end %}
+			
+			{% try %}
+				{% if PRODUCAO["PALAVRA-CHAVE-3"] %}
+					<tr><td><b>Palavra-chave 3:</b></td>
+						<td> {{ escape(PRODUCAO["PALAVRA-CHAVE-3"]) }} </td>
+					</tr>
+				{% end %}
+			{% except %}
+			{% end %}
+			
+			{% try %}
+				{% if PRODUCAO["PALAVRA-CHAVE-4"] %}
+					<tr><td><b>Palavra-chave 4:</b></td>
+						<td> {{ escape(PRODUCAO["PALAVRA-CHAVE-4"]) }} </td>
+					</tr>
+				{% end %}
+			{% except %}
+			{% end %}
+			
+			{% try %}
+				{% if PRODUCAO["PALAVRA-CHAVE-5"] %}
+					<tr><td><b>Palavra-chave 5:</b></td>
+						<td> {{ escape(PRODUCAO["PALAVRA-CHAVE-5"]) }} </td>
+					</tr>
+				{% end %}
+			{% except %}
+			{% end %}
+			
+			{% try %}
+				{% if PRODUCAO["PALAVRA-CHAVE-6"] %}
+					<tr><td><b>Palavra-chave 6:</b></td>
+						<td> {{ escape(PRODUCAO["PALAVRA-CHAVE-6"]) }} </td>
+					</tr>
+				{% end %}
+			{% except %}
+			{% end %}
+		</table>
+		<b>Autores:</b>
+		<div id="error-msg" style="color: #FF0000; display: none;"></br>Nome de usuário inválido.</div>
+		<table width="100%">
+			<tr><td><b>Nome do Autor:</b></td>
+				<td><b>Nome para Citação:</b></td>
+				<td><b>Nome de Usuário no ActivUFRJ:</td>
+			</tr>
+			{% for i in range(len(PRODUCAO["AUTORES"])) %}
+				<tr><td>
+					{% if PRODUCAO["AUTORES"][i]["NRO-ID-CNPQ"] %}
+						<a target="_blank" href="http://lattes.cnpq.br/{{escape(PRODUCAO['AUTORES'][i]['NRO-ID-CNPQ'])}}">
+							<img src="/static/imagens/logolattes.gif" alt="Currículo Lattes" border="0"/>
+							{{ escape(PRODUCAO["AUTORES"][i]["NOME-COMPLETO-DO-AUTOR"]) }}
+						</a>
+					{% else %}
+						{{ escape(PRODUCAO["AUTORES"][i]["NOME-COMPLETO-DO-AUTOR"]) }}
+					{% end %}
+					</td>
+				<td>{{ escape(PRODUCAO["AUTORES"][i]["NOME-PARA-CITACAO"]) }}</td>
+				<td>
+					{% if "USERNAME-ACTIV" in PRODUCAO["AUTORES"][i] %}
+						<input type="text" name="autor{{i}}" id="autor{{i}}" style="display: none;"/>
+						<a target="_blank" id ="username-autor{{i}}" href="/profile/{{ escape(PRODUCAO['AUTORES'][i]['USERNAME-ACTIV']) }}">{{ escape(PRODUCAO["AUTORES"][i]["USERNAME-ACTIV"]) }}</a>
+						<input type="image"  id="enviar-autor{{i}}" src="/static/imagens/icones/join16.png" alt="Enviar" onclick="enviaUsername({{ escape(PRODUCAO['SEQUENCIA-PRODUCAO']) }}, {{i}})" style="display: none;"/>
+						<input type="image"  id="editar-autor{{i}}" src="/static/imagens/icones/leave16.png" alt="Editar" onclick="editaUsername({{i}})"/>
+					{% else %}
+						<input type="text" name="autor{{i}}" id="autor{{i}}"/>
+						<a target="_blank" id ="username-autor{{i}}" style="display: none;"></a>
+						<input type="image"  id="enviar-autor{{i}}" src="/static/imagens/icones/join16.png" alt="Enviar" onclick="enviaUsername({{ escape(PRODUCAO['SEQUENCIA-PRODUCAO']) }}, {{i}})"/>
+						<input type="image"  id="editar-autor{{i}}" src="/static/imagens/icones/leave16.png" alt="Editar" onclick="editaUsername({{i}})" style="display: none;"/>
+					{% end %}
+				</td>				
+				</tr>
+			{% end %}
+		</table>
+
+    {{ modules.ShowMolduraFim() }}
+{% end %}

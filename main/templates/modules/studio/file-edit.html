@@ -1,0 +1,23 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+<br/>
+	<form name="upload" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+		{% raw xsrf_form_html() %}
+		{{ modules.ShowMolduraInicio() }}
+			<h2>Arquivo:</h2>
+		    {{ escape(FILE["_id"].split("/")[1]) }}
+		    <br/><br/>
+			<h2>Descrição:</h2> <input name="description" value="{{ escape(FILE["description"]) }}" type="text" size="40"/>
+			<br/><br/>
+			<h2>URL:</h2> <input name="url" value="{{ escape(FILE["url"]) }}" type="text" size="40"/>
+			<br/><br/>
+			<h2>Tags:</h2> {{ modules.InputTags(FILE["tags"]) }}
+			<br/><br/>
+			<h2>Permissões:</h2>
+			<input type="checkbox" value="S" name="acesso_publico" 
+				{% if FILE["acesso_publico"]=="S" %}checked="checked"{% end %} /> Este arquivo pode ser acessado de fora da plataforma.
+			<br/>
+		{{ modules.ShowMolduraFim("upload") }}
+	</form>
+{% end %}

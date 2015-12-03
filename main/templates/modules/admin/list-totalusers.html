@@ -1,0 +1,28 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+	{% if MSG %}
+	    <div class="tnmMSG">{{ MSG }}</div>
+	{% else %}
+	    {% if TOTAL %}
+	        <table border="1">
+	            <tr>
+	                <td>Tipo de Cadastro</td>
+	                <td>Número de usuários</td>
+	            </tr>
+	                
+	            {% for item in TOTAL %}
+	                <tr>
+	                    <td>{{ item }}</td>
+	                    <td>{{ TOTAL[item] }}</td>
+	                </tr>
+	            {% end %}
+	        </table>
+	    {% else %}
+	        <p>Nenhum usuário cadastrado.</p>
+	    {% end %}
+	
+	{% end %}
+
+{% end %}

@@ -1,0 +1,92 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+    <script type="text/javascript">
+    acessos = { "acesso_privado":1, 
+                "acesso_grupos":2, 
+                "acesso_comunidade":3, 
+                "acesso_activ":4, 
+                "acesso_publico":5 
+              };
+    
+    function enableGroups(tipo, valor) {
+        if (valor!="acesso_grupos") 
+            //document.getElementById("area_grupos_"+tipo).style.visibility = 'hidden'
+            document.getElementById("area_grupos_"+tipo).style.display = 'none'
+        else
+            //document.getElementById("area_grupos_"+tipo).style.visibility = 'visible';
+            document.getElementById("area_grupos_"+tipo).style.display = 'block';
+    }
+    
+    function checkPermissions(f) {
+	    if (acessos[f.escopo_R.options[f.escopo_R.selectedIndex].value] < acessos[f.escopo_W.options[f.escopo_W.selectedIndex].value]) {
+	        alert("Permissão de escrita incompatível com a permissão de leitura.");
+	        return false;
+	    }
+	    return true;
+    }
+    
+    </script>
+{% end %}
+
+{% block body %} 
+    <form name="permedit" action="{{ request.path }}" method="post" onsubmit="return checkPermissions(this);">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(titulo=PATH)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div><br/>{% end %}
+    <input type="hidden" name="perm_id" value="{{ PERM_ID }}"/>
+
+ 	<!-- ************ Permissões de LEITURA ******************* -->
+     <h3>{{LEGENDA_R}}</h3>
+     <select name="escopo_R" onchange="enableGroups('R', this.options[this.selectedIndex].value)">
+     {% for perm in SERVICE_PERM[0] %}
+         {% if perm[0] != "acesso_grupos" or (perm[0] == "acesso_grupos" and GROUPS) %}
+	     	<option value="{{ perm[0] }}" {% if PERMDATA["leitura"]["escopo"]==perm[0] %} selected="selected"{% end %}>{{ perm[1] }}</option>
+	     {% end %}
+	 {% end %}
+     </select>
+     
+     <div id="area_grupos_R" {% if PERMDATA["leitura"]["escopo"]!="acesso_grupos" %}style="display:none"{% end %}>
+	    <br/><br/>
+	    {% if GROUPS %} 
+	       {% if TIPO_REGISTRY=="community" %}
+	          <i>Atenção: A escolha de um ou mais grupos não impede que os administradores da comunidade também tenham acesso a este objeto.</i><br/><br/>
+	       {% end %}
+	       Selecione os grupos:<br/> 
+        {% end %}
+	    {% for grupo in GROUPS %}
+	        <input type="checkbox" name="R_{{ grupo }}" id="R_{{ grupo }}" value="S" {% if grupo in PERMDATA["leitura"]["grupos"] %} checked="checked" {% end %}>{{grupo}}<br/>
+	    {% end %}
+    </div>
+    <br/>
+        
+ 	<!-- ************ Permissões de ESCRITA ******************* -->
+     <h3>{{LEGENDA_W}}</h3>
+     <select name="escopo_W" onchange="enableGroups('W', this.options[this.selectedIndex].value)">
+	 {% for perm in SERVICE_PERM[1] %}
+         {% if perm[0] != "acesso_grupos" or (perm[0] == "acesso_grupos" and GROUPS) %}
+	     	<option value="{{ perm[0] }}" {% if PERMDATA["escrita"]["escopo"]==perm[0] %} selected="selected"{% end %}>{{ perm[1] }}</option>
+	     {% end %}
+	 {% end %}
+	 </select>
+ 	
+     <div id="area_grupos_W" {% if PERMDATA["escrita"]["escopo"]!="acesso_grupos" %}style="display:none"{% end %}>
+        <br/><br/>
+	    {% if GROUPS %} 
+		    <i>Atenção: Ao ceder permissão de escrita para um grupo, certifique-se que este mesmo grupo também tenha permissão de leitura.</i><br/>
+	       {% if TIPO_REGISTRY=="community" %}
+	          <i> - A escolha de um ou mais grupos não impede que os administradores da comunidade também possam alterar este objeto.</i><br/>
+	       {% end %}
+	       <br/>
+		    Grupos:<br/> 
+	    {% end %}
+	    {% for grupo in GROUPS %}
+	        <input type="checkbox" name="W_{{ grupo }}" id="W_{{ grupo }}" value="S" {% if grupo in PERMDATA["escrita"]["grupos"] %} checked="checked" {% end %}>{{grupo}}<br/>
+	    {% end %}
+    </div>
+    <br/><br/>
+    <input type="submit" value="Enviar" />
+
+    {{ modules.ShowMolduraFim() }}
+   </form>
+{% end %}

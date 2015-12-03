@@ -1,0 +1,83 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    
+    {{modules.ShowMolduraInicio(titulo=TITLE, width="100%", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    <div>
+      <br/>
+       {% if BOOKMARKS %}
+            {% for mark in BOOKMARKS %}
+                 <div style="float:right">
+                    {% if mark["alterar"] %}
+                       <a href="/bookmarks/edit/{{ escape(mark["registry_id"])}}?id={{mark["id"]}}" title="alterar">
+                       <img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+                    {% end %}
+                      {% if mark["apagar"] %}
+                         <a onclick="return confirm('Deseja realmente apagar este favorito?');" href="/bookmarks/delete/{{ escape(mark["registry_id"]) }}?id={{mark["id"]}}" title="apagar">
+                         <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+                    {% end %}  
+                 </div>
+
+                 {% if FOTO %}
+                     {{ modules.ShowFoto("/photo/"+escape(mark['registry_id'])+"?size=P",escape(mark['registry_id']),escape(mark['registry_id']),"/user/"+escape(mark['registry_id']),True)}}
+                 {% end %}
+                 {% if mark["title"] %}
+                     <b><a href="{{mark["url"]}}" target="_new">{{mark["title"]}}</a></b><br/>
+                     <span style="color:#999;font-size:small;">
+                     {{mark["url"]}}<br/>
+                     </span>
+                 {% else %}
+                     <b><a href="{{mark["url"]}}" target="_new">{{mark["url"]}}</a></b><br/>
+                 {% end %}
+                 {% if not FOTO and mark["url_count"] %}
+                    <a href="/bookmarks/url?url={{ escape(mark["url"]) }}">{{ mark["url_count"] }}</a>. <br/>
+                 {% end %}
+                 {% if mark["description"] %}
+                    <br/>
+                    <div style="background-color:#f0f0f0; padding:8px 8px; margin-right:40px; margin-left: 40px;">{{mark["description"]}}</div>
+                    <br/>
+                 {% end %}
+                 
+
+		        {% if mark["tags"] %}
+		           <i>Tags:</i><br/>
+		           {{ modules.ShowTags(mark["tags"], link="/bookmarks/"+mark["registry_id"]+"/") }}
+		        {% end %}
+        
+                <p>     
+                <span style="color:#999;font-size:small;">
+                 {% if mark["owner"] != mark["registry_id"] %}
+                  Criado por: {{ escape(mark["owner"]) }} em {{ escape(mark["registry_id"]) }}<br/>
+                 {% end %}
+
+                 Última alteração: {{ escape(mark["alterado_por"]) }} em {{ escape(mark["data_alt"]) }}<br/>
+                <a href="/bookmarks/comment/{{ escape(mark["registry_id"]) }}?id={{mark["id"]}}">{{ mark["num_comments"] }}</a>
+                </span>
+                </p>
+                <br/><hr noshade/><br/>
+            {% end %}
+        {% else %}      
+            <p>{{ REGISTRY_ID }} ainda não possui nenhum favorito{% if TAG %} com a tag {{TAG}}{% end %}.
+            </p>
+        {% end %}
+    </div>
+    {{ modules.ShowMolduraFim() }}
+    
+    {{ modules.Paginator(PAGE, PAGESIZE, BOOKM_COUNT) }}
+    <br/>
+{% end %}
+
+{% block body-left %}
+	{% if TAGS %}
+        <br/><br/>
+        {{modules.ShowMolduraInicio(width="100%", titulo="Tags")}}
+        <table><tr><td>
+          <a href="/bookmarks/{{REGISTRY_ID}}">Todas</a> 
+          <br/><br/>
+          {{ modules.ShowTags(TAGS, link="/bookmarks/"+REGISTRY_ID+"/") }}
+          <br/>
+        </td></tr></table>
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}

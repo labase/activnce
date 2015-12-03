@@ -1,0 +1,21 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %} 
+<form name="perfil" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Alterar senha", width="100%")}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+	<h2 for="name">Nome do Usuario</h2>
+	<input namewr="name" id="name" value="{{REGISTRY_ID}}" disabled="disabled" type="name"/>
+	<input name="name" id="name" value="{{REGISTRY_ID}}" type="hidden"/>
+	<input name="activate_id" value="{{ACTIVATE_ID}}" type="hidden"/>
+        
+	<h2 for="newpasswd">Senha nova</h2>
+	<input name="newpasswd" id="newpasswd" value="" type="password"/>
+
+	<h2 for="confpasswd">Confirmação da senha nova</h2>
+	<input name="confpasswd" id="confpasswd" value="" type="password"/>
+	{{ modules.ShowMolduraFim("perfil") }}
+</form>
+{% end %}

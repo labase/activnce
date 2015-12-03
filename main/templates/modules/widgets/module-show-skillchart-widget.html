@@ -1,0 +1,130 @@
+{% if len(SKILLS) >= MIN_HABILIDADES_GRAFICO %}
+	<script src="/static/jquery/Chart.js/Chart.min.js"></script>
+	<div>
+		<!-- a href="/profile/skills/chart/user/{{REGISTRY_ID}}">Gráfico de habilidades</a -->
+		<div id="grafico" align="center"> <canvas style="cursor: pointer;" id="myChart" width="600" height="300" onclick="window.location = '/profile/skills/chart/user/{{REGISTRY_ID}}';"> </canvas> </div>
+	</div>
+			<script>
+				//{# Arrays para guardarem os valores e que ficarão selecionados nos selects #}
+				var data_nomes_originais = [];
+				var data_niveis_originais = [];
+				var data_nomes_20chars = [];
+				
+				{% for habil in SKILLS %}
+					data_nomes_originais.push("{{escape(habil['nome_habilidade'])}}");
+					data_niveis_originais.push({{habil["nivel_geral"]}});
+					if("{{escape(habil['nome_habilidade'])}}".length < 23){
+						data_nomes_20chars.push("{{escape(habil['nome_habilidade'])}}");
+					}else{
+						var nome20chars = "{{escape(habil['nome_habilidade'])}}".slice(0, 20)+"...";
+						data_nomes_20chars.push(nome20chars);		
+					}
+				{% end %}
+					
+				//{# Limitando o gráfico em MAX_HABILIDADES_GRAFICO habilidades #}
+				var data_nomes_grafico = data_nomes_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+				var data_niveis_grafico = data_niveis_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+				var data_nomes_20chars_grafico = data_nomes_20chars.slice(0, {{MAX_HABILIDADES_GRAFICO}}); 
+				//{# Preenchendo demais espaços com vazio, caso haja menos que MAX_HABILIDADES_GRAFICO habilidades no total #}
+				while(data_nomes_grafico.length < {{MAX_HABILIDADES_GRAFICO}}){
+					data_nomes_grafico.push("");
+					data_niveis_grafico.push("");
+					data_nomes_20chars_grafico.push("");
+				}
+				//{# Arrays que serão utilizados para o desenho do gráfico #}
+				var vetor_nomes = [];
+				var vetor_niveis = [];
+				var vetor_legendas = [];
+				for (i=0; i<{{MAX_HABILIDADES_GRAFICO}}; i++){
+					if(data_nomes_20chars_grafico[i] != ""){
+						vetor_nomes.push(data_nomes_20chars_grafico[i]);
+						vetor_niveis.push(data_niveis_grafico[i]);
+						vetor_legendas.push(data_nomes_grafico[i]);
+					}
+				}
+				var data = {
+					labels: vetor_nomes,
+					nomes_legenda: vetor_legendas,
+					datasets: [
+						{
+					        label: "Habilidades",
+					        fillColor: "rgba(0,0,220,0.2)",
+					        strokeColor: "rgba(0,0,220,1)",
+					        pointColor: "rgba(0,0,0,1)",
+					        pointStrokeColor: "#fff",
+					        pointHighlightFill: "#000",
+					        pointHighlightStroke: "rgba(0,0,0,1)",
+					        data: vetor_niveis
+						}
+					]
+				}
+				var options = {
+					//{# Boolean - Whether to show lines for each scale point #}
+					scaleShowLine : true,
+			
+					//{# Boolean - Whether we show the angle lines out of the radar #}
+					angleShowLineOut : true,
+			
+					//{# Boolean - Whether to show labels on the scale #}
+					scaleShowLabels : false,
+			
+					//{# Boolean - Whether the scale should begin at zero #}
+					scaleBeginAtZero : true,
+			
+					//{# String - Colour of the angle line #}
+					angleLineColor : "rgba(0,0,0,.8)",
+					
+					//{# String - Colour of the scale line #}
+					scaleLineColor: "rgba(0,0,0,.8)",
+			
+					//{# Number - Pixel width of the angle line #}
+					angleLineWidth : 1,
+			
+					//{# String - Point label font declaration #}
+					pointLabelFontFamily : "'Arial'",
+			
+					//{# String - Point label font weight #}}
+					pointLabelFontStyle : "bold",
+			
+					//{# Number - Point label font size in pixels #}
+					pointLabelFontSize : 12,
+			
+					//{# String - Point label font colour #}
+					pointLabelFontColor : "#000",
+			
+					//{# Boolean - Whether to show a dot for each point #}
+					pointDot : true,
+			
+					//{# Number - Radius of each point dot in pixels #}
+					pointDotRadius : 3,
+			
+					//{# Number - Pixel width of point dot stroke #}
+					pointDotStrokeWidth : 1,
+			
+					//{# Number - amount extra to add to the radius to cater for hit detection outside the drawn point #}
+					pointHitDetectionRadius : 20,
+			
+					//{# Boolean - Whether to show a stroke for datasets #}
+					datasetStroke : true,
+			
+					//{# Number - Pixel width of dataset stroke #}
+					datasetStrokeWidth : 2,
+			
+					//{# Boolean - Whether the scale should stick to integers, not floats even if drawing space is there #}
+					scaleIntegersOnly: true,
+					
+					//{# Boolean - Whether to fill the dataset with a colour #}
+					datasetFill : true,
+					
+				    // String - Template string for single tooltips
+    				tooltipTemplate: "<%if (label){ %><%=data.nomes_legenda[data.labels.indexOf(label)]%>: <%}%> <%if(value == 1){ %>Novato<%}%><%if(value == 2){ %>Iniciante Avançado<%}%><%if(value == 3){ %>Apto<%}%><%if(value == 4){ %>Proficiente<%}%><%if(value == 5){ %>Especialista<%}%>",
+					
+					//{# String - Template string for multiple tooltips #}
+	    			multiTooltipTemplate: "<%= datasetLabel %> - <%= value %>"
+					
+				}
+				var ctx = document.getElementById("myChart").getContext("2d");
+				var myRadarChart = new Chart(ctx).Radar(data, options);
+	
+			</script>
+{% end %}

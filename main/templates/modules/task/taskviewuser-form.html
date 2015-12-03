@@ -1,0 +1,182 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+		function ehNumero(evt){
+		    var charCode = (evt.which) ? evt.which : event.keyCode
+		    if (charCode > 31 && (charCode < 48 || charCode > 57))
+		        return false;
+		    return true;
+		}    
+			
+		function minMax(value, min, max) 
+		{
+		    if(parseInt(value) < 0 || isNaN(value)) 
+		        return 0; 
+		    else if(parseInt(value) > 100) 
+		        return 100; 
+		    else return value;
+		}
+	</script>
+{% end %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(u"Corrigir a tarefa "+escape(TASKDATA["nome"]), width="100%")}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div>{% end %}
+
+	<table cellspacing="5">
+		<tr><td>
+        </td>
+        <td colspan="3">
+        <b>Descrição da Tarefa:</b> {{ escape(TASKDATA["descricao"]) }}
+        </td></tr>
+		
+		<tr><td>
+        </td>
+        <td colspan="3">
+        <b>Número de Arquivos:</b> {{ escape(TASKDATA["num_arquivos"]) }}
+        </td></tr>
+		
+		{% if PARTICIPANTES %}
+			<tr>
+			<td>
+			</td>
+			<td colspan="3">
+				<b>Grupo: </b> {{escape(NOME_GRUPO)}}
+			</td>
+			</tr>
+
+			<tr>
+			<td>
+			</td>
+			<td colspan="3">
+				<b>Integrantes:</b></br> 
+				{% for part in PARTICIPANTES %}
+					{{escape(part)}}</br>
+				{% end %}
+			</td>
+			</tr>
+		{% end %}
+
+		<tr><td>
+        </td>
+        <td colspan="3">
+     	<b>Data de Início:</b> {{ escape(TASKDATA["data_inicio"]) }}
+        </td></tr>
+
+		<tr><td>
+        </td>
+        <td colspan="3">
+     	<b>Data de Encerramento:</b> {{ escape(TASKDATA["data_encerramento"]) }}
+        </td></tr>
+
+		<tr><td>
+        </td>
+        <td colspan="3">
+     	<b>Valor:</b> {{ escape(TASKDATA["valor"]) }}
+        </td></tr>
+		
+		<tr><td>
+        </td>
+        <td colspan="3">
+		{% if TASKDOC["nota"] %}
+     		<b>Nota:</b> {{ escape(TASKDOC["nota"]) }}
+		{% else %}
+			<b>Nota:</b> -
+		{% end %}
+        </td></tr>
+
+		<form name="sendgrade"  action="/task/view/{{ escape(TASKDOC["registry_id"]) }}/{{TASK}}/{{STUDENT}}" method="post">
+        <tr><td>
+		</td>
+        <td colspan="3" valign="top">
+        <label for="nota"><b>Alterar nota (0 - 100):</b> </label>
+        <input name="nota" id="nota" value="" type="text" size="1" onkeypress="return ehNumero(event)" onchange="this.value = minMax(this.value,0,100)"/>
+		<button type="submit">Salvar</button>
+		{% raw xsrf_form_html() %}
+        </td></tr>
+		</form>
+	</table>
+	
+	<br/><br/>
+
+    {% if TASKFILES %}
+        <table border="0" cellspacing="10" width="100%" style="color: black;">
+        <tr>
+            <td style="border-bottom: 1px solid" align="left"><b>Arquivo</b></td>
+            <td style="border-bottom: 1px solid" align="left"><b>Última alteração</b></td>
+			<td style="border-bottom: 1px solid" align="left"><b>Tamanho</b></td>
+            <td style="border-bottom: 1px solid" align="left"><b>Opções</b></td>
+        </tr>
+            {% for arq in TASKFILES %}
+                <tr>
+                                
+                 <td align="left" valign="top">{{ arq[0] }}</td>
+                    
+                 <td align="left" valign="top">{{ arq[1] }}</td>
+
+ 				 <td align="left" valign="top">{{ arq[2] }}</td>
+                 
+                 <td align="left" valign="top">
+              		<!-- Deleção de Arquivos desativada para o professor
+                 	<a onclick="return confirm('Deseja realmente apagar este arquivo?');" title="apagar" href="/task/filedelete/{{ REGISTRY_ID }}/{{ escape(arq[0]) }}/{{TASK}}">
+                 	<img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>  -->
+					<a href="/task/fileview/{{ REGISTRY_ID }}/{{ escape(arq[0]) }}/{{ escape(TASKDATA["nome"]) }}?groupld={{ escape(PARTICIPANTES[0]) }}&disp=inline" title="ver">					
+                    <img src="/static/imagens/icones/view16.png" alt="ver" border="0" /></a>
+                    <a href="/task/fileview/{{ REGISTRY_ID }}/{{ escape(arq[0]) }}/{{ escape(TASKDATA["nome"]) }}?groupld={{ escape(PARTICIPANTES[0]) }}&disp=attachment" title="baixar">
+                    <img src="/static/imagens/icones/down16.png" alt="baixar" border="0" /></a>
+
+                 </td>
+
+                
+                </tr>
+
+                <tr><td colspan="7" style="border-bottom: 1px solid"></td></tr>
+                
+                                
+            {% end %}
+		</table>
+
+
+		<br/><br/>
+        	<a name="comment"></a>
+        	<h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+        	{% if TASKDOC["comentarios"] %}
+            		{% for comment in TASKDOC["comentarios"] %}
+                		<p>
+                		{{ comment["comment"] }}
+                		<span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">	{{ comment["owner"] }}</a> em {{ comment["data_cri"] }}</span>
+
+			
+                    		
+                    	<!-- Deleção de comentários desativada
+							<a href="/task/comment/delete/{{ escape(TASKDOC["registry_id"]) }}/{{TASK}}?owner={{ comment['owner'] }}&data={{ comment['data_cri'] }}" title="apagar">
+                    		<img src="/static/imagens/icones/delete16.png" alt="Apagar" border="0" />
+                    		</a>-->
+                    		
+                		</p>
+            		{% end %}
+        	{% else %}
+            		Nenhum comentário até o momento.
+        	{% end %}
+        	<br/><br/>
+        
+    		<!--Falta o if de proteção externa -->
+		<h2>{{ _("Post a comment") }}:</h2>
+		<form name="postcomment"  action="/task/comment/{{ escape(TASKDOC["registry_id"]) }}/{{TASK}}" method="post">
+		<input type="hidden" name="nome_usuario" value="{{ escape(STUDENT) }}"/>
+		{% raw xsrf_form_html() %}
+
+		<textarea rows="6" cols="70" name="comment"></textarea>
+		
+		</form>
+    		
+    {% else %}
+        <p>{{ REGISTRY_ID }} ainda não possui nenhum arquivo.</p>
+    {% end %}
+
+
+
+    {{ modules.ShowMolduraFim("postcomment") }}
+{% end %}
+

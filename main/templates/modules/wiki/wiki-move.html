@@ -1,0 +1,28 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+    <form name="moverpagina" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(titulo=u"Mover Pastas/Páginas")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div><br/>{% end %}
+    
+    <input type="hidden" name="nomepag" value="{{ escape(WIKIDATA["nomepag"]) }}"/>
+    <input type="hidden" name="revision" value="{{ escape(WIKIDATA["_rev"]) }}"/>
+    <h2>Localização atual:</h2>{{ PATH }}{% if WIKIDATA["is_folder"] == "N" %}{{ escape(WIKIDATA["nomepag"]) }}{% end %}
+
+    <br/><br/>
+
+    <h2>Mover para:</h2>
+    <select name="destino">
+    {% for folder in FOLDERS %}
+        {% if folder[0]==WIKIDATA["parent_folder"] %}
+            <option value="{{folder[0]}}" selected="selected">{{folder[1]}}</option>
+        {% elif folder[0]!=WIKIDATA["nomepag_id"] %}
+            <option value="{{folder[0]}}">{{folder[1]}}</option>
+        {% end %}
+    {% end %}
+    </select>
+    
+    {{ modules.ShowMolduraFim("moverpagina") }}
+   </form>
+{% end %}

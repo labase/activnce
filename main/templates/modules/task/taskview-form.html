@@ -1,0 +1,94 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+<style type="text/css">
+    #content {     
+        display:table-cell;   
+        text-align:center;  
+        vertical-align:middle;
+		width:100000px;
+    }
+</style>
+
+
+    {{modules.ShowMolduraInicio(u"Correção da tarefa", width="100%")}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+	<div id="content">
+		<table border="0" cellspacing="5" width="100%">
+                    {% if GRUPO == False %}
+
+			    		<tr><td style="border-bottom: 1px solid;"></td>
+						<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Nome</b></td>
+						<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Número de Arquivos Enviados</b></td>
+						<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Data do Último Envio</b></td>
+						<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Nota</b></td>
+			    		</tr>
+			    		{% for member in PARTICIPANTES %}
+							<tr>
+							{% if member[2] == 0 %}
+								<td><a><img src="/photo/{{member[0]}}?size=P" width="16" title="{{member[1]}}" /></a></td>
+								<td><a>{{ member[1] }}</a></td>
+								<td>-</td>
+								<td>-</td>
+								<td>-</td>
+							{% else %}
+								<td><a href="{{ escape(LINK)+escape(member[0]) }}"><img src="/photo/{{member[0]}}?size=P" width="16" title="{{member[1]}}" /></a></td>
+								<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[1] }}</a></td>
+								<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[2] }}</a></td>
+								<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[3] }}</a></td>
+								{% if member[5] %}<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[5] }}</a></td>
+								{% else %}<td><a href="{{ escape(LINK)+escape(member[0]) }}">-</a></td>{% end %}
+						
+							{% end %}
+						</tr>
+			    		{% end %}
+						<tr><td colspan="7" style="border-bottom: 1px solid"></td></tr>
+					{% else %}
+						{% if PARTICIPANTES %}
+							<tr>
+							<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Grupo</b></td>
+							<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Participantes</b></td>
+							<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Número de Arquivos Enviados</b></td>
+							<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Data do Último Envio</b></td>
+							<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; border-bottom: 1px solid;"><b>Nota</b></td>
+				   			</tr>
+				
+							{% for member in PARTICIPANTES %}
+							<tr>
+									{% if member[2] == 0 %}
+										<td>{{ member[1] }}</td>
+										<td>
+											{% for part in member[6] %}
+												<a><img src="/photo/{{part}}?size=P" width="16" title="{{part}}"/></a>
+											{% end %}
+										</td>
+										<td>-</td>
+										<td>-</td>
+										<td>-</td>
+									{% else %}
+										<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[1] }}</a></td>
+										<td><a href="{{ escape(LINK)+escape(member[0]) }}">
+											{% for part in member[6] %}
+												<a href="{{ escape(LINK)+escape(member[0]) }}"><img src="/photo/{{part}}?size=P" width="16" title="{{part}}"/></a>
+											{% end %}
+										</a></td>
+										<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[2] }}</a></td>
+										<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[3] }}</a></td>
+										{% if member[5] %}<td><a href="{{ escape(LINK)+escape(member[0]) }}">{{ member[5] }}</a></td>
+										{% else %}<td><a href="{{ escape(LINK)+escape(member[0]) }}">-</a></td>{% end %}
+						
+									{% end %}
+									</tr>
+							{% end %}
+							<tr><td colspan="7" style="border-bottom: 1px solid"></td></tr>
+						{% else %}
+						<tr><td>Não há grupos para esta tarefa no momento.</td></tr>
+						{% end %}
+					{% end %}
+		</table>
+	</div>
+
+    {{ modules.ShowMolduraFim() }}
+{% end %}
+

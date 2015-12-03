@@ -1,0 +1,83 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        
+        $('#data_start').datetimepicker({});
+        $('#data_end').datetimepicker({});
+    });
+    </script>
+{% end %}
+
+{% block body-right %}
+
+<form action="{{ request.path }}" name="avaliacao" method="post">
+    {% raw xsrf_form_html() %}
+  
+    {{modules.ShowMolduraInicio(u"Alterar avaliação", width="100%", links=LINKS)}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <table>
+            <tr><td>
+            <label for="nome">Título</label>
+            </td>
+            <td>
+            <h2>{{ escape(EVALUATIONDATA["nome"]) }}</h2>
+            </td></tr>
+            
+            <tr><td>
+            <label for="descricao">Descrição</label>
+            </td>
+            <td>
+            <input name="descricao" id="descricao" value="{{ escape(EVALUATIONDATA["descricao"]) }}" type="text" size="60"/>
+            </td></tr>
+            
+            <tr><td valign="top">
+            {% if EVALUATIONDATA["tipo"]==unicode("páginas","utf-8") %}
+                <label for="avaliados">Páginas a serem avaliadas</label>
+            {% else %}
+                <label for="avaliados">Participantes a serem avaliados&nbsp;</label>
+            {% end %}
+            </td>
+            <td>
+            {{ ", ".join(EVALUATIONDATA["avaliados"]) }}
+            </td></tr>
+                            
+            <tr><td valign="top">
+            <label for="pontuacao">Pontuação para os votados</label>
+            </td>
+            <td valign="top">
+            {% for item in EVALUATIONDATA["pontuacao"] %}
+                {{ item }} 
+            {% end %}
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_start">Data/hora de início</label>
+            </td>
+            <td>
+            <input id="data_start" name="data_inicio" maxlength="16" size="16" type="text" value="{{ escape(EVALUATIONDATA["data_inicio"]) }}" />
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_end">Data/hora de encerramento</label>
+            </td>
+            <td>
+            <input id="data_end" name="data_encerramento" maxlength="16" size="16" type="text" value="{{ escape(EVALUATIONDATA["data_encerramento"]) }}" />
+            </td></tr>
+            
+            
+                
+        </table>
+    {{ modules.ShowMolduraFim("avaliacao") }}
+</form>
+
+{% end %}

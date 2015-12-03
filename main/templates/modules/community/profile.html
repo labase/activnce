@@ -1,0 +1,40 @@
+{% extends "../../base-foto.html" %}
+{% block body-right %}
+	<h1>Comunidade {{ escape(COMMUNITYDATA["name"]) }}</h1>
+	<h2>Nome</h2>
+	<a href="/community/{{ escape(COMMUNITYDATA["name"]) }}">{{ escape(COMMUNITYDATA["name"]) }}</a>
+    <h2>Descrição</h2>
+	{{ escape(COMMUNITYDATA["description"]) }}
+	<h2>Usuário que criou a comunidade</h2>
+	{{ escape(COMMUNITYDATA["owner"]) }}
+	<br/>
+	<h2>Privacidade</h2>
+	{{ escape(COMMUNITYDATA["privacidade"]) }}
+	<h2>Forma de Participação</h2>
+	{{ escape(COMMUNITYDATA["participacao"]) }}
+			
+	{% if LOGADO==COMMUNITYDATA["owner"]  or LOGADO in COMMUNITYDATA["admins"] %}
+	    <br/>
+		{% if COMMUNITYDATA["participacao"]=="Mediante Convite" %}
+			<h2><a href="/searchmembers/{{ escape(COMMUNITYDATA["name"]) }}">Convidar usuário</a></h2>
+		{% end %}
+		<h2><a href="/members/admin/{{ escape(COMMUNITYDATA["name"]) }}">Administrar participantes</a></h2>
+		<h2><a href="/profile/{{ escape(COMMUNITYDATA["name"]) }}/edit">Editar perfil</a></h2>	
+	{% end %}
+
+	{% if LOGADO in COMMUNITYDATA["participantes"] %}
+	    <br/>
+		<h2><a href="/wiki/newpage/{{ escape(COMMUNITYDATA["name"]) }}?tipo=pagina">Criar nova página</a></h2>	
+				
+		<h2><a href="/evaluation/new/{{ escape(COMMUNITYDATA["name"]) }}">Criar avaliação nesta comunidade</a></h2>	
+		<h2><a href="/wiki/portfolio/{{ escape(COMMUNITYDATA["name"]) }}">Exportar portfólio</a></h2>	
+			
+		{% if "apps" in COMMUNITYDATA %}
+			<br/>
+			<h2>Aplicações desta comunidade</h2>
+			{% for app in COMMUNITYDATA["apps"] %}
+				<a href="{{ app }}">{{ COMMUNITYDATA["apps"][app] }}</a><br/>	
+			{% end %}
+		{% end %}
+	{% end %}
+{% end %}

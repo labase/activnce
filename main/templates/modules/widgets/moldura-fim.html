@@ -1,0 +1,13 @@
+		{% if form != "" %}
+		 <div style="height:5px;"></div>
+		 <div style="float:left; height:10px;">
+		  <img src="/static/imagens/botaoform/enviar/Azul.png" style="position:relative;top:-2px;left:10px;"
+		   onmouseover="this.src='/static/imagens/botaoform/enviar/Azul_over.png';"
+		   onmousedown="this.src='/static/imagens/botaoform/enviar/Azul_down.png';"
+		   onmouseup  ="this.src='/static/imagens/botaoform/enviar/Azul_over.png';" 
+		   onmouseout ="this.src='/static/imagens/botaoform/enviar/Azul.png';"
+		   onclick="document.{{form}}.submit();" />
+		 </div>
+		{% end %}
+	</div>
+</div>

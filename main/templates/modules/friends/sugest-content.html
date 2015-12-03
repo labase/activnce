@@ -1,0 +1,51 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {% if PAGINAS or POSTS or PERFIL or COMUNIDADES %}
+        {% if PAGINAS %}
+           {{ modules.ShowMolduraInicio("<h2 style='display:inline'>Páginas</h2>", width="100%") }}
+            
+            {% for pagina in PAGINAS %}
+                <a href="/wiki/{{ pagina[0] }}"> Página {{ pagina[0].split("/")[1] }} de {{ pagina[0].split("/")[0] }} (tag(s) {{ pagina[1] }})</a> <br/>
+            {% end %}
+            
+            {{ modules.ShowMolduraFim() }}
+            <br/>
+        {% end %}
+    
+        {% if POSTS %}
+            {{ modules.ShowMolduraInicio("<h2 style='display:inline'>Posts</h2>", width="100%") }}
+            
+            {% for post in POSTS %}
+                <a href="/blog/{{ post[0] }}"> Post {{ post[0].split("/")[1] }} do Blog de {{ post[0].split("/")[0] }} (tag(s) {{ post[1] }})</a> <br/>
+            {% end %}
+            
+            {{ modules.ShowMolduraFim() }}
+            <br/>
+        {% end %}
+    
+        {% if PERFIL %}
+            {{ modules.ShowMolduraInicio("<h2 style='display:inline'>Pessoas</h2>", width="100%") }}
+        
+            {% for perfil in PERFIL %}
+                <a href="/profile/{{ perfil[0] }}"> {{ perfil[0] }} (tag(s) {{ perfil[1] }}) </a> <br/>
+            {% end %}
+    
+            {{ modules.ShowMolduraFim() }}
+            <br/>
+        {% end %}
+        
+        {% if COMUNIDADES %}
+            {{ modules.ShowMolduraInicio("<h2 style='display:inline'>Comunidades</h2>", width="100%") }}
+        
+            {% for comunidade in COMUNIDADES %}
+                <a href="/profile/{{ comunidade[0] }}"> {{ comunidade[0] }} (tag(s) {{ comunidade[1] }}) </a> <br/>
+            {% end %}
+    
+            {{ modules.ShowMolduraFim() }}
+        {% end %}
+    {% else %}
+        <p>Ainda não é possível sugerir conteúdo para {{ REGISTRY_ID }}.</p>
+  {% end %}
+
+{% end %}

@@ -1,0 +1,24 @@
+<div>
+{% if links %}
+    {% if width != "" %}
+        <table cellpadding="0" cellspacing="0" width="{{width}}">
+    {% else %}
+        <table cellpadding="0" cellspacing="0" style="min-width:500px;">
+    {% end %} 
+    <tr>
+        <td>
+        <span style="display:block; text-align:{{alinha}}; padding: 0px 3px;">
+        {% for link in links %}
+            {% if link[2] %}
+            <a href="{{link[2]}}" title="{{link[0]}}" {% if len(link)>3 %}onclick="{{link[3]}}"{% end %}>
+            <img src="{{link[1]}}" alt="{{link[0]}}" border="0" /></a>
+            {% else %}
+            <img src="{{link[1]}}" alt="{{link[0]}}" title="{{link[0]}}" border="0" />
+            {% end %}
+        {% end %}
+        </span>
+        </td>
+    </tr>
+    </table>
+{% end %}
+</div>

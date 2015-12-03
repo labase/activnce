@@ -1,0 +1,16 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+    <form name="alterarfavorito" action="{{ request.path }}" method="post">
+    <input type="hidden" name="id" value="{{ BOOKMARK["_id"] }}" />
+    {% raw xsrf_form_html() %}
+
+        {{modules.ShowMolduraInicio("Alterar favorito")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h2>URL:</h2>{{ escape(BOOKMARK["url"]) }}
+        <h2>Título:</h2><input name="title" value="{{ escape(BOOKMARK["title"]) }}" type="text" size="60"/>
+        <h2>Descrição:</h2><textarea name="description" rows="8" cols="60">{{ escape(BOOKMARK["description"]) }}</textarea>
+        <h2>Tags:</h2> {{ modules.InputTags(BOOKMARK["tags"]) }}
+        {{ modules.ShowMolduraFim("alterarfavorito") }}
+    </form>
+{% end %}

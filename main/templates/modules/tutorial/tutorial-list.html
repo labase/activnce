@@ -1,0 +1,37 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+<script src="/static/getcookie.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+	function changeStatus(status) {
+	    var status_value = status?"N":"S"
+		var xsrf=getCookie("_xsrf");
+		
+		$.ajax({url: "/tutorial/change_status",
+			type: "POST",
+			data: {"status": status_value, "_xsrf": xsrf},
+			success: function(response) {
+		}});
+	}
+</script>
+{% end %}
+
+{% block body %}
+{{modules.ShowMolduraInicio(width="95%", titulo=ITENS["menu"])}}
+	<p>{{ITENS["descricao"]}}</p>
+	<ul>
+	{% for i in range (len(ITENS["tutoriais"])) %}
+        <li><a href="/tutorial/{{ escape(SERVICE)}}/{{i}}/0">&nbsp;&nbsp;&nbsp;&nbsp;{{ITENS["tutoriais"][i]['titulo']}}</a></li>
+	{% end %}
+	</ul>
+{{ modules.ShowMolduraFim() }}
+
+<br/><br/>
+<form>
+<input type="checkbox" id="tutorial" name="tutorial" {% if SHOW_TUTORIAL != "S" %}checked="checked"{% end %} onchange='changeStatus($("#tutorial").is(":checked"));' /> Não exibir tutoriais automaticamente. 
+Para voltar a exibí-los, clique no ícone <span class="fa fa-compass fa-lg" aria-hidden="true"></span> no menu superior.
+</form>
+
+{% end %}

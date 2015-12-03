@@ -1,0 +1,28 @@
+/* barra do governo */
+
+#barraGoverno {
+	
+	background-color: #004b82; /* azul governo */
+	margin: 0;
+	padding: 0;
+	width:100%;
+	height: 24px; /* altura da barra */
+	border-bottom: 2px solid #FFB400; /* borda inferior amarela */
+}
+
+/* posicionando as imagens do governo*/
+#logoAcesso { 
+	position: relative;
+	float:right;
+	width:250px;
+}
+
+ #logoGoverno {
+ 
+	position: relative;
+	float:right;
+	width:150px;
+}
+
+
+

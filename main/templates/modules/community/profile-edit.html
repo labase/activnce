@@ -1,0 +1,50 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+<script type="text/javascript">
+	function open_window(url)
+	{
+	    window.open(url, "mywindow", "scrollbars=yes,location=no,directories=no,menubar=no,toolbar=no,status=no,width=600,height=400");
+	}
+</script>
+{% end %}
+
+{% block body-right %}
+<form name="cadastro" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+	{% raw xsrf_form_html() %}
+	{{ modules.ShowMolduraInicio("Alterar comunidade") }}
+	<h2>Nome</h2>
+	{{ escape(COMMUNITYDATA["name"]) }}
+	<input name="name" id="name" value="{{ escape(COMMUNITYDATA["name"]) }}" type="hidden"/>
+
+	<br/><br/>
+	<h2>Descrição</h2>
+	<input name="description" id="description" value="{{ escape(COMMUNITYDATA["description"]) }}" type="text" size="50"/>
+	
+	<br/><br/>
+	<h2>Foto</h2>
+	<input id="photo" name="photo" type="file"/>
+	
+	<br/><br/>
+	<h2>Tags</h2>
+		   {{ modules.InputTags(COMMUNITYDATA["tags"]) }}
+    <br/><br/>
+    <h2>Aplicativos</h2>
+    {% for service in SERVICES["community"].keys() %}
+           {% if SERVICES["community"][service]["optional"] %}
+		        <span style="white-space:nowrap;">
+		        <input name="{{service}}" value="S" type="checkbox" 
+		         {% if service in COMMUNITYDATA["services"] %}checked="checked"{% end %} 
+		         title="{{ SERVICES['community'][service]['hint'] }}" />{{ SERVICES["community"][service]['description'] }}
+		         </span>
+		    {% end %}
+    {% end %}
+
+    <br/><br/>
+    <h2>Arquivo CSS</h2>
+    <input id="arquivo_css" name="arquivo_css" type="file"/> &nbsp;&nbsp;&nbsp;
+    <a href="javascript: open_window('/css/{{ escape(COMMUNITYDATA["name"]) }}');">Ver o CSS atual</a>
+    
+	{{ modules.ShowMolduraFim("cadastro") }}
+</form>
+{% end %}

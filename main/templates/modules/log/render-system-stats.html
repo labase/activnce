@@ -1,0 +1,110 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- Yahoo User Interface: Produz os gráficos das estatísticas -->
+	<script src="/static/yui/3.13.0/yui/yui-min.js"></script>
+
+	<style>
+	#mychart {
+	    margin:10px 10px 10px 10px;
+	    width:90%;
+	    min-width:600px;
+		min-height:300px;
+	}
+	</style>
+
+	<script>
+	YUI().use('charts', function (Y){ 
+	
+		var myDataValues = [ 
+	
+			{% for indice in LISTADEDADOS %}
+				{ {{TIPO}}:"{{ escape (indice[0]) }}", Acessos:{{ indice[1] }} }
+				{% if indice != LISTADEDADOS[len(LISTADEDADOS)-1] %}
+					,
+				{% end %}
+	
+			{% end %}
+			];
+	
+	    var myAxes = {
+	        actions:{
+	            keys:["Acessos"],
+	            position:"bottom",
+	            type:"numeric",
+				//maximum: escape(TAMANHO_EIXO) ,
+	            styles:{
+	                majorTicks:{
+	                    display: "none"
+	                }
+	            }
+	        },
+	        names:{
+	            keys:["{{TIPO}}"],
+	            position:"left",
+	            type:"category",
+	            styles:{
+	                majorTicks:{
+	                    display: "none"
+	                },
+	                label: {
+	                    rotation:0,
+	                    margin:{top:5}
+	                }
+	            }
+	        }
+	    };
+	
+	    var seriesCollection = [
+	     {
+	            type:"stackedbar",
+	            yAxis:"names",
+	            xAxis:"actions",
+	            yKey:"nome",
+	            yDisplayName:"Nome",
+	            xKey:"escrita",
+	            xDisplayName:"Operações de Escrita",
+	            styles: {
+	            	marker:{
+	                    fill: {
+	                        color: "#008B00"
+	                    },
+	               		 border: {
+	                    weight: 0,
+	                    color: "#008B00"
+	                },
+	                over: {
+	                    fill: {
+	                        alpha: 0.7
+	                    }
+	                }
+	            }
+	          }  
+	        }
+	
+	    ];
+	       
+	    var mychart = new Y.Chart({
+			dataProvider:myDataValues, 
+	        axes:myAxes,
+	        //seriesCollection:seriesCollection,
+	        type: "bar",
+            horizontalGridlines: true,
+            verticalGridlines: true,	        
+	        render:"#mychart"
+	    });
+	});
+	</script>
+{% end %}
+
+{% block body-right %}
+	{{modules.ShowMolduraInicio(width="100%", links="", titulo=u"Estatísticas de acesso à plataforma")}}
+	
+	<h1>Estatísticas do sistema: Número de acessos X {{ TIPO }}<br/>
+	Período: {{INICIO}} até {{FIM}}</h1>
+	
+	<div id="mychart" style="height:{{ALTURA}}px;"></div>
+	
+	{{ modules.ShowMolduraFim() }}
+{% end %}
+

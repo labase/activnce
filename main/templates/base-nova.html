@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>{{ PAGETITLE }}</title>
+		<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+
+		<link rel="stylesheet" href="/static/activ_new/dist/css/font-awesome.min.css">
+		<link rel="stylesheet" href="/static/activ_new/dist/css/hover.css">
+
+		<!-- Javscript -->
+		<script src="/static/jquery/jquery-1.11.1.min.js"></script>
+		<!-- script src="/static/activ_new/dist/js/head.js"></script -->
+		<script src="/static/activ_new/dist/js/bootstrap.min.js"></script>
+		<script src="/static/activ_new/dist/js/bootstrap.js"></script>
+		<script src="/static/activ_new/dist/js/filtro.js"></script>
+		<script src="/static/activ_new/dist/js/dropdown.js"></script>
+		
+		<!-- Bootstrap -->
+		<link rel="stylesheet" type="text/css" href="/static/activ_new/dist/css/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="/static/activ_new/dist/css/styles2.css">
+		
+		<!-- JQuery UI -->
+		<script src="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.js"></script>
+		<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.css">
+
+
+		<!-- Tinybox: código para abertura de popups -->
+		<link rel="stylesheet" href="/static/tinybox/style.css" />
+		<script type="text/javascript" src="/static/tinybox/tinybox.js"></script>
+		<script type="text/javascript">
+			function closeJS() { location.href = "{{request.path}}?{{request.query}}"; }
+		</script>
+
+		<!-- ARQUIVOS CSS DO ACTIV -->
+		<link rel="stylesheet" href="/static/activ/activ.css" type="text/css" />
+
+		{% block chat-notify %}
+			{% if LOGADO %}
+				<script type="text/javascript">
+					var registry_id = '{{REGISTRY_ID}}';
+					var TAM_STR_MSG = 80;
+
+					function find_user(str){
+						var p1=str.indexOf("<b>");
+						var p2=str.indexOf("</b>", p1);
+						//alert("user:"+str.substring(p1+3, p2));
+						return str.substring(p1+3, p2);
+					}
+
+					function extract_msg(str){
+						var p1=str.indexOf("</b>: ");
+						var p2=str.indexOf("<div class='date'>", p1);
+						str = str.substring(p1+6, p2);
+						msg = str.substr(0, TAM_STR_MSG);
+						if (str.length > TAM_STR_MSG) msg += "...";
+							//alert("msg:"+msg);
+						return msg
+					}
+
+					function extract_date(str){
+						var p1=str.indexOf("<div class='date'>");
+						var p2=str.indexOf("</div>", p1);
+						str = str.substring(p1+18, p2);
+						msg = str.substr(0, TAM_STR_MSG);
+						if (str.length > TAM_STR_MSG) msg += "...";
+							//alert("date:"+msg);
+						return msg
+					}
+
+					function show_notify_message(message){
+						chat_name = find_user(message);
+
+						if (chat_name!=registry_id){
+							// torna visível o div da área de notificação
+							var notify_area = document.getElementById("chat-notify");
+							notify_area.style.display = 'inline-block';
+
+							// remove mensagem anterior se houver
+							if (notify_area.childNodes[0]) notify_area.removeChild(notify_area.childNodes[0]); // icone
+							if (notify_area.childNodes[0]) notify_area.removeChild(notify_area.childNodes[0]); // link
+
+							// acrescenta imagem com ícone
+							//var img = document.createElement('img');
+							//img.src = '/static/imagens/icones/talk24.png';
+							//notify_area.appendChild(img);
+
+							var img = document.createElement('span');
+							img.className = 'fa fa-comments';
+							notify_area.appendChild(img);
+
+
+							// acrescenta mensagem com link
+							var chat_link = document.createElement('span');
+							chat_link.innerHTML = "&nbsp;<a href='/chat/" + chat_name + "'>"+ chat_name + " chamando...</a>";
+							notify_area.appendChild(chat_link);
+
+							//usr = "&nbsp;<a href='/chat/" + chat_name + "'>"+ chat_name + "</a>";
+							//msg = extract_msg(message);
+							//document.getElementById("chat-notify").innerHTML = usr+": "+msg;
+							//document.getElementById("chat-notify").innerHTML = "&nbsp;<a href='/chat/" + chat_name + "'>"+ chat_name + " chamando...</a>";
+						}
+					}
+
+					$(function() {
+						protocol = (location.href.substring(0,5)=="https") ? "wss" : "ws";
+						if ("WebSocket" in window){
+						   //alert ("vou iniciar na base-nova: " + protocol+"://{{PLATAFORMA_URL}}/chat/{{LOGADO}}/updates");
+
+						   var ws = new WebSocket(protocol+"://{{PLATAFORMA_URL}}/chat/{{LOGADO}}/updates");
+
+						   ws.onmessage = function(event) {
+						      show_notify_message(event.data);
+						   };
+						}
+
+						{% if SHOW_TUTORIAL == "S" %}
+							<!-- Exibe tutorial automaticamente -->
+							<!-- Só exibe se: existe tutorial deste serviço e -->
+							<!-- estou vendo a minha página ou a de uma comunidade que participo. -->
+
+							{% if TUTORIAL_ICON and (LOGADO==REGISTRY_ID or ("participantes" in USERDATA and LOGADO in USERDATA["participantes"])) %}
+								TINY.box.show({iframe:'/tutorial/{{ STR_PATH }}',width:800,height:600,fixed:false,maskid:'bluemask',maskopacity:40});
+							{% end %}
+						{% end %}
+					});
+				</script>
+			{% end %}
+		{% end %}
+
+		<script type="text/javascript">
+			var usersArray;
+			var communitiesArray;
+			var	tagsArray;
+			var	skillsArray;
+				
+			function set_autocomplete(selectType) {
+			    $('#tipo').val(selectType); 
+		    
+				if (selectType == "P"){
+					searchArray = usersArray;
+					$('#busca').attr('action', '/search'); //{# Mudança de action no form caso habilidades não seja escolhido #}
+				}
+				else if (selectType == "C"){
+					searchArray = communitiesArray
+					$('#busca').attr('action', '/search'); //{# Mudança de action no form caso habilidades não seja escolhido #}
+				}
+				else if (selectType == "T"){
+					searchArray = tagsArray;
+					$('#busca').attr('action', '/search'); //{# Mudança de action no form caso habilidades não seja escolhido #}
+				}
+				else if (selectType == "H"){
+					searchArray = skillsArray;
+					$('#busca').attr('action', '/skills/search'); //{# Mudança de action no form caso habilidades seja escolhido #}
+				}
+				// limpa str_busca
+				$('#str_busca').val('');
+
+				// Initialize autocomplete with local lookup:
+				$('#str_busca').autocomplete( "destroy" );
+				$('#str_busca').autocomplete({
+					//source: searchArray,
+					//minLength: 3,
+				    source: function(request, response) {
+				        var results = $.ui.autocomplete.filter(searchArray, request.term);
+				        // limita exibição em 10 itens
+				        response(results.slice(0, 10));
+				    },
+
+					select: function (event, ui) {
+						$('#str_busca').val(ui.item.value);
+						$('#busca').submit();
+					}
+				})
+			}
+							
+			$(function () {
+				// Carrega listas para o autocomplete
+				// ----------------------------------
+
+				//var selectType = $( "#tipo" ).find( "option" ).filter( ":selected" ).attr( "value" );
+				var selectType = $( "#tipo" ).val();
+				var registry_id_copiado = false;
+
+				// Load users
+				source = {{ AUTOCOMPLETE_USERS }};
+				usersArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+
+				// Load communities
+				source = {{ AUTOCOMPLETE_COMMUNITIES }};
+				communitiesArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+
+				// Load tags
+				source = {{ AUTOCOMPLETE_TAGS }};
+				tagsArray = $.map(source, function (value, key) { return { value: key, data: key }; });
+
+				// Load skills
+				// source = {{ AUTOCOMPLETE_CONFIRMED_SKILLS }};
+				// skillsArray = $.map(source, function (value, key) { return { value: key, data: key }; });
+				skillsArray = {{ AUTOCOMPLETE_CONFIRMED_SKILLS }};
+
+				// inicializa o jquery ui autocomplete com a lista de tags
+				$('#str_busca').autocomplete({
+					//source: tagsArray,
+					// minLength: 3,
+				    source: function(request, response) {
+				        var results = $.ui.autocomplete.filter(tagsArray, request.term);
+				        // limita exibição em 10 itens
+				        response(results.slice(0, 10));
+				    },
+
+					select: function (event, ui) {
+						$('#str_busca').val(ui.item.value);
+						$('#busca').submit();
+					}
+				});
+
+				// reinicializa autocomplete se o tipo de busca for alterado
+				$( "#tipo" ).change(function () {
+					//selectType = $( "#tipo" ).find( "option" ).filter( ":selected" ).attr( "value" );
+				    selectType = $( "#tipo" ).val();
+				    
+					if (selectType == "P"){
+						searchArray = usersArray;
+						$('#busca').attr('action', '/search'); //{# Mudança de action no form caso habilidades não seja escolhido #}
+					}
+					else if (selectType == "C"){
+						searchArray = communitiesArray
+						$('#busca').attr('action', '/search'); //{# Mudança de action no form caso habilidades não seja escolhido #}
+					}
+					else if (selectType == "T"){
+						searchArray = tagsArray;
+						$('#busca').attr('action', '/search'); //{# Mudança de action no form caso habilidades não seja escolhido #}
+					}
+					else if (selectType == "H"){
+						searchArray = skillsArray;
+						$('#busca').attr('action', '/skills/search'); //{# Mudança de action no form caso habilidades seja escolhido #}
+					}
+
+					// limpa str_busca
+					$('#str_busca').val('');
+
+					// Initialize autocomplete with local lookup:
+					$('#str_busca').autocomplete( "destroy" );
+					$('#str_busca').autocomplete({
+						//source: searchArray,
+						//minLength: 3,
+					    source: function(request, response) {
+					        var results = $.ui.autocomplete.filter(searchArray, request.term);
+					        // limita exibição em 10 itens
+					        response(results.slice(0, 10));
+					    },
+
+						select: function (event, ui) {
+							$('#str_busca').val(ui.item.value);
+							$('#busca').submit();
+						}
+					});
+				});
+
+				// reinicializa o form de busca ao carregar a página
+				// necessário quando o usuário clica em "voltar" no navegador
+				$( window ).load(function() {
+					$( "#tipo" ).prop('selectedIndex', 0);
+					$('#str_busca').val('');
+				});
+
+			});
+		</script>
+	
+		{% block head %}{% end %}
+	</head>
+
+	<body class="fundo">
+		<div class="container-full">
+
+			<div id="barra-brasil" class="fontBrasil"style="background:#7F7F7F; height: 20px; padding:0 0 0 10px;display:block;">
+          		<ul id="menu-barra-temp" style="list-style:none;">
+					<li style="display:inline; float:left;padding-right:10px; margin-right:10px; border-right:1px 	solid #EDEDED">
+						<a href="http://brasil.gov.br" style="font-family:sans,sans-serif; text-decoration:none; color:white;">
+							Portal do Governo Brasileiro
+						</a>
+					</li>
+					<li>
+						<a style="font-family:sans,sans-serif; text-decoration:none; color:white;" href="http://epwg.governoeletronico.gov.br/barra/atualize.html">
+							Atualize sua Barra de Governo
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- INÍCIO DA BARRA DE NAVEGAÇÃO PRINCIPAL-->
+
+			<div class="container-full">
+			<!-- INÍCIO DA BARRA DE NAVEGAÇÃO PRINCIPAL: menu do usuário logado (MENU PRETO) -->
+				<nav class="navbar navbar-default" role="navigation">
+					<a href="#"><img class="minerva" src="/static/activ_new/imagens/minerva.png"></a>
+					<div class="container-full">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded=" false" aria-controls="navbar">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+						</div>
+
+						{% if LOGADO %}
+
+							<div id="navbar" class="navbar-collapse collapse">
+							
+								<ul class="nav navbar-nav">
+									<!-- menu item N -->
+									{% for item in MENU["member"] %}
+										<li>
+											<a data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false" title="{{item["name"]}}">
+												<span class="fa {{item["icon"]}}">
+													
+												</span>
+												<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+													<li role="presentation">
+														{% for subitem in item["subitens"] %}
+														    {% if (not SERVICES["member"][subitem]["optional"]) or subitem in LOGADO_SERVICES %}
+																<a role="menuitem" tabindex="-1" href="{{SERVICES["member"][subitem]["my_link"]+LOGADO}}" 
+																   title="{{SERVICES["member"][subitem]["my_hint"]}}">{{SERVICES["member"][subitem]["description"]}}</a>
+															{% end %}
+														{% end %}
+													</li>
+												</ul>
+											</a>
+										</li>
+									{% end %}
+
+									<!-- Recentes -->
+										<li>
+											<a data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false" title="Ações Recentes">
+												<span class="fa fa-history">
+													
+												</span>
+												<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+													<li role="presentation">
+														{% for action in RECENT_ACTIONS %}
+															<a role="menuitem" tabindex="-1" href="{{action["link"]}}" 
+															   title="">{{action["verbo"]+" "+action["objeto"]}}</a>
+														{% end %}
+													</li>
+												</ul>
+											</a>
+										</li>
+										
+									<!-- Notificações -->
+										<li>
+											{% if (len(LISTA_NOTIFICACOES)!=0) %}
+												<a data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false" title="Notificaçoes">
+													<button class="btn btn-primary botaoBadge" type="button">
+														<span class="glyphicon glyphicon-exclamation-sign">
+															<span class="badge customBadge">
+																
+																{{len(LISTA_NOTIFICACOES)}}
+																
+															</span>
+														</span>
+													</button>
+													<ul class="dropdown-menu" role="menu"	>
+													    {% for item in LISTA_NOTIFICACOES %}
+														<li role="presentation">
+															<a role="menuitem" tabindex="-1" href="{{item[1]}}">
+																{{item[0]}}
+															</a>
+														</li>
+														{% end %}
+													</ul>
+												</a>
+											{% end %}
+										</li>
+									
+									
+									<!-- Ícone do tutorial -->
+									<!-- Só exibe se: existe tutorial deste serviço e -->
+									<!-- estou vendo a minha página ou a de uma comunidade que participo. -->
+						
+									{% if TUTORIAL_ICON and (LOGADO==REGISTRY_ID or ("participantes" in USERDATA and LOGADO in USERDATA["participantes"])) %}
+										<li>
+											<a class="faa-parent animated-hover" href="#" title="Tutorial do {{PAGETITLE}}" onclick="TINY.box.show({iframe:'/tutorial/{{ STR_PATH }}',width:800,height:600,fixed:false,maskid:'bluemask',maskopacity:40}); return false;">
+												<span class="fa fa-compass fa-lg" aria-hidden="true">
+													
+												</span>
+											</a>
+										</li>										
+									{% end %}									
+
+									<!-- Sair -->
+									<li>
+										<a href="/logout" title="Sair">
+											<span class="fa fa-sign-out" aria-hidden="true"></span>
+										</a>
+									</li>
+								</ul>
+								
+								<!-- Área de notificação do chat -->
+								<div id="chat-notify" style="position:relative; float:left; margin-top:12px; text-align:right;">
+								</div>
+
+								<a target="_blank" href="http://www.ufrj.br" id="univ">Universidade Federal do Rio Janeiro</a>
+							</div>
+						{% end %}
+					</div>
+				</nav>
+				<!---- FIM DA BARRA DE NAVEGAÇÃO PRINCIPAL ---->
+
+
+				<!---- INÍCIO DO CONTEÚDO PRINCIPAL ---->
+
+				<!-- XXXXXXXXXX   declaracao da barra de referencia do usuario e seu local na comunidade   XXXXXXXXXX -->
+					<div class="container-full">
+						<div class="col-md-12 meuCont">
+						
+							{% if LOGADO %}
+							
+								<!-- Breadcrumbs, a.k.a. caminhozinho -->
+								<ol class="col-md-9 breadcrumb meuCont">
+									{% for item in NAVIGATION %}
+										<li style="float:left">
+											<a href="{{ item }}">{{ item.split("/")[2] }}</a>
+										</li>
+									{% end %}
+								</ol>
+								
+								<!---- Busca ---->
+								<form name="busca" id="busca" action="/search" method="post">
+								
+									<div class="col-md-3 busca-nova meuCont">
+										<div class="input-group">
+											{% raw xsrf_form_html() %}
+											<input type="text" name="str_busca" id="str_busca" class="form-control autocomplete" aria-label="...">
+											<input type="hidden" name="tipo" id="tipo" value="T">
+											<div class="input-group-btn">
+												<button class="btn btn-default" type="submit" onclick="$('#busca').submit();">
+													<i class="glyphicon glyphicon-search"></i>
+												</button>
+												<button id="filter-filter" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+													<span class="glyphicon glyphicon-tags">
+													</span>
+												</button>
+												<ul class="dropdown-menu dropdown-menu-right" role="menu">
+													<li>
+														<a id="tags-filter" href="#" onclick="set_autocomplete('T'); return false;">
+															Tags
+														</a>
+													</li>
+													<li>
+														<a id="pessoas-filter" href="#" onclick="set_autocomplete('P'); return false;">
+															Pessoas
+														</a>
+													</li>
+													<li>
+														<a id="comunidades-filter" href="#" onclick="set_autocomplete('C'); return false;">
+															Comunidades
+														</a>
+													</li>
+													<li>
+														<a id="habilidades-filter" href="#" onclick="set_autocomplete('H'); return false;">
+															Habilidades
+														</a>
+													</li>				
+												</ul>
+												
+											</div><!-- /btn-group -->
+										</div><!-- /input-group -->
+									</div><!-- /buca-nova -->
+								</form>
+							{% end %}
+				
+				
+						<div class="clear"></div>
+
+						<!---- INÍCIO DA COLUNA QUE CONTÉM A FOTO, O NOME E O MENU DO PERFIL ---->
+						<div class="col-md-2 meuCont conteudoLateral">
+
+							{% block foto %} {% end %}
+
+							<!---- SEPARADOR HORIZONTAL ---->
+							<div class="col-md-12 row" id="separador-horizontal">
+							</div>
+							
+							<!-- Área da esquerda -->
+							{% block body-left %}{% end %}
+
+							<!---- SEPARADOR HORIZONTAL ---->
+							<div class="col-md-1" id="separador-horizontal2">
+							</div>
+						</div>
+						<!---- FIM DA COLUNA QUE CONTÉM A FOTO, O NOME E A ÁREA ESQUERDA ---->
+
+	  					<!---- INÍCIO DO GRID DE CONTEÚDO CENTRAL ---->
+								<div class="col-md-10 col-md-10-custom">
+									<!-- INÍCIO DA BARRA DE NAVEGAÇÃO: menu do usuário/comunidade visitada (MENU AZUL) -->
+									{% if LOGADO and LOGADO != REGISTRY_ID %}
+										<nav class="navbar navbar-activ" role="navigation">
+											<div class="container-full">
+												<div class="navbar-header">
+													<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar2" aria-expanded=" false" aria-controls="navbar">
+														<span class="sr-only">Toggle navigation</span>
+														<span class="icon-bar"></span>
+														<span class="icon-bar"></span>
+														<span class="icon-bar"></span>
+													</button>
+												</div>
+																
+										
+												<div id="navbar2" class="navbar-collapse collapse">
+													<ul class="nav navbar-nav">
+														<!-- menu item N -->
+														{% for item in MENU[TIPO_REGISTRY] %}
+															<li>
+																<a data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false" title="{{item["name"]}}">
+																	
+																	<span class="fa {{item["icon"]}}"></span>
+																	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+																		<li role="presentation">
+																			{% for subitem in item["subitens"] %}
+																    			{% if (not SERVICES[TIPO_REGISTRY][subitem]["optional"]) or subitem in USERDATA["services"] %}
+																			
+																				  {% if "%s" in SERVICES[TIPO_REGISTRY][subitem]["hint"] %}
+																					<a role="menuitem" tabindex="-1" 
+																					   href="{{SERVICES[TIPO_REGISTRY][subitem]["link"]+REGISTRY_ID}}" 
+																                       title="{{SERVICES[TIPO_REGISTRY][subitem]["hint"]%REGISTRY_ID}}">
+																                  {% else %}
+																					<a role="menuitem" tabindex="-1" 
+																					   href="{{SERVICES[TIPO_REGISTRY][subitem]["link"]+REGISTRY_ID}}" 
+																                       title="{{SERVICES[TIPO_REGISTRY][subitem]["hint"]}}">
+																                  {% end %}
+																					{{SERVICES[TIPO_REGISTRY][subitem]["description"]}}
+																				</a>
+																				{% end %}
+																			{% end %}
+																		</li>
+																	</ul>
+																</a>
+															</li>
+														{% end %}
+													</ul>
+												</div>
+												
+											</div>
+										</nav>
+									{% end %}
+									<!---- FIM DA BARRA DE NAVEGAÇÃO ---->
+									
+									<div class="tnmEstiloInterno"> 
+										{% block body-right %}
+										{% end %}   
+									</div>
+								</div>
+
+						<div class="col-md-5 col-md-5-custom meuCont">
+							{% block body-right-2 %}
+							{% end %}
+						</div>
+
+						<div class="col-md-5 col-md-5-custom meuCont">
+							{% block body-right-3 %}
+							{% end %}
+						</div>
+
+						<!---- INÍCIO DAS GRIDS DE CONTEÚDO CENTRAIS ---->
+				
+				{% if LOGADO %}
+					</div>
+				{% end %}
+				
+			</div>
+		</div>
+
+		<div class="clear"></div>
+		
+		<footer class="footer">
+			<p>ActivUFRJ {{ _("version") }} {{ VERSAO_TNM }} - ©2010 
+				<a href="http://www.nce.ufrj.br" target="_blank">
+					NCE/UFRJ
+				</a>
+			</p>
+		</footer>
+
+		<!-- Placed at the end of the document so the pages load faster -->
+		<!-- script src="http://barra.brasil.gov.br/barra.js" type="text/javascript" -->
+		<script src="/static/barra_brasil/barra.js" type="text/javascript">
+		</script>
+	</body>
+</html>

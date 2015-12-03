@@ -1,0 +1,33 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+{% if MSG %}<div class="tnmMSG">{{ MSG }}</div>{% end %}
+<br/><br/>
+
+<h2>Busca de Usuários:</h2>
+<p><form action="/admin/listusers" method="post">
+	{% raw xsrf_form_html() %}
+	<input type ="hidden" name="tipo_busca" value="simples" />
+	
+	Login:
+	<input name="login" size="20" type="text"/>
+	<br/><br/>
+	<input name="save" value="Enviar" type="submit"/>
+</form></p>
+<br/><br>
+
+<h2>Busca Avançada:</h2>
+<p><form action="/admin/listusers" method="post">
+	{% raw xsrf_form_html() %}
+	<input type ="hidden" name="tipo_busca" value="avancada" />
+	
+	Email:
+	<input name="email" size="20" type="text"/>
+	<br/>	
+	Nome:
+	<input name="nome" size="20" type="text" />	
+	<br/><br/>	
+	<input name="save" value="Enviar" type="submit"/>
+</form></p>	
+
+{% end %}

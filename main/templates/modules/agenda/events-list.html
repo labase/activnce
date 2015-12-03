@@ -1,0 +1,35 @@
+{% extends "../../base.html" %}
+
+{% block body %}   
+    {{modules.ShowMolduraInicio(u"Informações do evento", width="95%")}}
+    {% if EVENTS %}
+      
+        <h3>{{ DIA }} de {{ MESES[int(MES)-1] }} de {{ ANO }}</h3>
+            {% for i in range(0,len(EVENTS)) %}
+                {% if ALTERAR %}
+                    <div style="float:right">
+                    <a href="/agenda/edit/{{ REGISTRY_ID }}?data={{ ANO+MES+DIA }}&pos={{ i }}" title="alterar">
+                    <img src="/static/imagens/icones/edit16.png" border="0" /></a>
+                    <a onclick="return confirm('Deseja realmente apagar este evento do dia {{ DIA }}/{{ MES }}/{{ ANO }}?');" href="/agenda/delete/{{ REGISTRY_ID }}?data={{ ANO+MES+DIA }}&pos={{ i }}" title="excluir">
+                    <img src="/static/imagens/icones/delete16.png" border="0" /></a>
+                    </div>
+                {% end %}    
+                            
+                <p style="padding-left:10px">
+			      {{ EVENTS[i]["hora"] }} às {{ EVENTS[i]["hora_fim"] }} - 
+			      <i>
+                    {% if EVENTS[i]["url"] and EVENTS[i]["url"]!="http://" %}
+                        <a href='{{ EVENTS[i]["url"] }}' target="_new">{{ EVENTS[i]["msg"].replace("\n","<br/>") }}</a>
+                    {% else %}
+                        {{ EVENTS[i]["msg"].replace("\n","<br/>") }}                   
+                    {% end %}
+                  </i>
+                </p>
+        {% end %}
+                
+    {% elif not MSG %}
+       <p> Nenhum evento encontrado nesta agenda.</p>
+    {% end %}
+    {{modules.ShowMolduraFim()}}
+
+{% end %}

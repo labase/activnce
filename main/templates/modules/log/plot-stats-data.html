@@ -1,0 +1,117 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<script type="text/javascript">
+    function desabilita_select_membros(valor){
+    	var select_membros = document.getElementById("select_membros");
+		select_membros.disabled=(valor == "total");
+		if (valor == "total"){		
+			select_membros.options[0].selected = true;
+			select_membros.style.color = "grey";
+		}
+		else{
+			select_membros.style.color = "black";
+		} 
+	} 
+    
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        
+        // Período default: últimos 15 dias
+		var end = new Date();
+		var start = new Date();
+		start.setDate(end.getDate()-15);
+        
+        $('#data_start').datepicker({
+        	maxDate: 0
+        }).datepicker('setDate', start);
+        
+        $('#data_end').datepicker({
+        	maxDate: 0
+        }).datepicker('setDate', end);
+    });
+    </script>
+
+{% end %}
+
+{% block body-right %}
+<form action="" name="stats" method="post">
+	<input type="hidden" name="nome_comunidade" value="{{NOMECOMUNIDADE}}" />
+    {% raw xsrf_form_html() %}
+    
+    {{modules.ShowMolduraInicio(width="100%", titulo=u"Estatísticas de acesso a "+REGISTRY_ID)}}
+	{{ modules.ShowTabs(TABS) }}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}    
+    	
+        <table>
+		    <tr><td>
+			<label for="tipo_servico">Serviços Considerados:</label>
+			</td>
+			<td colspan="3">
+			<select name="tipo_servico">
+        		<option value="wiki">Páginas</option>
+				<option value="blog">Blog</option>
+				<option value="task">Tarefas</option>
+				<option value="avaliacoes">Avaliações</option>
+				<option value="file">Arquivos</option>
+				<option value="forum">Fórum</option>
+				<option value="mblog">Microblog</option>
+				<option value="todos" selected>Todos</option>
+			</select>
+			</td></tr>
+			<tr><td>
+			<label for="periodo_estatistica">Tipo de Gráfico:</label>
+			</td>
+			<td colspan="3">
+			<select name="periodo_estatistica" id="periodo_estatistica" onchange="return desabilita_select_membros(this.options[this.selectedIndex].value)">
+        		<option value="diario" selected> Diário </option>
+				<option value="total" > Todo o período &nbsp; </option>
+			</select>
+			</td></tr>
+			
+			<tr><td>
+			<label for="select_membros">Membros da Comunidade:</label>
+			</td>			
+			<td><select name="select_membros" id="select_membros" disabled='disabled' style="color:grey;">
+	        	<option value="*">Todos os membros dessa comunidade</option>
+	       		 {% for part in MEMBROSDACOMUNIDADE %}    
+	            	    <option value="{{ part }}">{{ part }}</option>
+		         {% end %}
+    		</select>
+    		</td></tr>
+
+			<tr><td>
+            <label for="data_start">Data Inicial:</label>
+            </td>
+            <td>
+            <input id="data_start" name="data_inicio" maxlength="16" size="16" type="text" value="" />
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_end">Data Final:</label>
+            </td>
+            <td>
+            <input id="data_end" name="data_encerramento" maxlength="16" size="16" type="text" value="" />
+            </td></tr>
+
+			
+			<tr><td>
+			<label for="tipo_log">Operações consideradas:</label></td>
+			<td><input type="radio" name="group1" value="leitura"> Somente acesso 
+			<input type="radio" name="group1" value="escrita"> Publicação 
+			<input type="radio" name="group1" value="todos" checked> Ambas
+			</td></tr>
+			
+		
+                
+        </table>
+    {{ modules.ShowMolduraFim("stats") }}
+    
+</form>
+<script>
+window.onload = desabilita_select_membros(document.getElementById("periodo_estatistica").options[document.getElementById("periodo_estatistica").selectedIndex].value);
+</script>
+{% end %}

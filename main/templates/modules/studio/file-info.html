@@ -1,0 +1,79 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS)}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h1>&lt;{{ FILE["_id"] }}&gt;</h1> 
+        <img src='/studio/{{ FILE["_id"] }}?disp=inline&size=M'/>
+        <p>
+        <br/>
+        Descrição: {{ FILE["description"] }}
+        <br/><br/>
+        Tipo de Arquivo: {{ FILE['content_type'] }}
+        <br/>
+        Tamanho: {{ FILE['length'] }} bytes
+        <br/><br/>
+        {% if FILE["url"] %}
+            URL: <a href='{{ escape(FILE["url"]) }}'>{{ escape(FILE["url"]) }}</a>
+            <br/>
+        {% end %}
+
+        {% if FILE["acesso_publico"] == "S" %}
+            Permissões: <img src="/static/imagens/icones/lock_open.png" alt="" />
+            Este arquivo pode ser acessado de fora da plataforma.
+            <br/>
+        {% end %}
+        </p>
+        
+        <span style="color:#999;font-size:small;">
+        <p>{{ _("Created by") }} <a href="/user/{{ escape(FILE["owner"]) }}">{{ escape(FILE["owner"]) }}</a> {{ _("at") }} {{ FILE["data_upload"] }}</p>
+        {% if FILE["data_alt"] != FILE["data_upload"] %}
+            <p>{{ _("Updated by") }} <a href="/user/{{ escape(FILE["alterado_por"]) }}">{{ escape(FILE["alterado_por"]) }}</a> {{ _("at") }} {{ FILE["data_alt"] }}</p>
+        {% end %}
+        </span>
+        
+        {% if FILE["tags"] %}
+           <i>Tags:</i><br/>
+           {{ modules.ShowTags(FILE["tags"]) }}
+        {% end %}
+                
+        <br/><br/><br/>
+        <a name="comment"></a>
+        
+        <h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+        {% if FILE["comentarios"] %}
+            {% for comment in FILE["comentarios"] %}
+                <p>
+                {{ comment["comment"] }}
+                <br/><span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">{{ comment["owner"] }}</a> em {{ comment["data_fmt"] }}</span>
+                    {% if comment["apagar"] %}
+                    <a href="/studio/comment/delete/{{ escape(FILE["_id"])}}?owner={{ comment['owner'] }}&data={{ comment['data_cri'] }}" title="apagar">
+                    <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" />
+                    </a>
+                    {% end %}
+                </p>
+            {% end %}
+        {% else %}
+            Nenhum comentário até o momento.
+        {% end %}
+        <br/><br/>
+        
+    {% if FILE["comentar"] %}
+        <h2>{{ _("Post a comment") }}:</h2>
+        <form name="postcomment"  action="/studio/comment/{{ escape(FILE["_id"]) }}" method="post">
+        {% raw xsrf_form_html() %}
+    
+        <textarea rows="6" cols="70" name="comment"></textarea>
+        {{ modules.ShowMolduraFim("postcomment") }}
+        </form>
+    {% else %}
+        {% if TIPO_REGISTRY=="member" %}
+            <span style="color:#999;font-size:small;">Somente os amigos de {{ REGISTRY_ID }} podem comentar.</span>
+        {% elif TIPO_REGISTRY=="community" %}
+            <span style="color:#999;font-size:small;">Somente os participantes de {{ REGISTRY_ID }} podem comentar.</span>
+        {% end %}
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+
+{% end %}

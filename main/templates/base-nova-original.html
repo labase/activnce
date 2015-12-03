@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>{{ PAGETITLE }}</title>
+	<meta http-equiv="content-type" content="application/xml;charset=utf-8" />
+	<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+	 
+	<!-- JQuery -->
+	<script src="/static/jquery/jquery-1.11.1.min.js"></script>
+	
+	<!-- Tinybox: código para abertura de popups -->
+	<link rel="stylesheet" href="/static/tinybox/style.css" />
+	<script type="text/javascript" src="/static/tinybox/tinybox.js"></script>
+	<script type="text/javascript">
+	function closeJS() { location.href = "{{request.path}}?{{request.query}}"; }
+	</script>
+		
+	<!-- LISTA DE ARQUIVOS CSS DO ACTIV -->
+	<link rel="stylesheet" href="/static/activ/main.css" type="text/css" /> <!-- css geral da pagina -->
+	<link rel="stylesheet" href="/static/activ/barra_governo.css" type="text/css" /> <!-- css da barra do governo federal -->
+	<link rel="stylesheet" href="/static/activ/barra_ufrj.css" type="text/css" /> <!-- css da barra da UFRJ contendo o menu principal -->
+	<link rel="stylesheet" href="/static/activ/barra_sequencia.css" type="text/css" /> <!-- css da barra da UFRJ contendo o menu principal -->
+	<link rel="stylesheet" href="/static/activ/menu.css" type="text/css" /> <!-- css especifico do menu -->
+	<link rel="stylesheet" href="/static/activ/center.css" type="text/css" /> <!-- css geral do meio da pagina canto + conteudo -->
+	<link rel="stylesheet" href="/static/activ/conEsquerdo.css" type="text/css" /> <!-- css do canto vertical a esquerda -->
+	<link rel="stylesheet" href="/static/activ/conDireito.css" type="text/css" /> <!-- css do conteudo principal -->
+	<link rel="stylesheet" href="/static/activ/activ.css" type="text/css" /> <!-- css do design original do activ -->
+	<link rel="stylesheet" href="/static/activ/controlPanel.css" type="text/css" /> <!-- css do control panel -->
+
+	
+	<!-- declaracao para a geracao de borda e seletores -->
+	<style type="text/css">
+	.borderGenerator { 
+	    border: solid 1px {{COR[1]}}; 
+	    border-radius: 15px; 
+	    padding: 8px;
+	    word-wrap: break-word;
+	}
+	
+	.tnmEstiloInterno h1,h2,h3,h4,h5,h6,a:link,a:visited,a:hover,a:active {
+	    color: {{COR[1]}};
+	}
+	</style>
+	
+	
+	
+	<!-- declaração para a geração de tabs -->
+	<style type="text/css" >
+	
+	#activTabs ul {
+		list-style-type: none;
+		margin-left: 9px; 
+		padding: 5px 5px 0px 15px;
+		border-bottom: 2px solid {{COR[1]}};
+	}
+	#activTabs ul li {
+		display: inline-block;
+		border-width: 1px 1px 0px 1px;
+		border-color: {{COR[1]}};
+		border-style: solid;
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+		-ms-transform:translate(0px,2px); /* IE 9 */
+		-webkit-transform:translate(0px,2px); /* Chrome, Safari, Opera */
+		transform:translate(0px,2px); /* Standard syntax */
+	}
+	#activTabs ul li.tabOn  {
+		color: #fff;
+	    background: #616161;
+	    font-weight: bold;	
+	    padding: 10px;
+	}
+	#activTabs ul li a {
+		position: relative;
+		display: block;
+		padding: 10px;
+		color: {{COR[1]}};
+		text-decoration: none;
+		font-weight: bold;
+		transition: background 1.2s, color 0.8s;
+	}
+	#activTabs ul li a:hover {
+		background: {{COR[1]}};
+		color: white;
+	}
+	</style>
+
+	
+	{% block chat-notify %}
+	   {% if LOGADO %}
+	    <script type="text/javascript">
+	       var registry_id = '{{REGISTRY_ID}}';
+	       var TAM_STR_MSG = 80;
+	       
+	       function find_user(str){
+	           var p1=str.indexOf("<b>");
+	           var p2=str.indexOf("</b>", p1);
+	           //alert("user:"+str.substring(p1+3, p2));
+	           return str.substring(p1+3, p2);
+	       }
+	         
+	       function extract_msg(str){
+	           var p1=str.indexOf("</b>: ");
+	           var p2=str.indexOf("<div class='date'>", p1);
+	           str = str.substring(p1+6, p2);
+	           msg = str.substr(0, TAM_STR_MSG);
+	           if (str.length > TAM_STR_MSG) msg += "...";
+	           //alert("msg:"+msg);
+	           return msg
+	       }         
+	 
+	        function extract_date(str){
+	           var p1=str.indexOf("<div class='date'>");
+	           var p2=str.indexOf("</div>", p1);
+	           str = str.substring(p1+18, p2);
+	           msg = str.substr(0, TAM_STR_MSG);
+	           if (str.length > TAM_STR_MSG) msg += "...";
+	           //alert("date:"+msg);
+	           return msg
+	       }    
+	               
+	       function show_notify_message(message){
+	           chat_name = find_user(message);
+	           
+	           if (chat_name!=registry_id){
+		           
+		           // torna visível o div da área de notificação 
+		           var notify_area = document.getElementById("chat-notify");
+		           notify_area.style.display = 'inline-block';
+		           
+		           // remove mensagem anterior se houver
+				   if (notify_area.childNodes[0]) notify_area.removeChild(notify_area.childNodes[0]); // icone
+				   if (notify_area.childNodes[0]) notify_area.removeChild(notify_area.childNodes[0]); // link
+		           
+		           // acrescenta imagem com ícone
+		           var img = document.createElement('img');
+		           img.src = '/static/imagens/icones/talk24.png';
+		           notify_area.appendChild(img);
+	
+				   // acrescenta mensagem com link
+		       	   var chat_link = document.createElement('span');
+		       	   chat_link.innerHTML = "&nbsp;<a href='/chat/" + chat_name + "'>"+ chat_name + " chamando...</a>";
+		           notify_area.appendChild(chat_link);
+		           
+		           //usr = "&nbsp;<a href='/chat/" + chat_name + "'>"+ chat_name + "</a>"; 
+		           //msg = extract_msg(message);
+		       	   //document.getElementById("chat-notify").innerHTML = usr+": "+msg;
+		       	   //document.getElementById("chat-notify").innerHTML = "&nbsp;<a href='/chat/" + chat_name + "'>"+ chat_name + " chamando...</a>";
+		       }
+	       }
+	           
+		   $(function() {
+		       protocol = (location.href.substring(0,5)=="https") ? "wss" : "ws";
+			   if ("WebSocket" in window){	 
+	               //alert ("vou iniciar na base-nova: " + protocol+"://{{PLATAFORMA_URL}}/chat/{{LOGADO}}/updates");
+			     
+		           var ws = new WebSocket(protocol+"://{{PLATAFORMA_URL}}/chat/{{LOGADO}}/updates");
+		           
+		           ws.onmessage = function(event) {
+		              show_notify_message(event.data);
+		           };
+		       }
+		       
+				{% if SHOW_TUTORIAL == "S" %}
+					<!-- Exibe tutorial automaticamente -->
+					<!-- Só exibe se: existe tutorial deste serviço e -->
+					<!-- estou vendo a minha página ou a de uma comunidade que participo. -->
+					
+					{% if TUTORIAL_ICON and (LOGADO==REGISTRY_ID or ("participantes" in USERDATA and LOGADO in USERDATA["participantes"])) %}				
+						TINY.box.show({iframe:'/tutorial/{{ STR_PATH }}',width:800,height:600,fixed:false,maskid:'bluemask',maskopacity:40});
+					{% end %}		       
+				{% end %}
+		   });
+			
+	    </script>
+	   {% end %}
+	{% end %}	
+	    
+	{% block head %}{% end %}
+</head>
+
+<body>
+
+	<div id="all">
+		<!-- a pagina foi colocada no css para o minimo de 980 pixels -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<!-- XXXXXXXX   BARRAS NO TOPO DA PAGINA   XXXXXXXXXX -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<div id="top">
+			<!-- XXXXXXXXXX  declaracao da barra do governo brasileiro   XXXXXXXXXX -->
+			<!-- parece estar ao contrario mas as imagens estao alinhadas pela direita então a imagem a diretira da tela vem primeiro -->
+			<div id="barraGoverno">
+				<div id="logoGoverno"> 
+					<!-- imagem do acesso ao planato -->
+					<a target="_blank" href="http://www.brasil.gov.br"><img src="/static/imagens/logoGoverno.gif" align="left" alt="Portal Brasil" border="0"/></a> <!-- border nao funciona mais em html 5 mas sem ele o IE está pondo bordas nas imagens -->
+				</div>
+				<div id="logoAcesso" >
+					<!-- imagem do programa acesso a informacao -->
+					<a target="_blank" href="http://www.acessoainformacao.gov.br"><img src="/static/imagens/logoAcesso.gif" align="left" alt="Acesso à Informação" border="0"/></a>
+				</div>
+			</div>
+			<!-- XXXXXXXXXX   declaracao da barra cinza representando a UFRJ e contendo o menu principal   XXXXXXXXXX -->
+			<div id="barraUfrj">
+				<!-- Imagem da minerva apontada a esquerda da pagina -->
+				<div id="minerva">
+					<img src="/static/activ/minerva.png" width="90" height="45"/>
+				</div>
+
+				<!-- menu principal da pagina -->
+				{% if LOGADO %}
+					<!-- container para limitar o tamanho do menu -->
+					<div id="menu">
+						<!-- inicio da declaracao do menu -->
+						<div id='cssmenu'>
+						<ul>
+						   <!-- menu item N -->
+						   {% for item in MENU[TIPO_REGISTRY] %}
+							   <li class='has-sub'><a href='#'><span>{{item}}</span></a>
+							      <ul>
+							         {% for servico in MENU[TIPO_REGISTRY][item] %}
+							            {% if ((not SERVICES[TIPO_REGISTRY][servico]["optional"]) or servico in USERDATA["services"]) and ((LOGADO==REGISTRY_ID and (SERVICES[TIPO_REGISTRY][servico]["hint"] or SERVICES[TIPO_REGISTRY][servico]["my_hint"])) or (LOGADO!=REGISTRY_ID and (SERVICES[TIPO_REGISTRY][servico]["hint"] or SERVICES[TIPO_REGISTRY][servico]["his_hint"]))) %}
+									         <li class='has-sub'><a href='{{SERVICES[TIPO_REGISTRY][servico]["link"]+REGISTRY_ID}}'><span>{{SERVICES[TIPO_REGISTRY][servico]["description"]}}</span></a>
+									            <ul>
+									               {% if SERVICES[TIPO_REGISTRY][servico]["hint"] %}
+									                  {% if "%s" in SERVICES[TIPO_REGISTRY][servico]["hint"] %}
+									                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["hint"]%REGISTRY_ID}}</span></a></li>
+									                  {% else %}
+									                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["hint"]}}</span></a></li>
+									                  {% end %}
+									               {% elif LOGADO==REGISTRY_ID %}
+									                  {% if SERVICES[TIPO_REGISTRY][servico]["my_hint"] %}
+										                  {% if "%s" in SERVICES[TIPO_REGISTRY][servico]["my_hint"] %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["my_hint"]%REGISTRY_ID}}</span></a></li>
+										                  {% else %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["my_hint"]}}</span></a></li>
+										                  {% end %}
+										              {% end %}
+									               {% else %}
+									                  {% if SERVICES[TIPO_REGISTRY][servico]["his_hint"] %}
+										                  {% if "%s" in SERVICES[TIPO_REGISTRY][servico]["his_hint"] %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["his_hint"]%REGISTRY_ID}}</span></a></li>
+										                  {% else %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["his_hint"]}}</span></a></li>
+										                  {% end %}
+									                  {% end %}
+									               {% end %}
+									            </ul>
+									         </li>
+								        {% end %}
+							         {% end %}
+							      </ul>
+							{% end %}
+					
+						   <!-- menu ultimo item -->
+						   <li><a href='/logout'><span>Sair</span></a></li>
+						   	   
+						</ul>
+						</div>
+					
+					</div>  
+				
+				{% end %} 				
+	
+				<!-- Nome da universidade -->
+				<div id="UFRJ">
+				    <a href="http://www.ufrj.br" target="_blank">Universidade Federal do Rio de Janeiro</a>
+				</div>
+			</div>
+			
+			{% if LOGADO %}
+				<!-- XXXXXXXXXX   declaracao da barra de referencia do usuario e seu local na comunidade   XXXXXXXXXX -->
+			    <div id="sequencia">
+				    <div id="navigation" style="position:relative; float:left; width:48%">	
+					      {% for item in NAVIGATION %}
+					      	<a href="{{ item }}">{{ item.split("/")[2] }}</a> &gt; 
+					      {% end %}
+					</div>
+				    <div id="chat-notify" style="position:relative; float:left; margin-right:20px; width:48%; text-align:right;"></div>	
+			    </div>
+		    {% end %}
+		</div>
+
+		
+		
+		
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<!-- XXXXXXXXXXXX   CONTEUDO CENTRAL   XXXXXXXXXXXXXX -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		
+		<div id="center">
+		    <div class="tnmEstiloInterno">
+			<!-- XXXXXXXXXX   declaracao da barra vertical denominando em que tipo de pagina voce esta   XXXXXXXXXX -->
+			<div id="localizacao">
+			
+			
+				<!-- Ícone do tutorial -->
+				<!-- Só exibe se: existe tutorial deste serviço e -->
+				<!-- estou vendo a minha página ou a de uma comunidade que participo. -->
+				
+				{% if TUTORIAL_ICON and (LOGADO==REGISTRY_ID or ("participantes" in USERDATA and LOGADO in USERDATA["participantes"])) %}
+					<span style="padding:12px;">
+	                <a href="#" title="Tutorial" onclick="TINY.box.show({iframe:'/tutorial/{{ STR_PATH }}',width:800,height:600,fixed:false,maskid:'bluemask',maskopacity:40}); return false;">
+	                <img src="/static/imagens/icones/tutorial32.png" alt="Tutorial" title="Tutorial do {{PAGETITLE}}" border="0" />
+	                </a>  
+	                </span>
+				{% end %}
+			
+				<div id="rotate">
+				  {% if URL_RETORNO %}
+				    <a href="{{URL_RETORNO}}">{{NOMEPAG}}</a>
+				  {% else %}
+				    {{NOMEPAG}}
+				  {% end %}
+				</div>
+				  				
+			</div>
+			<!-- XXXXXXXXXX   declaracao da barra esquerda com foto e indice   XXXXXXXXXX -->
+			<div id="principal">
+				<div id="conEsquerdo">
+					<!-- declaracao para colocar a foto do usuario -->
+					<div id="foto">
+						{% block foto %}{% end %}
+					</div>
+					<!-- declaracao para indice de paginas e sublistas -->
+					<div id="conIndice">
+						{% block body-left %}{% end %}
+					</div>				
+				</div>
+				<!-- XXXXXXXXXX   declaracao da area direita / central   XXXXXXXXXX -->
+				<div id="conDireito">
+					<div id="areaCentral">
+						<div style="width:100%;overflow:hidden;height:30px;">
+						    {% if LOGADO %}
+					            {% if TIPO_REGISTRY=="member" %}
+					               <h1><!-- USERDATA["user"] -->{{ USERDATA["name"] }} {{ USERDATA["lastname"] }}</h1>
+					               <br/>
+					            {% elif TIPO_REGISTRY=="community" %}
+					               <h1><!-- USERDATA["name"] -->{{ USERDATA["description"] }}</h1>
+					               <br/>
+					            {% end %}  
+					        {% end %}
+				        </div>
+    				    {% block body-right %}{% end %}
+
+						<div id="footer">
+	  						ActivUFRJ {{ _("version") }} {{ VERSAO_TNM }} - ©2010 <a href="http://www.nce.ufrj.br" target="_blank">NCE/UFRJ</a>		
+						</div>
+					</div>						
+				</div>
+				
+			</div>	
+			</div>
+	   </div>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %} 
+    <form name="perfil" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Esqueci minha Senha")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> <br/><br/>{% end %}  
+    
+    {% if "USERLIST" in globals() and USERLIST %}
+        <p>Este email está associado a mais de uma conta no {{PLATAFORMA}}.<br/><br/>
+        Selecione de qual delas você deseja recuperar a senha:<br/>
+        {% for user in USERLIST %}
+            <input type="checkbox" name="user" value="{{user}}" /> {{user}} <br/>
+        {% end %}
+        </p>
+    {% else %}
+	    <p> Se você já é usuário do {{PLATAFORMA}} e se esqueceu de sua senha, informe aqui seu login ou o seu email. 
+	        Você receberá uma mensagem por email com instruções para proceder a troca da senha.</p>
+
+		<br/>
+    	<h2 for="user">Login ou Email:</h2>
+    	<input name="user" id="user" value="" type="text" size="30"/></p>
+    {% end %}
+	{{ modules.ShowMolduraFim("perfil") }}
+    </form>
+
+{% end %}

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+    <title>Teste de Cancelamento</title>
+  </head>
+  <body>
+<form action="click" method="post" name="Cancela">
+    {% raw xsrf_form_html() %}
+    <input type="hidden" name="sessionid" value="{{ SESSIONID }}" />
+    <input type="hidden" name="shape" value="" />
+    <input type="hidden" name="status" value="" /> 
+    <input type="hidden" name="score" value="{{CHECK}}" /> 
+    <input type="hidden" name="criteria" value='{{json_encode(CRITERIA)}}' /> 
+    <input type="hidden" name="return_url" value="/can/index" /> 
+    
+    <input type="submit" name="change" value="Tenta Novamente a Fase"            onClick="this.form.action='/api/retry'; this.form.return_url.value+='?init=0'; this.form.submit();" />
+    <input type="submit" name="change" value="Não quero jogar"                   onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.QUIT}}';this.form.submit();" />
+    <input type="submit" name="change" value="Desisto"                           onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.ABORT}}';this.form.submit();" />
+    <input type="submit" name="change" value="Terminei mas acho que está errado" onClick="this.form.action='/api/next'; this.form.return_url.value+='?init=1'; this.form.status.value='{{RESULT.ALMOST}}';this.form.submit();" />
+    <input type="submit" name="change" value="Terminei e acho que está certo"    onClick="this.form.action='/api/next'; this.form.return_url.value+='?init=1'; this.form.status.value='{{RESULT.SUCCESS}}';this.form.submit();" />
+
+    
+    {% for col, img in enumerate(HAND) %}
+      <img alt="" src="/static/plugins/cancel/bw-{{ img }}.png" style="width: 18px; height: 18px; position: absolute; left: {{ 40 * col + 300 }}px; top:40px" />
+    {% end %}
+    {% for row, line in enumerate(SHAPES) %}
+        {% for col, img in enumerate(line) %}
+            <input type="image"  alt="" src="/static/plugins/cancel/bw-{{ img }}.png" style="width: 18px; height: 18px; position: absolute; left: {{ 20 * col + 20 }}px; top:{{ 20 * row + 60  }}px"  onClick="this.form.shape.value='{{ (img,col,row) }}';this.form.submit();" />
+        {% end %}
+    {% end %}
+    {% for img in CHECK %}
+      <img alt="" src="/static/plugins/cancel/ck-{{ img[0] }}.png" style="width: 18px; height: 18px; position: absolute; left: {{ 20 * img[1] + 20 }}px; top:{{ 20 * img[2] + 60  }}px" />
+    {% end %}
+</form>
+  </body>
+</html>

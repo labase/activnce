@@ -1,0 +1,37 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+      	var escolheu = false;
+
+		$(function () {
+			// Load users
+			source = {{ AUTOCOMPLETE_USERS }};
+			usersArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+			
+			// Initialize autocomplete with local lookup
+			$('#friend_name').autocomplete({
+				source: usersArray,
+				minLength: 3,
+				
+				select: function (event, ui) {
+				    escolheu = true;
+					$('#friend_name').val(ui.item.value);
+					$('#convidar').submit();
+				}
+			});
+		});
+	</script>    
+{% end %}
+
+{% block body-right %}
+	<form name="convidar" id="convidar" action="/friends/search" method="post"
+	 onsubmit="if (!escolheu) { alert('selecione o nome na lista'); return false }">
+		{% raw xsrf_form_html() %}
+		{{ modules.ShowMolduraInicio("Procurar Amigos") }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		Digite o nome do usuário a ser procurado:<br/>
+		<input type="text" name="friend_name" id="friend_name" size=40/>
+		{{ modules.ShowMolduraFim() }}
+	</form>
+{% end %}

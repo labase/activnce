@@ -1,0 +1,23 @@
+{% extends "../../base.html" %}
+{% block body %}
+   
+	{{modules.ShowMolduraInicio(titulo=u"Criar atividade")}}
+	 {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+	<form action="{{ request.path }}" name="criaratividades" method="post">
+    <input type="hidden" name="id" value="{{GROUP}}" />
+	{% raw xsrf_form_html() %}
+	<i>Atividade</i> <br/> 
+	<input type="text" name="titulo" {% if ATIVIDADE["titulo"] and NEW %} value="{{(ATIVIDADE['titulo'])}}"{% end %} size="70" maxlengh="300" />
+	<br/>
+	<i>Observações:</i>
+	<textarea name="observacao" rows="4" cols="68"  >{% if ATIVIDADE["observacao"] and NEW %} {{(ATIVIDADE['observacao'])}} {% end %}</textarea> 
+	<br/>
+	<input type="checkbox" name="prioritario" value= "S"{% if ATIVIDADE["prioritario"]=="S" %} checked= "True" {% end %} > Marque esta opção se esta atividade for prioritária.
+	<br/>
+	<input type="submit" value="Criar atividade"/>
+    </form>
+	
+	{{ modules.ShowMolduraFim() }}
+{% end %}
+

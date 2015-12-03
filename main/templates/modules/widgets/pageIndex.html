@@ -1,0 +1,7 @@
+{% for texto,url in links.iteritems() %}
+    {% if url %}
+        <a href="{{ url }}">{{ texto }}</a> |
+    {% else %}
+        {{ texto }} |
+    {% end %}
+{% end %}

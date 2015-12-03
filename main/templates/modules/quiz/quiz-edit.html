@@ -1,0 +1,74 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        $('#data_start').datetimepicker([]);
+        $('#data_end').datetimepicker({});
+    });
+    </script>
+{% end %}   
+
+{% block body-right %}
+
+<form action="{{ request.path }}" name="editarquiz" method="post">
+    {% raw xsrf_form_html() %}
+
+	{{modules.ShowMolduraInicio(titulo="Alterar Quiz", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+	
+
+	<h2>Título:</h2>
+		<input type="text" name="titulo" value="{{ escape(QUIZDATA['titulo']) }} " size="70" maxlengh="300" /> <br/> 
+		  
+	<br/>
+	<h2>Descrição:</h2> 
+		 <textarea  name="descricao" rows="4" cols=70> {{ escape(QUIZDATA["descricao"]) }}</textarea> <br/>  
+	
+	<br/>
+	<h2>Forma de Exibição:</h2> 
+		 <select  name="exibicao">
+		 <option value="Uma questão de cada vez"{% if QUIZDATA["exibicao"]=="Uma questão de cada vez" %} selected="selected" 
+{% end %}>Uma questão de cada vez</option>
+		 <option value="Todas as questões juntas"{% if QUIZDATA["exibicao"]=="Todas as questões juntas" %} selected= "selected"
+{% end %}>Todas as questões juntas</option>
+		 </select> <br/>  
+		 
+	<br/>	 
+	
+	<h2>Período de Realização do Quiz:</h2> 	
+			<table cellspacing="5">      
+			<td valign="top">
+			<tr><td>
+			<label for="data_start">Data/hora de início</label>
+			</td>
+			<td colspan="3">
+			<input id="data_start" name="data_start"
+			{% if QUIZDATA["data_inicio"] %} value="{{(QUIZDATA['data_inicio'])}}" {% end %}			
+			 maxlength="16" size="16" type="text"/>
+			</td></tr>
+			
+			<tr><td>
+			<label for="data_end">Data/hora de encerramento</label>
+			</td>
+			<td colspan="3">
+			<input id="data_end" name="data_end" 
+			{% if QUIZDATA["data_fim"] %} value="{{(QUIZDATA['data_fim'])}}" {% end %}
+			maxlength="16" size="16" type="text"/>
+			</td></tr>   
+		    </table>
+
+	{{ modules.ShowMolduraFim("editarquiz") }}
+    </form>
+{% end %}
+
+

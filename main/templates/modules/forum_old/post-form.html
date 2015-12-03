@@ -1,0 +1,22 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+<p>
+	<form name="novotopico" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	
+	{{ modules.ShowMolduraInicio() }}
+	<h2>{{ _("Titulo") }}</h2>
+	<input name="title" value="" size="50" type="text"/>
+
+	<h2>{{ _("Content") }}</h2>
+	<textarea name="message" rows="6" cols="50"></textarea>
+
+    {{ modules.ShowMolduraFim("novotopico") }}
+	</form>
+</p>
+
+{% end %}	

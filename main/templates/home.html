@@ -1,0 +1,7 @@
+{% extends "base-foto.html" %}
+
+{% block body-right %}
+   {{modules.ShowMolduraInicio()}}
+    {% if MSG %} <div class="tnmHomeMSG">{{ MSG }}</div> {% end %}
+    {{ modules.ShowMolduraFim() }}    
+{% end %}

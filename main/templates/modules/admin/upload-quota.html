@@ -1,0 +1,23 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+    {% if MSG %}
+    <div class="tnmMSG">{{ MSG }}</div>
+    <br/>
+    {% end %}
+    
+    {{modules.ShowMolduraInicio()}}
+    <form name="upload_change"  action="" method="post">
+    {% raw xsrf_form_html() %}
+
+    <h2>{{ REGISTRY_DATA["_id"] }}</h2>
+    <p>
+    quota de upload atual: {{ int(REGISTRY_DATA["upload_quota"]) / 1024 / 1024 }} MB<br/>
+    espaço utilizado: {{ "%.1f" % (float(REGISTRY_DATA["upload_size"]) / 1024 / 1024) }} MB<br/>
+    nova quota de upload: <input type="text" name="nova_quota" maxlength="12" size="12" /> MB<br/>
+    </p>
+    {{ modules.ShowMolduraFim("upload_change") }}
+    </form>
+    
+{% end %}

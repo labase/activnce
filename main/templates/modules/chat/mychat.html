@@ -1,0 +1,90 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- Estilos do chat -->
+    <link rel="stylesheet" href="/static/chat/chat.css" type="text/css">
+
+	<style type="text/css">
+	.caixa {
+	   padding: 10px;
+	}
+	</style>
+    <script type="text/javascript">
+    
+        function community_channel(channel){
+            return channel.indexOf(":")==-1;
+        }
+        
+        function talk_with(channel, user) {
+           if (community_channel(channel)){
+               return channel
+           }
+           else {
+	           if (channel.indexOf(user)==0) {
+	              return channel.substr(channel.indexOf(":")+1)
+	           }
+	           else {
+	              return channel.substr(0, channel.indexOf(":"))
+	           }
+	       }
+        }
+        
+       
+       function show_chat_message(message, channel, user, insert_before){
+          is_community = community_channel(channel)
+          partner = talk_with(channel, user)
+          
+          // monta imagem com a foto
+          var img = document.createElement('img');
+          img.src = '/photo/'+partner+'?size=P';
+          img.className = 'photo-left';
+          
+          var texto = document.createElement('div');
+          texto.className = "text";
+          icon = (user==find_user(message))?"/static/chat/arrow_small_right.gif":"/static/chat/arrow_small_left.gif"
+          texto.innerHTML = "<a href='/chat/"+partner+"'><b>"+(is_community?"Chat na comunidade ":"Chat com ")+partner+":</b></a>"+
+                            "<span style='color: #aaa; float: right;'>"+extract_date(message)+"</span><br/>"+
+                            "<img hspace='5' src='"+icon+"'>"+
+                            "<span style='color: #aaa;'>"+find_user(message)+": "+extract_msg(message)+"</span>";
+          
+          // monta caixa com a mensagem
+          var caixa = document.createElement('div');
+          caixa.className = "caixa";
+          caixa.appendChild(texto);
+          
+          // inclui foto na caixa
+          caixa.insertBefore(img, caixa.childNodes[0]);
+          
+          if (insert_before) {
+	          // inclui caixa no início do documento
+	          document.getElementById("msg_area").insertBefore(caixa, document.getElementById("msg_area").childNodes[0]);
+          } else {
+	          // inclui caixa no fim do documento
+	          document.getElementById("msg_area").appendChild(caixa);
+	      }
+       }
+           
+    </script>
+{% end %}
+
+{% block body-right %}
+
+    {{modules.ShowMolduraInicio(width="100%", titulo="Minhas mensagens no Chat")}}
+	{{ modules.ShowTabs(TABS) }}    
+        <div id="msg_area">
+           {% if LIST %}
+               <script>
+	           {% for item in LIST %}
+	              show_chat_message("{{ item[0].replace('"', '\\"') }}", "{{item[1]}}", "{{LOGADO}}", false);
+	           {% end %}
+               </script>
+	       {% else %}
+	           <b>Nenhum chat encontrado.</b>
+	           <br/><br/>
+	       {% end %}
+        </div>
+    {{ modules.ShowMolduraFim() }}
+    
+{% end %}
+
+

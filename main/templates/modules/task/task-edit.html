@@ -1,0 +1,93 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+	
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        $('#data_start').datetimepicker({});
+        $('#data_end').datetimepicker({});
+    });
+    </script>
+{% end %}
+
+{% block body-right %}
+
+
+<form action="{{ request.path }}" name="tarefa" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio("Alterar tarefa", width="100%")}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <table>
+            <tr><td>
+            <label for="nome">Título</label>
+            </td>
+            <td>
+            <h2>{{ escape(TASKDATA["nome"]) }}</h2>
+            </td></tr>
+            
+            <tr><td valign="top">
+            <label for="descricao">Enunciado da tarefa</label>
+            </td>
+            <td>
+            <textarea name="descricao" id="descricao" rows="4" cols="60">{{ escape(TASKDATA["descricao"]) }}</textarea>
+            </td></tr>
+                           
+            <tr><td valign="top">
+            <label for="recursos">Recursos</label>
+            </td>
+            <td>
+            <!-- span data-toggle="tooltip" title="O LabVad é uma plataforma..." -->
+			<input type="checkbox" name="labvad" id="labvad" value="S" {% if TASKDATA["labvad"] == 'S' %}checked="checked"{% end %} /> Marque se esta tarefa deve ser realizada no <b>LabVad</b> - <i>Laboratório Virtual de Atividades Didáticas com Robótica</i> <br/>
+			<br/>
+			<b>Outro recurso a ser consultado pelos alunos para a realização da tarefa:</b><br/>
+			<input type="text" name="recurso" id="recurso" size="62" value="{{ escape(TASKDATA["recurso"]) }}" placeholder="Digite o endereço (URL) do recurso..." />
+            </td></tr>
+
+
+		    <tr><td>
+			<label for="num_arquivos">N&#176; de arquivos a serem enviados pelos alunos<br/>como resultado da tarefa</label>
+			</td>
+			<td colspan="3">
+			<select name="num_arquivos">
+			<option value="1">01</option>
+			<option value="2">02</option>
+			<option value="3">03</option>
+			<option value="4">04</option>
+			<option value="5">05</option>
+			</select>
+			</td></tr>
+
+            <tr><td>
+            <label for="valor">Valor da tarefa</label>
+            </td>
+            <td>
+            <input name="valor" id="valor" value="{{ escape(TASKDATA["valor"]) }}" type="text" size="60"/>
+            <i>Número entre 1 e 100 indicando o valor deste trabalho para o cálculo da média final.</i>
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_start">Período de realização da tarefa</label>
+            </td>
+            <td>
+            <input id="data_start" name="data_start" maxlength="16" size="16" type="text" value="{{ escape(TASKDATA["data_inicio"]) }}" />
+             <i>Data e hora de início.</i>
+            </td></tr>
+            
+            <tr><td>
+            </td>
+            <td>
+            <input id="data_end" name="data_end" maxlength="16" size="16" type="text" value="{{ escape(TASKDATA["data_encerramento"]) }}" /> <i>Data e hora de encerramento.</i>
+            </td></tr>
+                
+        </table>
+    {{ modules.ShowMolduraFim("tarefa") }}
+    
+</form>
+{% end %}

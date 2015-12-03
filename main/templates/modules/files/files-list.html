@@ -1,0 +1,258 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+<script type="text/javascript">
+    function toggle(name) {
+      checkboxes = document.getElementsByName(name);
+      for(var i=0; i<checkboxes.length; i++){
+        checkboxes[i].checked = !checkboxes[i].checked;
+      }
+        
+      return false;
+    }
+    
+    function deleteAll()
+    {
+        marcado = false;
+        checkboxes = document.getElementsByName("items");
+        for(var i=0; i<checkboxes.length; i++)
+            if (checkboxes[i].checked)
+                marcado = true;
+        
+        if (marcado) {
+            if (!confirm('Deseja realmente apagar todos os arquivos e pastas marcados?\nPastas que não estejam vazias não serão removidas.'))
+                return false;
+        
+            document.f.action = "/file/delete/{{REGISTRY_ID}}";
+            document.f.method = "POST";
+            document.f.submit();
+            return true;
+        }
+        else {
+            alert ("A operação não foi realizada.\nNenhum item selecionado.")
+            return false;
+        }
+    }
+    
+    function moveAll()
+    {
+        marcado = false;
+        checkboxes = document.getElementsByName("items");
+        
+        for(var i=0; i<checkboxes.length; i++){
+            if (checkboxes[i].checked)
+                marcado = true;
+        }
+        if (marcado) {
+            url = '/file/move/{{REGISTRY_ID}}?folder={{FOLDER}}'
+            // acrescenta parâmetros na query-string
+            for(var i in checkboxes)
+                if (checkboxes[i].checked)
+                    url = url + "&items=" + checkboxes[i].value;
+
+            TINY.box.show({iframe:url,width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}});
+            //document.f.action = "/file/move/{{REGISTRY_ID}}";
+            //document.f.method = "GET";
+            //document.f.submit();
+            return true;
+        }
+        else {
+            alert ("A operação não foi realizada.\nNenhum item selecionado.")
+            return false;
+        }
+    }    
+</script>
+{% end %}
+
+{% block body-right %}
+    {% if CRIAR %}
+    <form name="criaarq" action="/file/upload/{{ REGISTRY_ID }}" method="post" enctype="multipart/form-data">
+        {% raw xsrf_form_html() %}
+        <input type="hidden" name="folder" value="{{ FOLDER }}" />
+        {{ modules.ShowMolduraInicio("Upload de arquivo", width="100%") }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+        <h2>Localização:</h2> {{ PATH }}
+        
+        <h2>Descrição:</h2> <input name="description" value="" type="text" size="40"/>
+        <h2>Tags:</h2> {{ modules.InputTags([]) }}
+		<br/>
+		<h2>Permissões:</h2>
+		<p><i>Você poderá alterá-las após o envio, clicando em alterar e depois no ícone do cadeado que aparecerá no canto superior direito.</i></p>
+		<b>Quem pode ler:</b> {{ DEFAULT_PERM[0] }} <br/>
+		<b>Quem pode alterar:</b> {{ DEFAULT_PERM[1] }} <br/>
+        <h2>Arquivo:</h2>
+        <input type="file" value="Procurar..." name="arquivo"/>
+		<br/><br/>      
+        {{ modules.ShowMolduraFim("criaarq") }}
+    </form>
+    {% end %}
+
+<br/>
+    {{modules.ShowMolduraInicio(titulo="Pasta: "+PATH, width="100%", links=LINKS)}}
+
+    {% if FILES %}
+        <form name="f" method="" action="">
+        {% raw xsrf_form_html() %}
+        <input type="hidden" name="folder" value="{{ FOLDER }}" />    
+        <table border="0" cellspacing="10" width="100%" style="color: black;">
+        <tr>
+            {% if SEL_MULTIPLA %}
+                <td style="border-bottom: 1px solid" align="left" width="60">
+                <a href="#" title="inverter marcação" onclick="return toggle('items');">
+                <img src="/static/imagens/icones/tick16.png" alt="marcar/desmarcar tudo" border="0" />
+                </a>
+                <a href="#" onclick="return moveAll();" title="mover selecionados">
+                <img src="/static/imagens/icones/move_16.png" alt="mover" border="0" />
+                </a>
+                <a href="#" onclick="return deleteAll();" title="apagar selecionados">
+                <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" />
+                </a>
+                </td>
+            {% end %}
+            {% if TIPO_REGISTRY=="community" %}
+                  <td style="border-bottom: 1px solid" align="left"><b>Quem criou</b></td>
+            {% end %}
+            <td style="border-bottom: 1px solid" align="left"><b>Acesso</b></td>
+            <td style="border-bottom: 1px solid" align="left" colspan="2"><b>Arquivo</b></td>
+            <td style="border-bottom: 1px solid" align="left"><b>Última alteração</b></td>
+            <td style="border-bottom: 1px solid" align="right"> </td>
+            </tr>
+            {% for arq in FILES %}
+                <tr>
+                {% if SEL_MULTIPLA %}
+                    <td align="center" valign="top">
+                    {% if arq["alterar"] and arq["mover"] and arq["filename"] != ".." %}
+                    <input type="checkbox" name="items" value="{{ arq["filename_id"] }}" />
+                    {% end %}
+                    </td>
+                {% end %}
+                {% if TIPO_REGISTRY=="community" %}
+                    <td valign="top">{{ modules.ShowFoto("/photo/"+escape(arq['owner'])+"?size=P",escape(arq['owner']),escape(arq['owner']),"/user/"+escape(arq['owner']),True)}}</td>
+                {% end %}
+
+                <td valign="top" width="16">
+                    {% if arq["apagar"] %}                
+                        <a href="#" onclick="TINY.box.show({iframe:'/permission/file/{{ escape(arq["file_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">                        
+                    {% end %}
+                    {% if arq["leitura"]["escopo"]=="acesso_publico" %}
+                        <img src="/static/imagens/icones/world16.png" alt="" border="0" title="acesso externo permitido" />
+                    {% elif arq["leitura"]["escopo"]=="acesso_activ" %}
+                        <img src="/static/imagens/icones/activ16.png" alt="" border="0" title="acesso aos usuários logados no {{PLATAFORMA}}" />
+                    {% elif arq["leitura"]["escopo"]=="acesso_comunidade" %}
+                        {% if TIPO_REGISTRY=="member" %}
+                        	<img src="/static/imagens/icones/friend16.png" width="16" alt="" border="0" title="acesso a todos os meus amigos" />
+                        {% elif TIPO_REGISTRY=="community" %}
+                        	<img src="/photo/{{REGISTRY_ID}}?size=P" width="16" alt="" border="0" title="acesso aos participantes da comunidade" />
+                        {% end %}
+                    {% elif arq["leitura"]["escopo"]=="acesso_grupos" %}
+                        <img src="/static/imagens/icones/group16.png" alt="" border="0" title="acesso aos grupos: {{arq['leitura']['grupos']}}" />
+                    {% elif arq["leitura"]["escopo"]=="acesso_privado" %}
+                        <img src="/photo/{{arq["owner"]}}?size=P" width="16" alt="" border="0" title="acesso privado" />
+                    {% end %}
+                    {% if arq["apagar"] %}                
+	                    </a>
+	                {% end %}
+                </td>                    
+
+                {% if arq["is_folder"] == "S" %}
+                    <!-- Opções de Pasta -->
+                    <td width="32"></td>
+                    <td valign="top">
+                        {% if arq["filename"]==".." or arq["ler"] %}
+	                        <a href="/file/{{ escape(arq["registry_id"]) }}?folder={{ arq["filename_id"] }}">
+	                            <img src="/static/imagens/icones/folder_16x16.png" border="0" alt="" />
+	                            {{ escape(arq["filename"]) }}
+	                        </a> 
+	                    {% else %}
+                            <img src="/static/imagens/icones/folder_16x16.png" border="0" alt="" />
+                            {{ escape(arq["filename"]) }}
+	                    {% end %}
+                        {% if len(arq["folder_items"])>0 and arq["filename"]!=".." %}
+                            ({{len(arq["folder_items"])}})
+                        {% end %}
+                        <br/>
+                    </td>
+                    
+                    {% if escape(arq["alterado_por"]) %}
+                        <td align="left" valign="top">{{ escape(arq["alterado_por"]) }} em {{ escape(arq["data_alt"]) }}</td>
+                    {% end %}
+                        
+                    <td align="left" valign="top">
+                        {% if arq["alterar"] and arq["mover"] %}
+                              <a href="#" title="mover" onclick="TINY.box.show({iframe:'/file/move/{{ escape(arq["file_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                              <img src="/static/imagens/icones/move_16.png" alt="mover" border="0" /></a>
+                        {% end %}
+                        {% if arq["alterar"] %}
+                            <a href="#" title="renomear" onclick="TINY.box.show({iframe:'/file/rename/{{ escape(arq["file_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                            <img src="/static/imagens/icones/rename16.png" alt="renomear" border="0" /></a>
+                        {% end %}
+                        {% if arq["apagar"] and len(arq["folder_items"])==0 %}
+                            <a onclick="return confirm('Deseja realmente apagar esta pasta?');" href="delete/{{ escape(arq["file_id"]) }}" title="apagar">
+                            <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+                        {% end %}
+                    </td>
+
+                {% else %}
+                    <!-- Opções de Arquivo -->
+                    
+                    <td valign="top" width="32">
+                    <img src="/file/icon/{{ escape(arq['file_id']) }}" border="0" style="float:left" alt="" />
+                    </td>
+                    <td align="left" valign="top">
+                        {% if arq["ler"] %}
+	                        <a href="/file/info/{{ escape(arq['file_id']) }}">
+	                        &lt;{{ escape(arq["file_id"].split("/")[1]) }}&gt;
+                        </a>
+                        {% else %}
+	                        &lt;{{ escape(arq["file_id"].split("/")[1]) }}&gt;
+                        {% end %}
+                        {% if arq["description"] %}
+                            <br/>
+                            {{ escape(str_cut(arq["description"], 80)) }}
+                        {% end %}
+                        <br/>
+                        <span style="color:#999;font-size:small;">
+                        {% if arq["ler"] %}
+	                        <a href="/file/info/{{ escape(arq["file_id"]) }}#comment">{{ arq["num_comments"] }}</a>
+                        {% else %}
+	                        {{ arq["num_comments"] }}
+                        {% end %}
+                        </span>
+                    </td>
+                    
+                    <td align="left" valign="top">{{ escape(arq["alterado_por"]) }} em {{ escape(arq["data_alt"]) }}</td>
+                    
+                    <td align="left" valign="top">
+                        {% if arq["ler"] %}
+	                        <a href="{{ escape(arq["file_id"]) }}?disp=inline" title="ver">
+	                        <img src="/static/imagens/icones/view16.png" alt="ver" border="0" /></a>
+	                        <a href="{{ escape(arq["file_id"]) }}?disp=attachment" title="baixar">
+	                        <img src="/static/imagens/icones/down16.png" alt="baixar" border="0" /></a>
+                        {% end %}
+                        {% if arq["alterar"] and arq["mover"] %}
+                           <!-- boxid:'frameless', -->
+                           <a href="#" title="mover" onclick="TINY.box.show({iframe:'/file/move/{{ escape(arq["file_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                           <img src="/static/imagens/icones/move_16.png" alt="mover" border="0" /></a>
+                        {% end %}
+                        {% if arq["apagar"] %}
+                            <a onclick="return confirm('Deseja realmente apagar este arquivo?');" title="apagar" href="/file/delete/{{ escape(arq["file_id"]) }}">
+                            <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+                        {% end %}
+                        {% if arq["alterar"] %}
+                            <a href="/file/edit/{{ escape(arq["file_id"]) }}" title="alterar">
+                            <img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+                        {% end %}
+                    </td>
+                {% end %}
+                </tr>
+                <tr><td colspan="7" style="border-bottom: 1px solid"></td></tr>
+            {% end %}
+            <tr><td colspan="7"><b>Espaço total utilizado pelos arquivos de {{REGISTRY_ID}}:</b> {{UPLOAD_SIZE}} / {{UPLOAD_QUOTA}}</td></tr>
+        </table>
+    {% else %}
+        <p>Pasta vazia.</p>
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+    {{ modules.Paginator(PAGE, PAGESIZE, FILE_COUNT) }}
+{% end %}

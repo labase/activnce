@@ -1,0 +1,63 @@
+/*area centra do activ */
+
+#areaCentral {
+	margin-left:20px; /* espaco entre a area e a foto */
+	height:100%;
+	padding:5px;
+	/*calculando largura descontanto a borda interna 20 da margem esquerda 10 da borda interna */
+	/* Standard */
+	width: calc(100% - 40px); 
+	/* Firefox */
+	width: -moz-calc(100% - 40px);
+	/* WebKit */
+	width: -webkit-calc(100% - 40px);
+	/* Opera */
+	width: -o-calc(100% - 40px);
+}
+
+
+#cabecMoldura {
+	position:relative;
+	width:100%;
+	vertical-align:bottom;/* alinhamento pelo centro vertical do container */
+	line-height:20px;	/* tamanho diretamente relacionado ao tamanho da fote utilizado, titulos em h3, 10 px */
+	height:40px;	/* tamanho diretamente relacionado ao tamanho da fote utilizado, titulos em h3, 10 px */
+
+}
+
+#tituloMoldura {
+	position:relative;
+	float:left;
+/*	width:450px; */
+	height:40px;	/* tamanho diretamente relacionado ao tamanho da fote utilizado, titulos em h3, 10 px */
+	
+}
+
+#xMoldura {
+	position:relative;
+	float:right;
+/*	width:450px; */
+	height:40px;	/* tamanho diretamente relacionado ao tamanho da fote utilizado, titulos em h3, 10 px */
+	
+}
+
+#linksMoldura {
+	position:relative;
+	float:right;
+/*	width:450px; */
+	line-height:40px;
+	height:40px;	/* tamanho diretamente relacionado ao tamanho da fonte utilizado, titulos em h3, 10 px */
+	
+}
+
+#footer  { 
+	margin-top:20px;
+	position:relative;
+	float:left;
+	width:100%;
+
+	font-size:0.8em;
+	color:gray;
+	text-align:center;
+	height: 50px;  border-top: solid gray 1px;
+}

@@ -1,0 +1,52 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+    {% if REGISTRY_ID != LOGADO %}
+        <form name="cadastro" action="/new/scrap" method="post">
+                {% raw xsrf_form_html() %}
+                {{modules.ShowMolduraInicio("Enviar recado por email para "+REGISTRY_ID)}}
+               
+                <input type="hidden" name="friend" value="{{ REGISTRY_ID }}">
+                <p><textarea rows=4 cols=50 id="scrap" name="scrap"></textarea></p>
+                {{ modules.ShowMolduraFim("cadastro") }}
+        </form>
+    {% end %}
+    
+    
+    {% if SCRAPDATA %}
+	    {% if REGISTRY_ID != LOGADO %}
+    		{{modules.ShowMolduraInicio(u"Recados que você enviou para "+REGISTRY_ID, width="100%")}}
+    	{% else %}
+    		{{modules.ShowMolduraInicio("Meus recados", width="100%")}}
+    	{% end %}
+    	
+        {% for item in SCRAPDATA %}
+            <div style="width:100%; float:left;">
+                {{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=P",escape(item[0]),escape(item[0]),"/user/"+escape(item[0]),True)}}
+                {{ item[1] }} - {{ escape(item[3]) }}
+                <br/>
+                <div style="float:right; vertical-align:top;">
+                    {% if item[4] %}
+                         <!--
+                         <a href='/scrap/{{ escape(item[4]) }}'>responder</a>
+                         <br />
+                         -->
+                    {% end %}
+                    {% if APAGAR %}
+                         <a onclick="return confirm('Deseja realmente apagar este recado?');" href="/delete/scrap?id={{ REGISTRY_ID }}&&item={{ escape(str(SCRAPDATA.index(item))) }}">apagar</a>
+                    {% end %}
+                </div>
+            </div>
+        {% end %}
+        
+        {{ modules.ShowMolduraFim() }}
+        {{ modules.Paginator(PAGE, PAGESIZE, SCRAPS_COUNT) }}
+        
+	{% else %}
+		{{modules.ShowMolduraInicio("Recados", width="100%")}}
+		Nenhum recado encontrado.
+	    {{ modules.ShowMolduraFim() }}        
+    {% end %}
+
+{% end %}

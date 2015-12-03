@@ -1,0 +1,19 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+<p><form name="cadastro" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Enviar recado")}}
+	<h2>Para:</h2>
+	{% if FRIEND %}
+		{{ FRIEND }}
+		<p><input type="hidden" name="friend" value="{{ FRIEND }}"></p>
+	{% else %}
+		<p><input id="friend" name="friend" autocomplete="off" style="width: 15%; color: rgb(136,136, 136);" type="text"/></p.
+	{% end %}
+	<br/>
+	<h2>Recado:</h2><br/>
+	<p><textarea rows=4 cols=50 id="scrap" name="scrap"></textarea></p>
+	{{ modules.ShowMolduraFim("cadastro") }}
+</form></p>
+{% end %}

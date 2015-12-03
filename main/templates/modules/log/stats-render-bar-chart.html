@@ -1,0 +1,137 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- Yahoo User Interface: Produz os gráficos das estatísticas -->
+	<script src="/static/yui/3.13.0/yui/yui-min.js"></script>
+	
+	<style>
+	#mychart {
+	    margin:10px 10px 10px 10px;
+	    width:90%;
+	    min-width:800px;
+		min-height:300px;
+	}
+	</style>
+	
+	<script type="text/javascript">
+	YUI().use('charts', function (Y){ 
+	
+	
+		var myDataValues = [ 
+	
+			{% for indice in LISTADEDADOS %}
+	
+				{nome:"{{ escape (indice[0]) }}", escrita:"{{ escape (indice[1]) }}", leitura:"{{ escape (indice[2]) }}"}
+				{% if indice != LISTADEDADOS[len(LISTADEDADOS)-1] %}
+					,
+				{% end %}
+	
+			{% end %}
+			];
+	
+	    var myAxes = {
+	        actions:{
+	            keys:["escrita", "leitura"],
+	            position:"bottom",
+	            type:"numeric",
+				maximum:{{ escape(TAMANHO_EIXO) }},
+	            styles:{
+	                majorTicks:{
+	                    display: "none"
+	                }
+	            }
+	        },
+	        names:{
+	            keys:["nome"],
+	            position:"left",
+	            type:"category",
+	            styles:{
+	                majorTicks:{
+	                    display: "none"
+	                },
+	                label: {
+	                    rotation:0,
+	                    margin:{top:5}
+	                }
+	            }
+	        }
+	    };
+	
+	    var seriesCollection = [
+	     {
+	            type:"stackedbar",
+	            yAxis:"names",
+	            xAxis:"actions",
+	            yKey:"nome",
+	            yDisplayName:"Nome",
+	            xKey:"escrita",
+	            xDisplayName:"Operações de Escrita",
+	            styles: {
+	            	marker:{
+	                    fill: {
+	                        color: "#008B00"
+	                    },
+	               		 border: {
+	                    weight: 0,
+	                    color: "#008B00"
+	                },
+	                over: {
+	                    fill: {
+	                        alpha: 0.7
+	                    }
+	                }
+	            }
+	          }  
+	        },
+	        {
+	            type:"stackedbar",
+	            yAxis:"names",
+	            xAxis:"actions",
+	            yKey:"nome",
+	            yDisplayName:"Nome",
+	            xKey:"leitura",
+	            xDisplayName:"Operações de Leitura",
+	            styles: {
+	                marker:{
+	                    fill: {
+	                        color: "#8B0000"
+	                    },
+	                    border: {
+	                        weight: 0,
+	                        color: "#cbc8ba"
+	                    },
+	                    over: {
+	                        fill: {
+	                            alpha: 0.7
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    ];
+	       
+	        var mychart = new Y.Chart({
+				dataProvider:myDataValues, 
+	            axes:myAxes,
+	            seriesCollection:seriesCollection,
+	            type: "bar",
+	            render:"#mychart"
+	        });
+	});
+	</script>
+
+{% end %}
+
+{% block body-right %}
+
+
+<form>
+{{modules.ShowMolduraInicio(width="100%", links="", titulo=u"Estatísticas de acesso a "+REGISTRY_ID)}}
+
+<h1>{{ escape(TITLE) }}</h1>
+<div id="mychart" style="height:{{ALTURA}}px;"></div>
+
+{{ modules.ShowMolduraFim() }}
+</form>
+{% end %}
+

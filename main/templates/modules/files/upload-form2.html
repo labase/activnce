@@ -1,0 +1,78 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+
+<!-- JQuery UploadFile -->
+<script src="/static/jquery/uploadfile/jquery.uploadfile.min.js"></script>
+<link href="/static/jquery/uploadfile/jquery.uploadfile.css" rel="stylesheet">
+
+<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+<script src="/static/getcookie.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+		var settings = {
+			url: "{{ request.path }}",
+			method: "POST",
+			// allowedTypes:"jpg,png,gif,doc,pdf,zip",
+			fileName: "arquivo",
+			formData: {"_xsrf":getCookie("_xsrf")},
+			dynamicFormData: function()
+			{
+				var data = { "description": document.getElementById("description").value,
+				             "tags": document.getElementById("tags").value,
+				             "folder": "{{FOLDER}}"
+				              };
+				return data;
+			},		
+			multiple: true,
+			
+			onSuccess:function(files,data,xhr)
+			{
+				var result = JSON.parse(xhr.responseText);
+				if (result.status==0) {
+					// sucesso
+					$("#status").html($("#status").html()+"<font color='green'>Arquivo: " + files + " transferido.</font><br/>");
+				}			
+				else {
+					// erro
+					$("#status").html($("#status").html()+"<font color='red'>Erro ao transferir o arquivo " + files + " - " + result.msg + "</font><br/>");
+				}
+			},
+			
+			onError: function(files,status,errMsg)
+			{	
+				// entra aqui se o controlador do upload der erro HTTP
+				$("#status").html($("#status").html()+"<font color='red'>Upload is Failed: " + files + "-" + status + "-" + errMsg +"</font>");
+			},
+			
+			afterUploadAll:function()
+			{
+				$("#eventsmessage").html("Fim da transferência de arquivos");
+			}	
+		}
+		$("#mulitplefileuploader").uploadFile(settings);
+	});
+</script>
+{% end %}
+
+{% block body-right %}  
+<br/>
+	<form name="upload" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+		{% raw xsrf_form_html() %}
+		{{ modules.ShowMolduraInicio("Upload de múltiplos arquivos", links=LINKS) }}
+			<h2>Localização: {{ PATH }}</h2>
+			<input type="hidden" name="folder" value="{{ FOLDER }}" />
+			<h2>Descrição:</h2> <input name="description" id="description" value="" type="text" size="40"/>
+			<h2>Tags:</h2> {{ modules.InputTags([]) }}
+			<h2>Arquivos:</h2>
+			<div id="mulitplefileuploader">Upload</div>
+			
+			<div id="status"></div>
+			<div id="eventsmessage"></div>
+			
+		    {{ modules.ShowMolduraFim() }}
+	</form>
+{% end %}

@@ -1,0 +1,71 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+<script type="text/javascript">
+	function open_window(url)
+	{
+	    window.open(url, "mywindow", "scrollbars=yes,location=no,directories=no,menubar=no,toolbar=no,status=no,width=600,height=400");
+	}
+</script>
+{% end %}
+
+{% block body-right %} 
+    <form name="perfil" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Alterar perfil")}}
+	{{ modules.ShowTabs(TABS) }}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h2>Nome</h2>
+	    <input name="name" id="name" value="{{ escape(FORMDATA["name"]) }}" type="text" size="40"/>
+        <br/><br/>
+	    <h2>Sobrenome</h2>
+	    <input name="lastname" id="lastname" value="{{ escape(FORMDATA["lastname"]) }}" type="text" size="40"/>
+
+        <br/><br/>
+	    <h2>Foto</h2>
+	    <input id="photo" name="photo" type="file"/>
+
+        <br/><br/>
+	    <h2>E-mail</h2>
+	    <input name="email" id="email" value="{{ escape(FORMDATA["email"]) }}" type="text" size="50"/>
+	    
+        <br/><br/>
+	    <h2>Tags</h2>
+	    {{ modules.InputTags(FORMDATA["tags"]) }}
+
+        <br/><br/>
+        <h2>Notificações de E-mail</h2>
+        <select name="notify">
+        <option value="2" {% if FORMDATA["notify"]=="2" %}selected{% end %}>Receber sempre que ocorrer um evento relacionado a mim</option>
+        <option value="1" {% if FORMDATA["notify"]=="1" %}selected{% end %}>Receber apenas um boletim semanal com os eventos relacionados a mim</option>
+        <option value="0" {% if FORMDATA["notify"]=="0" %}selected{% end %}>Não receber</option>
+        </select>
+
+        <br/><br/>
+        <h2>Aplicativos</h2>
+        {% for service in SERVICES["member"].keys() %}
+           {% if SERVICES["member"][service]["optional"] %}
+		        <span style="white-space:nowrap;">
+	            <input name="{{service}}" value="S" type="checkbox" 
+	             {% if service in FORMDATA["services"] %}checked="checked"{% end %} title="{{ SERVICES['member'][service]['hint'] }}" />
+	            {{ SERVICES["member"][service]['description'] }}
+	            </span>
+           {% end %}
+        {% end %}
+           
+        <br/><br/>
+        <h2>Arquivo CSS</h2>
+        <input id="arquivo_css" name="arquivo_css" type="file"/> &nbsp;&nbsp;&nbsp;
+        <a href="javascript: open_window('/css/{{ escape(REGISTRY_ID) }}');">Ver o CSS atual</a>
+        <br/><br/>
+
+	{{ modules.ShowMolduraFim("perfil") }}
+	
+</form>
+
+        <br/><br/>
+        Caso deseje excluir esta conta, <a href="/removeuser">clique aqui</a>. Atenção: este procedimento não poderá ser desfeito.
+        <br/><br/>
+        
+        
+{% end %}

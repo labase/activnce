@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "http://my.netscape.com/publish/formats/rss-0.91.dtd">
+<rss version="0.91">
+
+<channel>
+<title>Web Design/HTML</title>
+<link>http://webdesign.about.com/blog/</link>
+<description>Web Design/HTML</description>
+<language>en-us</language>
+<pubDate>Wed, 21 May 2003 19:53:10 -0500</pubDate>
+
+<image>
+<title>About.com</title>
+<url>http://z.about.com/d/lg/rss.gif</url>
+<link>http://about.com/</link>
+<width>88</width>
+<height>31</height>
+</image>
+
+<item>
+<title>What is a Font?</title>
+<link>http://webdesign.about.com/blog/a/000024.htm</link>
+<description>
+Font families can be hard to understand, especially when trying to develop a decent style sheet for a Web site. Once you understand what the fonts are, you can better use them to style your pages. What is a...
+</description>
+</item>
+
+</channel>
+</rss> 

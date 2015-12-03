@@ -1,0 +1,22 @@
+  <div class="btn-group-vertical menuLateral col-md-12">
+        {% for link in links %}
+            {% if link[2] %}
+			      <a class="hvr-sweep-to-right btn btn-default" href="{{link[2]}}"  
+			        class="blue-tooltip menuLateral" {% if len(link)>3 %}onclick="{{link[3]}}"{% end %}>
+			        <div id="{{link[0]}}">
+			        	<span class="fa {{link[1]}} black" aria-hidden="true" ></span>
+			        	{{link[0]}}
+			        	{% if len(link)>4 and int(link[4])>0 %}({{link[4]}}){% end %}
+			        </div>
+			      </a>
+            {% else %}
+			    <a class="btn btn-default">
+			        <div id="{{link[0]}}">
+			        	<span class="fa {{link[1]}} black" aria-hidden="true" ></span>
+			        	{{link[0]}}
+			        	{% if len(link)>4 and int(link[4])>0 %}({{link[4]}}){% end %}
+			        </div>
+			    </a>
+            {% end %}
+        {% end %}
+  </div>

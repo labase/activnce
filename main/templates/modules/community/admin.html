@@ -1,0 +1,66 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+	{{ modules.ShowMolduraInicio("Gerenciar participantes") }}
+	{{ modules.ShowTabs(TABS) }}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		
+	<i>Numa comunidade obrigatória, o seu administrador pode incluir e excluir participantes compulsoriamente, independente da solicitação ou aceitação dos mesmos.</i>
+	<br/><br/>
+    <p>
+    <b>Incluir Participantes:</b>
+	<form name="inclusao" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+    <input type="hidden" name="tipo" value="incluirparticipantes"/>
+
+    Digite abaixo os logins dos usuários a serem incluídos na comunidade(um em cada linha):
+	<br/>		        
+    <textarea name="users" rows="10" cols="30"></textarea>
+    </p>
+    <input type="submit" value="Incluir usuários na comunidade" />
+	</form>
+	<br/>
+	
+    <p><b>Excluir Participantes:</b><br/>
+	{% if PARTICIPANTES %}
+	    <form name="exclusao"  action="{{ request.path }}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir estes participantes da comunidade? Esta operação não poderá ser desfeita.');">
+	    {% raw xsrf_form_html() %}
+	        <input type="hidden" name="tipo" value="excluirparticipantes"/>
+	        <p>
+		    Selecione abaixo os participantes a serem excluídos da comunidade:
+		    </p>
+	        
+	            {% for part in PARTICIPANTES %}
+	                <input type="checkbox" name="users" value="{{ escape(part) }}"/> {{ escape(part) }}<br/>
+	            {% end %}
+	            
+			<input type="submit" value="Excluir participantes da comunidade" />            
+	    </form>
+	{% else %}
+	     <p>Ainda não há participantes nesta comunidade.</p>
+	{% end %}
+	    
+	<br/>
+	{% if PENDENTES %}   
+		<b>Convidados Pendentes</b>
+		<br/>
+		<form name="pendentes" action="{{ request.path }}" method="post">
+		{% raw xsrf_form_html() %}
+        <input type="hidden" name="tipo" value="alterarpendentes"/>
+		    
+		Estes usuários foram convidados para a comunidade anteriormente e ainda não aceitaram o convite. 
+		Decida se deseja incluí-los ou não na comunidade.
+        <p> 
+        {% for pend in PENDENTES %}            
+        <input type="checkbox" name="users" value="{{ escape(pend) }}"/>{{ escape(pend) }}<br/>
+        {% end %}
+        </p>
+        <input name="oper" value="Incluir" type="submit"/>
+        <input name="oper" value="Excluir" type="submit"/>       
+		</form>
+	{% end %}  
+    
+    {{ modules.ShowMolduraFim() }}
+
+{% end %}

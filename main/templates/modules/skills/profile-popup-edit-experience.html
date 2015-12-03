@@ -1,0 +1,229 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+	<script src="/static/jquery/tagsinput/jquery.tagsinput.js"></script>
+
+	<script type="text/javascript">  
+		function disable_formacao_data_fim(valor){
+			valor = !valor;
+			document.formacao.formacao_data_fim_mes.disabled = valor;
+			document.formacao.formacao_data_fim_ano.disabled = valor;
+			if(valor){
+				document.formacao.formacao_data_fim_mes.value = "";
+				document.formacao.formacao_data_fim_ano.value = "";
+				document.formacao.formacao_data_fim_mes.style.backgroundColor = "#d3d3d3";
+				document.formacao.formacao_data_fim_ano.style.backgroundColor = "#d3d3d3";
+			}
+			else{
+				document.formacao.formacao_data_fim_mes.style.backgroundColor = "white";
+				document.formacao.formacao_data_fim_ano.style.backgroundColor = "white";
+			}
+		}
+
+		function enable_experiencias_data_fim(valor){
+			document.experiencias.experiencias_data_fim_mes.disabled = valor;
+			document.experiencias.experiencias_data_fim_ano.disabled = valor;
+			if(valor){
+				document.experiencias.experiencias_data_fim_mes.value = "";
+				document.experiencias.experiencias_data_fim_ano.value = "";
+				document.experiencias.experiencias_data_fim_mes.style.backgroundColor = "#d3d3d3";
+				document.experiencias.experiencias_data_fim_ano.style.backgroundColor = "#d3d3d3";
+			}
+			else{
+				document.experiencias.experiencias_data_fim_mes.style.backgroundColor = "white";
+				document.experiencias.experiencias_data_fim_ano.style.backgroundColor = "white";
+			}
+		}
+
+		function inicializa_data_ano(ano_data_ini, ano_data_fim){
+			for (i = new Date().getFullYear(); i > 1900; i--){
+				$('#formacao_data_ini_ano').append($('<option />').val(i).html(i));
+				$('#formacao_data_fim_ano').append($('<option />').val(i).html(i));
+				$('#experiencias_data_ini_ano').append($('<option />').val(i).html(i));
+				$('#experiencias_data_fim_ano').append($('<option />').val(i).html(i));
+			}
+			if (ano_data_fim == "none"){
+				ano_data_fim = new Date().getFullYear();
+			}
+			$('#formacao_data_ini_ano option[value='+ano_data_ini+']').attr('selected','selected');
+			$('#formacao_data_fim_ano option[value='+ano_data_fim+']').attr('selected','selected');
+			$('#experiencias_data_ini_ano option[value='+ano_data_ini+']').attr('selected','selected');
+
+			if (document.getElementById("experiencias_check_andamento").checked){
+				document.experiencias.experiencias_data_fim_mes.value = "";
+				document.experiencias.experiencias_data_fim_ano.value = "";
+				document.experiencias.experiencias_data_fim_mes.style.backgroundColor = "#d3d3d3";
+				document.experiencias.experiencias_data_fim_ano.style.backgroundColor = "#d3d3d3";
+				document.experiencias.experiencias_data_fim_mes.disabled = true;
+				document.experiencias.experiencias_data_fim_ano.disabled = true;
+			}
+			else {
+				$('#experiencias_data_fim_ano option[value='+ano_data_fim+']').attr('selected','selected');
+			}
+		}
+	</script>
+
+{% end %}
+
+{% block body %} 
+	{{modules.ShowMolduraInicio(titulo="Editar Formação ou Experiência")}}
+		{% if TIPO == "academic" %}
+			<form name="formacao" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+				{% raw xsrf_form_html() %}
+
+				<table>
+				<tr>
+					<td>Instituição: </td>
+						<td><input name="formacao_instituicao" id="formacao_instituicao" value='{{escape(SKILLDATA["instituicao"])}}' type="text" size="30"/></td>
+				</tr><tr>
+					<td>Curso: </td>
+						<td><input name="formacao_curso" id="formacao_curso" value='{{escape(SKILLDATA["curso"])}}' type="text" size="30"/></td>
+				</tr><tr>
+					<td>Nível: </td>
+					<td><select name="formacao_nivel">
+					<option value="Não Informado" {%if SKILLDATA["nivel"] == u"Não Informado" %}selected{%end%}>Não Informado</option>
+					<option value="Ensino Fundamental" {%if SKILLDATA["nivel"] == "Ensino Fundamental" %}selected{%end%}>Ensino Fundamental</option>
+					<option value="Ensino Médio" {%if SKILLDATA["nivel"] == u"Ensino Médio" %}selected{%end%}>Ensino Médio</option>
+					<option value="Graduação" {%if SKILLDATA["nivel"] == u"Graduação" %}selected{%end%}>Graduação</option>
+					<option value="Pós-Graduação" {%if SKILLDATA["nivel"] == u"Pós-Graduação" %}selected{%end%}>Pós-Graduação</option>
+					<option value="Mestrado" {%if SKILLDATA["nivel"] == "Mestrado" %}selected{%end%}>Mestrado</option>
+					<option value="Doutorado" {%if SKILLDATA["nivel"] == "Doutorado" %}selected{%end%}>Doutorado</option>
+					<option value="Pós-Doutorado" {%if SKILLDATA["nivel"] == u"Pós-Doutorado" %}selected{%end%}>Pós-Doutorado</option>
+					</select></td>
+
+				</tr><tr>
+				<td><label for="formacao_data_ini">Data de Início: </label></td>
+				<td><select name="formacao_data_ini_mes" id="formacao_data_ini_mes" title="Mês de começo da formação">
+					<option value="01" {%if SKILLDATA["data_ini"].split("/")[0] == "01" %}selected{%end%}>Janeiro</option>
+					<option value="02" {%if SKILLDATA["data_ini"].split("/")[0] == "02" %}selected{%end%}>Fevereiro</option>
+					<option value="03" {%if SKILLDATA["data_ini"].split("/")[0] == "03" %}selected{%end%}>Março</option>
+					<option value="04" {%if SKILLDATA["data_ini"].split("/")[0] == "04" %}selected{%end%}>Abril</option>
+					<option value="05" {%if SKILLDATA["data_ini"].split("/")[0] == "05" %}selected{%end%}>Maio</option>
+					<option value="06" {%if SKILLDATA["data_ini"].split("/")[0] == "06" %}selected{%end%}>Junho</option>
+					<option value="07" {%if SKILLDATA["data_ini"].split("/")[0] == "07" %}selected{%end%}>Julho</option>
+					<option value="08" {%if SKILLDATA["data_ini"].split("/")[0] == "08" %}selected{%end%}>Agosto</option>
+					<option value="09" {%if SKILLDATA["data_ini"].split("/")[0] == "09" %}selected{%end%}>Setembro</option>
+					<option value="10" {%if SKILLDATA["data_ini"].split("/")[0] == "10" %}selected{%end%}>Outubro</option>
+					<option value="11" {%if SKILLDATA["data_ini"].split("/")[0] == "11" %}selected{%end%}>Novembro</option>
+					<option value="12" {%if SKILLDATA["data_ini"].split("/")[0] == "12" %}selected{%end%}>Dezembro</option>
+					</select>
+					<select name="formacao_data_ini_ano" id="formacao_data_ini_ano" title="Ano de começo da formação"></select>
+				</td>
+				</tr><tr>
+				<td><label for="formacao_check_andamento">Formação concluída </label></td>
+				<td><input type="checkbox" id="formacao_check_andamento" name="formacao_check_andamento" checked onclick="disable_formacao_data_fim(this.checked)"></td>
+
+				</tr><tr>
+				<td><label for="formacao_data_fim">Data de Término: </label></td>
+				<td><select name="formacao_data_fim_mes" title="Mês de término da formação. Se esta continua em andamento, marque acima.">
+					<option value="01" >Janeiro</option>
+					<option value="02" >Fevereiro</option>
+					<option value="03" >Março</option>
+					<option value="04" >Abril</option>
+					<option value="05" >Maio</option>
+					<option value="06" >Junho</option>
+					<option value="07" >Julho</option>
+					<option value="08" >Agosto</option>
+					<option value="09" >Setembro</option>
+					<option value="10" >Outubro</option>
+					<option value="11" >Novembro</option>
+					<option value="12" >Dezembro</option>
+					</select>
+					<select name="formacao_data_fim_ano" id="formacao_data_fim_ano" title="Ano de término da formação. Se esta continua em andamento, marque acima."></select>
+				</td>
+
+				</tr><tr>
+				<td>Descrição:</td>
+				<td><textarea rows="5" cols="40" name="formacao_descricao">{{escape(SKILLDATA["descricao"])}}</textarea></td>
+
+				</tr><tr>
+				<td>Habilidades e Competências</br><i>(separe por vírgulas)</i>:</td>
+				<td>
+					<!-- Campo de Skills -->
+					{{ modules.InputTags(SKILLDATA['habilidades'], "academic_skills") }}</td>
+
+
+				</tr>
+				</table>
+				</form>
+
+				{{ modules.ShowMolduraFim("formacao") }}
+		{% end %}
+		{% if TIPO == "professional" %}
+			<form name="experiencias" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+				{% raw xsrf_form_html() %}
+				<table>
+				<tr>
+					<td>Empresa/Projeto: </td>
+						<td><input name="experiencias_empresa" id="experiencias_empresa" value='{{escape(SKILLDATA["empresa"])}}' type="text" size="30"/></td>
+				</tr><tr>
+					<td>Cargo: </td>
+						<td><input name="experiencias_cargo" id="experiencias_cargo" value='{{escape(SKILLDATA["cargo"])}}' type="text" size="30"/></td>
+
+
+				</tr><tr>
+<td><label for="experiencias_data_ini">Data de Início: </label></td>
+				<td><select name="experiencias_data_ini_mes" title="Mês de começo da formação">
+					<option value="01" {%if SKILLDATA["data_ini"].split("/")[0] == "01" %}selected{%end%}>Janeiro</option>
+					<option value="02" {%if SKILLDATA["data_ini"].split("/")[0] == "02" %}selected{%end%}>Fevereiro</option>
+					<option value="03" {%if SKILLDATA["data_ini"].split("/")[0] == "03" %}selected{%end%}>Março</option>
+					<option value="04" {%if SKILLDATA["data_ini"].split("/")[0] == "04" %}selected{%end%}>Abril</option>
+					<option value="05" {%if SKILLDATA["data_ini"].split("/")[0] == "05" %}selected{%end%}>Maio</option>
+					<option value="06" {%if SKILLDATA["data_ini"].split("/")[0] == "06" %}selected{%end%}>Junho</option>
+					<option value="07" {%if SKILLDATA["data_ini"].split("/")[0] == "07" %}selected{%end%}>Julho</option>
+					<option value="08" {%if SKILLDATA["data_ini"].split("/")[0] == "08" %}selected{%end%}>Agosto</option>
+					<option value="09" {%if SKILLDATA["data_ini"].split("/")[0] == "09" %}selected{%end%}>Setembro</option>
+					<option value="10" {%if SKILLDATA["data_ini"].split("/")[0] == "10" %}selected{%end%}>Outubro</option>
+					<option value="11" {%if SKILLDATA["data_ini"].split("/")[0] == "11" %}selected{%end%}>Novembro</option>
+					<option value="12" {%if SKILLDATA["data_ini"].split("/")[0] == "12" %}selected{%end%}>Dezembro</option>
+					</select>
+					<select name="experiencias_data_ini_ano" id="experiencias_data_ini_ano" title="Ano de começo da experiência"></select>
+				</td>
+				</tr><tr>
+				<td><label for="experiencias_check_andamento">Emprego/Projeto atual </label></td>
+				<td><input type="checkbox" id="experiencias_check_andamento" name="experiencias_check_andamento" {% if SKILLDATA["data_fim"] == "" %}checked{% end %} onclick="enable_experiencias_data_fim(this.checked)"></td>
+
+				</tr><tr>
+				<td><label for="experiencias_data_fim">Data de Saída: </label></td>
+				<td><select name="experiencias_data_fim_mes" title="Mês de término da formação. Se esta continua em andamento, marque acima.">
+					<option value="01" {%if SKILLDATA["data_fim"].split("/")[0] == "01" %}selected{%end%}>Janeiro</option>
+					<option value="02" {%if SKILLDATA["data_fim"].split("/")[0] == "02" %}selected{%end%}>Fevereiro</option>
+					<option value="03" {%if SKILLDATA["data_fim"].split("/")[0] == "03" %}selected{%end%}>Março</option>
+					<option value="04" {%if SKILLDATA["data_fim"].split("/")[0] == "04" %}selected{%end%}>Abril</option>
+					<option value="05" {%if SKILLDATA["data_fim"].split("/")[0] == "05" %}selected{%end%}>Maio</option>
+					<option value="06" {%if SKILLDATA["data_fim"].split("/")[0] == "06" %}selected{%end%}>Junho</option>
+					<option value="07" {%if SKILLDATA["data_fim"].split("/")[0] == "07" %}selected{%end%}>Julho</option>
+					<option value="08" {%if SKILLDATA["data_fim"].split("/")[0] == "08" %}selected{%end%}>Agosto</option>
+					<option value="09" {%if SKILLDATA["data_fim"].split("/")[0] == "09" %}selected{%end%}>Setembro</option>
+					<option value="10" {%if SKILLDATA["data_fim"].split("/")[0] == "10" %}selected{%end%}>Outubro</option>
+					<option value="11" {%if SKILLDATA["data_fim"].split("/")[0] == "11" %}selected{%end%}>Novembro</option>
+					<option value="12" {%if SKILLDATA["data_fim"].split("/")[0] == "12" %}selected{%end%}>Dezembro</option>
+					</select>
+					<select name="experiencias_data_fim_ano" id="experiencias_data_fim_ano" title="Ano de término da experiencia. Se esta continua em andamento, marque acima."></select>
+				</td>
+				</tr><tr>
+				<td>Descrição:</td>
+				<td><textarea rows="5" cols="40" name="experiencias_descricao">{{escape(SKILLDATA["descricao"])}}</textarea></td>
+
+				</tr><tr>
+				<td>Habilidades e Competências</br><i>(separe por vírgulas)</i>:</td>
+				<td>
+					<!-- Campo de Skills -->
+					{{ modules.InputTags(SKILLDATA['habilidades'], "professional_skills") }}</td>
+
+				</tr>
+				</table>
+				</form>
+
+				{{ modules.ShowMolduraFim("experiencias") }}
+		{% end %}
+	{% if SKILLDATA["data_fim"] %}
+		<script type="text/javascript">
+			$(document).ready(inicializa_data_ano({{SKILLDATA["data_ini"].split("/")[1]}}, {{SKILLDATA["data_fim"].split("/")[1]}}));
+		</script>
+	{% else %}
+		<script type="text/javascript">
+			$(document).ready(inicializa_data_ano({{SKILLDATA["data_ini"].split("/")[1]}}, "none"));
+		</script>
+	{% end %}
+{% end %}

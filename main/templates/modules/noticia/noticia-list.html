@@ -1,0 +1,33 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", titulo=u"Notícias de "+REGISTRY_ID, links=LINKS)}}
+        {% if len(LISTA)==0 %}
+            <br/>Nenhuma notícia.
+        {% else %}
+            {% for i in range(len(LISTA)) %}
+                {% if EH_EDITOR or (LISTA[i].dt_validade == "") or (LISTA[i].dt_validade > NOW) %}
+                    <br/>
+                    {% if LISTA[i].popup=="S" and ((LISTA[i].dt_validade == "") or (LISTA[i].dt_validade > NOW)) %}
+                    <img src="/static/imagens/icones/star16.png" title="Notícia publicada no pop-up da comunidade" />
+                    {% end %}
+                    <b><a href={{ "/noticia/"+REGISTRY_ID+"/"+str(LISTA[i].id)+"?tr=s" }}>{{ LISTA[i].titulo}}</a></b><br/>
+                    {% if LISTA[i].get_resumo()!="" and LISTA[i].get_resumo()!="<br />" %}
+                        &nbsp;&nbsp;Resumo: {{ escape(LISTA[i].get_resumo_sem_html()) }}<br/>
+                    {% end %}
+                    {% if LISTA[i].fonte %}
+                        &nbsp;&nbsp;Fonte: {{ LISTA[i].fonte }}<br/>
+                    {% end %}
+                    &nbsp;&nbsp;<i>publicado em {{ LISTA[i].dt_publicacao }}</i>
+                    {% if EH_EDITOR %}
+                        <div style="float:right; vertical-align:top"><a href={{ "/noticia/"+REGISTRY_ID+"/new?n="+str(LISTA[i].id) }} title="alterar">
+                        <img src="/static/imagens/icones/edit16.png" border="0" alt="alterar" />
+                        </a></div>
+                    {% end %}
+                    <br/>
+                {% end %}
+            {% end %}    
+        {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}
+

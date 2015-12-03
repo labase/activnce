@@ -1,0 +1,46 @@
+{% extends "../../../base-nova.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%")}}
+    <br/><br/>
+    {% if GAMESLIST %}
+        <table width="100%">
+        <tr>
+        
+        <td>
+        <ul>
+        {% for item in GAMESLIST %}
+            {% if item[3] == 1 %}
+                {% if item[2] %}
+                <li><a href="{{ item[1] }}"><b>{{ item[0] }}</b></a><br/>
+                <a href="{{ item[1] }}"><img src="/static/plugins/api/{{ item[2] }}.png" border="0" /></a><br/><br/></li>
+                {% else %}
+                <li><a href="{{ item[1] }}"><b>{{ item[0] }}</b></a></li><br/>
+                {% end%}
+            {% end %}
+        {% end %}
+        </ul>
+        </td>
+        
+        <td>
+        <ul>
+        {% for item in GAMESLIST %}
+            {% if item[3] == 2 %}
+                {% if item[2] %}
+                <li><a href="{{ item[1] }}"><b>{{ item[0] }}</b></a><br/>
+                <a href="{{ item[1] }}"><img src="/static/plugins/api/{{ item[2] }}.png" border="0" /></a><br/><br/></li>
+                {% else %}
+                <li><a href="{{ item[1] }}"><b>{{ item[0] }}</b></a></li><br/>
+                {% end%}
+            {% end %}
+        {% end %}
+        </ul>
+        </td>        
+        
+        </tr>
+        </table>
+    {% else %}
+        Não há nenhum jogo.
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,44 @@
+/* css principal */
+
+
+* {
+}
+
+/* herdado do css original */
+img {
+   border: none;
+}
+
+/* herdado do css original */
+a:link {
+   text-decoration: none;
+}
+
+/* herdado do css original */
+body {
+   background-color: #ffffff;
+   margin: 0px;
+   padding: 0px;
+}
+
+#all { 
+	min-width:980px; /* tamanho mínimo da página */
+	margin: 0px; /* juntando a pagina ao canto da tela */ 
+	padding: 0px;
+	/* height: 750px; widht: 100%; border: solid black 1px; marcacao de borda para teste */
+}
+
+#top { 
+	height: 116px; /* 24 + 2 + 45 +45 soma da primeira barra mais a linha inferior amarela mais a segunda barra mais a sequencia */ 
+	width: 100%; 
+	/* border: solid red 1px; marcacao de borda para teste */
+}
+
+#center {  width: 100%; /* center tinha altura de 600 pixels, mas foi transferido apenas para barra de localizacao liberando o tamanho do centro */
+	margin:0px;
+	padding:0px;
+	display:inline-block;
+	/* border: solid yellow 3px; marcacao de borda para teste */
+}
+
+

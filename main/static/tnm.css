@@ -1,0 +1,408 @@
+/********************************************************************
+   Estilos usados nas paginas internas da plataforma ActivUFRJ
+********************************************************************/
+
+/*--- Definicoes gerais ---*/
+
+* {
+   margin: 0px;
+   padding: 0px;
+}
+
+img {
+   border: none;
+}
+
+a:link {
+   text-decoration: none;
+}
+
+body {
+   background-color: #ffffff;
+}
+
+.width1024 {
+   min-width: 1024px;
+}
+
+
+ 
+/*##################################################*/
+
+
+/* CSS DA BARRA DE TAMANHO EXPANSÍVEL */
+
+/*Barra UFRJ*/
+
+#subheader {
+    left: 0;
+    top: 24px;
+    float: left; 
+    width:100%;
+    min-width: 1024px;
+    height: 45px;
+    background-color: #e6e6e6;
+    background-repeat: repeat-x;
+    position: absolute;
+}
+
+.nome_faculdade {
+    /*
+    position: relative;
+    float: right;
+    */
+    position: absolute;
+    top: 23px; 
+    height: 14px;
+    right: 18px;
+}
+
+#activ_ufrj_logo {
+    float: right;
+    margin-right: 8px;
+    margin-top: 10px;
+    height: 78px;
+}
+
+
+/*######################*/
+
+#formulario_login {
+   margin-top: 0px;
+}
+
+.form_index {
+   float: right;
+   margin-right: 20px;
+   margin-top: 50px;
+   /* margin-top: 130px; */
+}
+
+.form_preencher {
+   margin-left: 20px;
+   padding-left: 0px;
+   margin-right: 20px;
+}
+
+.form_enviar {
+   margin-left:0px;
+}
+
+.bemvindo{
+   margin-left: -100px;
+   padding-left: 0px;
+}
+
+/*--- Definicoes do cabecalho e laterais (depende dos tamanhos das imagens) ---*/
+
+.tnmLadoEsqBkg {
+   position: fixed;
+   z-index: 2;
+   height: 100%;
+   width: 55px;
+   left: 0px;
+}
+
+.tnmLadoDirBkg {
+   position: fixed;
+   z-index: 2;
+   height: 100%;
+   width: 60px;
+   right: 0px;
+}
+
+.tnmLogo {
+   z-index: 3;
+   position: fixed;
+   top: 0px;
+   left: 0px;
+  /* width:   px;*/
+   height: 40px;
+   background-color: white;
+   margin-left: 0px;
+}
+
+.tnmTituloPag {
+   z-index: 2;
+   position: fixed;
+   top: 0px;
+   padding-top: 5px;
+   margin-left:  40px;
+   margin-right: 60px;
+   height: 40px;
+   width: 100%;
+   background-color: white;
+}
+
+.tnmOiTNM { 
+    font-size: 18pt;
+    font-weight: bold;
+    font-family: Helvetica, Sans Serif, Arial;
+    float:left; 
+    margin-right: 15px;
+    margin-top: -5px;
+}
+
+.tnmUsuario {
+   font-size: 12pt;
+   font-family: 'Open Sans', Helvetica, Sans Serif, Arial;
+   /* background-image: url(../static/imagens/activ/fundo_usuario.png); */
+   background-repeat: repeat-x; 
+   float: left;
+   height: 40px;
+   width: 100%;
+   top: 79px;
+   position: absolute;
+   padding-left: 36px;
+   padding-top: 5px;
+}
+
+.tnmUsuario a:link    { text-decoration: none; color: #666666; }
+.tnmUsuario a:visited { text-decoration: none; color: #666666; }
+.tnmUsuario a:hover   { text-decoration: none; color: #666666; }
+.tnmUsuario a:active  { text-decoration: none; color: #666666; }
+
+.tnmNomePag {
+   position: absolute;   /* fixed: alterado em 03/04/2012 */
+   left: 0px;
+   top: 50%;
+   margin-top: -105px;
+   width: 50px;
+   height: 420px;
+   z-index: 2;
+}
+
+/*--- Definicoes do menu de botoes superior (depende dos tamanhos das imagens) ---*/
+
+.tnmMenuSup {
+   position: absolute;
+   top: 85px;
+   right: 120px;
+}
+
+#botao_sair {
+   font-family: Open Sans, Helvetica, sans-serif;
+   font-size: 11px;
+   color: #666666;
+}
+
+.tnmBotaoSup {
+   width: 20px;
+   padding-left: 50px;
+   float:left;
+}
+
+.tnmImgBtnSup {
+   z-index: 5;
+   position: relative;
+}
+
+.tnmBolhaSup {
+   z-index: 4;
+   position: absolute;
+   top: 35px;
+   display: none;
+   width: 100%;
+}
+
+.tnmBolhaSupTxt {
+   padding: 5px 0px 0px 11px;
+   font-size: 12pt;
+   font-family: Helvetica, Sans Serif, Arial;
+   font-weight: bold;
+   background-repeat: no-repeat;
+   float: left;
+   height: 30px;
+}
+
+/*--- Definicoes do menu de botoes a direita (depende dos tamanhos das imagens) ---*/
+/*
+.tnmMenuDir {
+   position: absolute;
+   height: 320px; 
+   right: 15px;
+   top: 50%;
+   margin-top: -105px;
+}
+*/
+
+.tnmMenuDir {
+   position: absolute;
+   height: 320px; 
+   right: 15px;
+   top: 82px;
+}
+
+.tnmBotaoDir {
+   height: 55px; 
+}
+
+.tnmImgBtnDir {
+   z-index: 3;
+   position: relative;
+   right: 0px;
+   float: right;
+}
+
+.tnmBolhaDir {
+   z-index: 2;
+   position: relative;
+   top: 0px;
+   right: 0px;
+   margin-right: 25px;
+   padding: 14px 30px 8px 15px;
+   display: none;
+   font-size: 14pt;
+   font-family: Helvetica, Sans Serif, Arial;
+   font-weight: bold;
+   background-repeat: no-repeat;
+}
+
+/*--- Definicao para o rodape ---*/
+
+.tnmRodape {
+   margin: 5px 60px 0px 55px;
+}
+
+.tnmVersao {
+   display: table;
+   width: 100%;
+   color: #999;
+   font-family: Helvetica, Sans Serif, Arial; 
+   font-size: 8pt;
+   text-align: center;
+   border-top: 1px solid #EEE;         
+}
+
+/*--- Definicao do container do "miolo" da pagina ---*/
+
+.tnmConteudo {
+   /* margin: 90px 110px 0px 55px; com espaço para os botões */ 
+   margin: 90px 10px 0px 55px; 
+   min-width: 550px; 
+}
+
+.tnmConteudoPopup {
+   margin: 30px 110px 0px 40px; /* --- top, right, bottom, left */
+   min-width: 550px; 
+   /* border: 1px solid #EEE; --> apenas para teste (remover esta propriedade no definitivo) */ 
+}
+
+.tnmConteudoInterno {
+   display: table;
+   width: 100%;
+}
+
+.tnmEstiloInterno {
+   font-family: Helvetica, Sans Serif, Arial;
+   font-weight: normal;
+   font-size: 10pt;
+   text-decoration: none;
+}
+
+.tnmHomeMSG {
+   padding: 5px 15px;
+   background-color: #EEE;
+   font-size: 12pt;
+   font-style: italic;
+}
+
+.tnmMSG {
+   padding: 5px 15px;
+   background-color: #EEE;
+   font-size: 12pt;
+   font-style: italic;
+}
+
+
+.tnmMSG:before { white-space: pre; content: "Atenção:\A"; }
+
+.editar_wiki {
+   float: right;
+   padding-right: 10px;
+   margin-top: -15px;
+   
+}
+
+/*--- Sobreposicao de estilos usados no interior das paginas ---*/
+
+.tnmEstiloInterno input[type="password"], textarea {
+   border: 1px solid white;
+   padding: 1px 2px;
+   background-color: #EEE;
+   font-size: 10pt;
+}
+
+.tnmEstiloInterno input[type="text"], textarea{
+   border: 1px solid white;
+   padding: 1px 2px;
+   background-color: #EEE;
+   font-size: 10pt;
+}
+
+.tnmEstiloInterno select, option, optgroup {
+   border: 1px solid white;
+   padding: 0px;
+   margin: 0px;
+   background-color: #EEE;
+   font-size: 10pt;
+}
+
+.tnmEstiloInterno em { font-style: normal; }
+
+.tnmEstiloInterno h1 { font-size: 12pt; font-weight: bold; }
+.tnmEstiloInterno h2 { font-size: 11pt; font-weight: bold; }
+.tnmEstiloInterno h3 { font-size: 10pt; font-weight: bold; }
+.tnmEstiloInterno h4 { font-size: 10pt; font-weight: normal; }
+.tnmEstiloInterno h5 { font-size:  9pt; font-weight: normal; }
+.tnmEstiloInterno h6 { font-size:  8pt; font-weight: normal; }
+
+.tnmEstiloInterno a:link    { text-decoration: none; }
+.tnmEstiloInterno a:visited { text-decoration: none; }
+.tnmEstiloInterno a:hover   { text-decoration: none; background-color: #EEE; }
+.tnmEstiloInterno a:active  { text-decoration: none; }
+
+.tnmEstiloInterno p { padding-bottom: 5px; }
+
+.tnmEstiloInterno ul,ol { padding-bottom: 5px; }
+.tnmEstiloInterno li    { padding-bottom: 2px; margin-left: 35px; }
+
+table.tnmTabelaInterna  { border: 1px solid black; margin-left:auto; margin-right:auto; }
+td.tnmTabelaInterna     { padding:10px; border: 1px solid black; }
+th.tnmTabelaInterna     { padding:10px; border: 1px solid black; }
+
+/*--- Cores basicas utilizadas nos menus e paginas ---*/
+
+.tnmCinza    { color: #3d3e3f; }
+.tnmVermelho { color: #b23838; }
+.tnmLaranja  { color: #ce773c; }
+.tnmAmarelo  { color: #d5b066; }
+.tnmAzul     { color: #0c649b; }
+.tnmVerde    { color: #558255; }
+.tnmLilas    { color: #544472; }
+
+
+/*Footer*/
+
+.footer{
+   height: 50px;
+   padding-top: 60px;
+   /* padding-top: 110px; */
+   width: 100%;
+   text-align: center;
+   margin-bottom: 0px;
+   bottom: 0;
+}
+
+.footer_ince {
+   height: 40px;
+   margin-left: auto;
+   margin-right: auto;
+   text-align: center;
+   bottom: 0;
+   
+}
+
+#footer_ince_posicao {
+   bottom: 0;
+}

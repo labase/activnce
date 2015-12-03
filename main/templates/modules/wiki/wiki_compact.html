@@ -1,0 +1,36 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+	{% if IMPOSSIBLE %}
+	
+	    {{modules.ShowMolduraInicio(titulo=PATH, width="100%")}}
+    	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		{{ IMPOSSIBLE }}
+	    {{ modules.ShowMolduraFim() }}
+	    
+	{% else %}
+	    <form name="compactwiki" action="{{ request.path }}" method="post">
+	    {% raw xsrf_form_html() %}
+	
+	    {{modules.ShowMolduraInicio(titulo=PATH, width="100%")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	        <br/>
+	        <h1>Compactação da Página "{{ NOMEWIKIPAG }}"</h1> 
+	        <br/>
+	        <b>Esta página possui {{ HISTORY_LEN }} versões armazenadas.</b>
+	        <br/><br/>
+	        Sempre que uma página é editada, uma nova versão da mesma é produzida, sendo que o {{ PLATAFORMA }} armazena todas as versões antigas de cada documento.
+	        Quando uma página possui muitas versões, o tempo de acesso a ela pode ser comprometido.
+	        Caso deseje remover as versões mais antigas deste documento, defina a seguir o número de versões a serem preservadas e clique no botão Enviar.
+	        <br/><br/>
+	        
+	        Número de versões a serem preservadas: <input type="text" name="nversoes" value="10" />
+	        <br/>
+	        <b>Atenção:</b> Todas as versões mais antigas serão removidas e não haverá mais como restaurá-las.
+	        <br/><br/>
+	        
+	    {{ modules.ShowMolduraFim("compactwiki") }}
+	{% end %}
+	
+{% end %}

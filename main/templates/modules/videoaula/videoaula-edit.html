@@ -1,0 +1,289 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- Maskedinput: Máscara de entrada de dados -->
+	<script src="/static/jquery/maskedinput/jquery.maskedinput.min.js" type="text/javascript"></script>
+
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		
+		// inicializa máscara de entrada de dados
+		
+		jQuery(function($){
+			$.mask.definitions['u'] = "[0-9]"; 
+			$.mask.definitions['d'] = "[0-5]"; 
+	        $("#time").mask("du:du");
+		});
+	
+		// crítica do formulário de inclusão de um novo slide
+		
+		function critica() {
+			if ( $("#time").val() == "" ) {
+				alert ("Tempo não preenchido");
+				return false;
+			}
+			if ( $("#slide").val() == "" ) {
+				alert ("Arquivo do slide não selecionado");
+				return false;
+			}
+			return true;
+		}	
+
+		// callback associada ao link para excluir slide (ícone da lixeira).
+		
+		function onDeleteSlide() {
+
+	    	if ( !confirm('Deseja realmente remover este slide da videoaula?') )
+	    		return false;
+	    	
+	    	// pega o tempo MM:SS no conteúdo da primeira célula da linha clicada
+	        var tr = $(this).closest('tr');
+	    	var td = tr.find('td:eq(0)');
+	    	var tempo = td.html();
+	    	
+			$.ajax({url: "/videoaula/delsync/{{REGISTRY_ID}}/{{VIDEODATA['name_id']}}?time=" + tempo,
+				type: "GET",
+				success: function(response) {
+				    if (response.status==0) {
+				        // tr.css("background-color","#FF3700");
+				        tr.fadeOut(400, function(){
+				            tr.remove();
+				        });
+				        return false;
+					}		    
+				}
+			});
+	    }
+			
+    	$(function() {
+
+			// callback no botão incluir para incluir novo slide	
+		    $("#b_incluir").click(function() {
+		    
+				if (critica()) {	
+					
+					$.ajax({url: "/videoaula/sync/{{REGISTRY_ID}}/{{VIDEODATA['name_id']}}",
+						type: "POST",
+						
+						data: {"_xsrf":getCookie("_xsrf"),
+						       "time": $("#time").val(),
+						       "slide": $("#slide").val() },
+						       			
+						success: function(response) {
+						    if (response.status == 0){
+						    	var first = false;
+						    	var id_link = "del_" + $("#time").val().replace(':','');
+						    	var newline = '<tr><td style="border-bottom: 1px solid">' + $("#time").val() + '</td>' +
+											  '<td style="border-bottom: 1px solid">' + $("#slide").val() + '</td>' +
+											  '<td style="border-bottom: 1px solid">' + 
+											  '<a id="' + id_link + '" class="deleteSlide" title="apagar">' +
+								              '<img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>' + 
+							                  '</td></tr>'
+						    	
+						    	// insere se a tabela está vazia
+								if ($( "#tabslides tr" ).length == 0) {
+									$( "#tabslides" ).append(newline);
+								    $( "#" + id_link ).click(onDeleteSlide);									
+								}
+								else {
+							    	
+							    	// insere a nova linha na posição correspondente, de forma a manter a tabela ordenada pelo tempo
+							    	$( "#tabslides tr" ).each(function( index ) {
+								    	var tempo = $( this ).find('td:eq(0)').text();
+								    	
+								    	if (!first && tempo > $("#time").val()) {
+								    		first = true;
+											$( this ).before( newline );	
+										    $( "#" + id_link ).click(onDeleteSlide);
+								    	}	
+								    	else if (!first && tempo == $("#time").val()) {
+								    	
+								    		// se o tempo a ser incluido já existir na tabela, substitui slide da linha
+								    		first = true;
+								    		$( this ).find('td:eq(1)').text($("#slide").val());
+								    	}
+									});
+									
+									// se o tempo a ser incluído é maior que o da última linha, inclui no final da tabela
+									if (!first) {
+										$( "#tabslides tr:last" ).after( newline );	
+									    $( "#" + id_link ).click(onDeleteSlide);
+									}
+								}
+							}    
+						}
+					});
+				}
+		    });
+
+			// callback no ícone lixeira para excluir slide
+		    $( "#tabslides .deleteSlide" ).click(onDeleteSlide);
+		});
+
+
+		// exibe lista de arquivos de um folder
+		
+		function changeFiles(folder) {
+			$.ajax({url: "/file/json/{{REGISTRY_ID}}?folder="+folder+"&type=image",
+				type: "GET",
+				success: function(response) {
+					// obj = JSON && JSON.parse(response.files) || $.parseJSON(response.files);
+					// select to be modified
+					sel = document.getElementById("slide")
+						
+					// remove all old options
+					$('#slide').empty();
+					
+					// and then create the new ones
+					for(file in response.files) {
+					   var opt = document.createElement("option");
+					   opt.value = response.files[file];
+					   opt.innerHTML = response.files[file];
+					   sel.appendChild(opt);
+					}
+				}
+			});
+		}	
+	
+
+    	$(function() {	
+			changeFiles("");
+		});		
+	
+	
+		// inicializa arrays de tempos e slides
+		
+	    var times = new Array();
+	    var slides = new Array();
+	
+		{% for tempo in SORTEDKEYS(VIDEODATA["slides"]) %}
+		    times.push({{ int(tempo.split(":")[0])*60+int(tempo.split(":")[1]) }});
+			slides.push("/file/{{REGISTRY_ID}}/{{ VIDEODATA["slides"][tempo] }}");
+		{% end %}
+		
+		
+		// determina o slide a ser exibido num dado instante
+		
+		function searchSlide(t) {
+			if (times.length<1 || t<times[0]) return "";
+			for (var i=0; i<times.length-1; i++){
+				if (t>=times[i] && t<times[i+1])
+					return slides[i];
+			}
+			return slides[slides.length-1];
+		}
+	</script>
+{% end %}
+
+{% block body-right %}
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+	{{modules.ShowMolduraInicio("Alterar videoaula", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	
+	<h2>Nome da VideoAula:</h2> 
+	{{ escape(VIDEODATA["titulo"]) }}<br/>
+	
+	<h2>Arquivo de video:</h2> 
+	{{ escape(VIDEODATA["arqvideo"]) }}<br/>
+	
+	<form action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}	
+    <h2>Tags:</h2> 
+	{{ modules.InputTags(VIDEODATA["tags"]) }}
+	<br/>
+	<input type="submit" value="Alterar tags"/>
+	
+	</form>
+	<br/><br/> 
+			   
+	<div id="player">
+	<video controls="controls" width="400" height="300" poster="" style="margin: 1em 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);">
+		<source src="http://{{PLATAFORMA_URL}}/file/{{REGISTRY_ID}}/{{escape(VIDEODATA["arqvideo"])}}?disp=attachment" type="{{MIME_TYPE}}" /> 	
+		Seu navegador n&atilde;o suporta HTML5.
+	</video>
+	
+	<!-- 640x480 -->
+	<img src="" width="400" height="300" id="imgslide" style="margin: 1em 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);"/>		
+	</div>
+ 
+	<br/><br/> 
+	
+	<!-- Lista de slides -->
+	<table border="0" cellspacing="10" width="100%" style="color: black;">
+		<tr>
+		<td width="100" style="border-bottom: 1px solid" align="left"><b>Tempo</b></td>
+		<td style="border-bottom: 1px solid" align="left"><b>Arquivo Slide</b></td>
+		<td width="100" style="border-bottom: 1px solid" align="left"></td>
+		</tr>
+	</table>
+			
+	<table id="tabslides" border="0" cellspacing="10" width="100%" style="color: black;">
+		{% for tempo in SORTEDKEYS(VIDEODATA["slides"]) %}
+			<tr>
+			<td width="100" style="border-bottom: 1px solid">{{ tempo }}</td>
+			<td style="border-bottom: 1px solid">{{ VIDEODATA["slides"][tempo] }}</td>
+			<td width="100" style="border-bottom: 1px solid"> 
+				<a class="deleteSlide" title="apagar">
+                <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+            </td>
+			</tr>
+		{% end %}
+	</table>
+
+    <!-- form name="syncslide" a inclusão do form aqui faria com que um enter no campo time submetesse o form erradamente -->
+		{% raw xsrf_form_html() %}
+		<input type="hidden" name="id" value="{{ escape(VIDEODATA['_id']) }}" />
+				
+		<!-- Inclusão de um slide -->
+		<table border="0" cellspacing="10" width="100%" style="color: black;">
+			<tr>
+			<td width="100"><input type="text" size="8" maxlength="8" name="time" id="time"/></td>
+			<td>
+				<select name="folder" onchange="changeFiles(this.options[this.selectedIndex].value)">
+					{% for item in FOLDERS %}
+					<option value='{{item[0]}}'>{{item[1]}}</option>
+					{% end %}
+				</select>
+				<select name="slide" id="slide"></select>	
+			</td>
+			<td width="100">				
+				<input id="b_incluir" type="button" value="incluir" />
+			</td>
+			</tr>
+		</table>
+	
+	<!-- /form -->	  
+		
+	{{ modules.ShowMolduraFim() }}
+	
+	<script type="text/javascript">
+		var old=0;
+	
+		function formatTwoDigits(x){
+			return (x<10) ? "0"+x.toString() : x.toString();
+		}
+		
+		(function(){
+		    var v = document.getElementsByTagName('video')[0]
+		    var t = document.getElementById('time');
+		    var s = document.getElementById('imgslide');
+
+		    if (slides.length>0)
+		    	s.src = slides[0];
+		    
+		    v.addEventListener('timeupdate',function(event){
+		    	now = parseInt(v.currentTime);
+		    	if (now>old){
+					t.value = formatTwoDigits(Math.floor(now/60)) + ":" + formatTwoDigits(now % 60);
+					newslide = searchSlide(now);
+					if (s.src!=newslide)
+						s.src = newslide;
+				}
+				old = now;
+		    },false);
+		})();
+	</script>	
+{% end %}
+

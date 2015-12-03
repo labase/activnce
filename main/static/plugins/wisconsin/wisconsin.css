@@ -1,0 +1,47 @@
+﻿.carta {
+    margin: 0 3em;
+    width: 100px;
+    height: 120px;
+    border: 1px solid #000000;
+    float: left;
+}
+
+.carta img {
+    display: block;
+    margin: 0 auto;
+}
+
+.puxada {
+    margin: 0 auto;
+    float: none;
+}
+
+a img {
+    border: 0;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+br {
+    clear: both;
+}
+
+.vermelho {
+    background-color: #FF0000;
+}
+
+.verde {
+    background-color: #009900;
+}
+
+.azul {
+    background-color: #0066CC;
+}
+
+.amarelo {
+    background-color: #FF9900;
+}

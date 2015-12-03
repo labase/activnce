@@ -1,0 +1,239 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+		function validaHabilidade(contador, tipo){
+			var xmlhttp;
+			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					//Codigo de sucesso
+					if( xmlhttp.responseText == "success"){
+						document.getElementById("opcoes_habilidade_pendente"+contador).style.display = 'none';
+					}
+					if( xmlhttp.responseText == "final success"){
+						document.getElementById("habilidades_pendentes").style.display = 'none';
+					}
+					document.getElementById("aviso_atualizacao").style.display = 'inline';
+				}
+			}
+			_xsrf=getCookie("_xsrf");
+			nivel = document.getElementById("nivel_habilidade_pendente"+contador).value;
+			if((tipo != "confirmar") || (tipo == "confirmar" && nivel!="")){
+				nome = document.getElementById("nome_habilidade_pendente"+contador).innerHTML;
+				data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome=" + nome + "&tipo=" + tipo;
+				xmlhttp.open("POST","/profile/skills/validate/pending",true);
+				xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				xmlhttp.send(data);
+			}
+		}
+
+		function atualizaNivel(contador){
+			var xmlhttp;
+			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					//Codigo de sucesso
+					if (document.getElementById("msg_habilidade_enviada"+contador).style.display == 'none'){
+									$('#nivel_habilidade'+contador).fadeOut(400, function(){ 
+											$('#msg_habilidade_enviada'+contador).fadeIn(400, function(){
+												$('#msg_habilidade_enviada'+contador).fadeOut(800, function(){ 
+													$('#nivel_habilidade'+contador).fadeIn(); 
+												});
+											});
+									});
+								}
+				}
+			}
+			nivel = document.getElementById("nivel_habilidade"+contador).value;
+			if (nivel != ""){
+				_xsrf=getCookie("_xsrf");
+				nome = document.getElementById("nome_habilidade"+contador).innerHTML;
+				data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome=" + nome;
+				xmlhttp.open("POST","/profile/skills/edit/skills/0",true);
+				xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				xmlhttp.send(data);
+			}
+		}
+
+
+		function closeJS()
+		{
+		    location.href = "{{request.path}}?{{request.query}}";
+		    //history.go(0);
+		}
+	</script>
+{% end %}
+
+{% block body-right %} 
+	{{modules.ShowMolduraInicio(escape("Habilidades"))}}
+		{{ modules.ShowTabs(TABS) }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<p align="justify">Esta funcionalidade do ActivUFRJ visa coletar informações para gerar o seu mapa de habilidades. Você poderá informar aqui suas habilidades obtidas através de formação acadêmica, cursos de extensão e pós-graduação, treinamentos executivos e demais habilidades adquiridas e desenvolvidas através de sua experiência profissional.</br></br>
+							Estas habilidades poderão ser confirmadas pelos seus amigos/pares, integrarão o mapa de habilidades coletivas das comunidades das quais você faz parte e poderão ser também associadas às suas <a href="/profile/skills/new/experience">atividades profissionais e acadêmicas.</a>
+							Você também poderá apontar e endossar habilidades de seus amigos através do perfil deles.</p>
+							
+ 							
+							
+							
+		<div id="habilidades_pendentes">
+		{% if HABILIDADES_PENDENTES %}
+			{{modules.ShowMolduraInicio()}}
+				<p> A partir dos dados do seu Currículo Lattes ou de sugestões de seus amigos, foram detectadas algumas possíveis habilidades que você possua. Dê uma olhada abaixo e nos ajude a confirmar estas habilidades!</p>
+			
+				<table width="100%">
+					<tr><td align="center"><b>Habilidade</b></td>
+						<td align="center"><b>Nível</b></td>
+						<td align="center"><b>Confirmar Habilidade</b></td>
+						<td align="center"><b>Recusar Habilidade</b></td>
+						<td align="center"><b>Não é Habilidade</b></td>
+					</tr>
+					{% for contador in range(len(HABILIDADES_PENDENTES)) %}
+					
+					<tr id="opcoes_habilidade_pendente{{contador}}"><td align="center"><a href="#" id="nome_habilidade_pendente{{contador}}" onclick="TINY.box.show({iframe:'/profile/skills/productions/references/pending/{{LOGADO}}/{{contador}}',width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40}); return false;">{{escape(HABILIDADES_PENDENTES[contador]["nome_habilidade"])}}</a></td>
+						<td align="center"><select id="nivel_habilidade_pendente{{contador}}">
+							<option value=""> </option>
+							<option value="novato">Novato</option>
+							<option value="iniciante">Iniciante Avançado</option>
+							<option value="apto">Apto</option>
+							<option value="proficiente">Proficiente</option>
+							<option value="especialista">Especialista</option>
+						</select></td>
+						<td align="center">
+							<a href="#" onclick="validaHabilidade({{contador}}, 'confirmar')" data-toggle="tooltip" title="Confirmar Habilidade">
+						        <div id="confirmar{{contador}}">
+						        	<span class="glyphicon glyphicon glyphicon-ok black" aria-hidden="true" > </span>
+						        </div>
+							</a>
+						</td>
+						<td align="center">
+							<a href="#" onclick="validaHabilidade({{contador}}, 'recusar')" data-toggle="tooltip" title="Recusar Habilidade">
+						        <div id="recusar{{contador}}">
+						        	<span class="glyphicon glyphicon glyphicon-remove black" aria-hidden="true" > </span>
+						        </div>
+							</a>
+						</td>
+						<td align="center">
+							<a href="#" onclick="validaHabilidade({{contador}}, 'invalidar')" data-toggle="tooltip" title="Não é Habilidade">
+						        <div id="invalidar{{contador}}">
+						        	<span class="glyphicon glyphicon glyphicon-ban-circle black" aria-hidden="true" > </span>
+						        </div>
+							</a>
+						</td>
+					</tr>
+					{% end %}
+				</table>
+
+			{{ modules.ShowMolduraFim() }}
+		{% end %}
+		</div>
+
+
+
+		<form name="habilidades" action="/profile/skills/new/skill/add" method="post" enctype="multipart/form-data">
+			{% raw xsrf_form_html() %}
+			{{modules.ShowMolduraInicio()}}
+			<h2 name="adicionarHabilidade">Adicionar Habilidade</h2>
+			<table cellpadding="10">
+				<tr>
+					<td>Habilidade: </td>
+					<td><input name="nome_habilidade_nova" id="nome_habilidade_nova" type="text" size="30"/></td>
+				</tr><tr>
+						<td>Nível da habilidade: </td>
+						<td><select name="nivel_habilidade_nova">
+							<option value=""> </option>
+							<option value="novato">Novato</option>
+							<option value="iniciante">Iniciante Avançado</option>
+							<option value="apto">Apto</option>
+							<option value="proficiente">Proficiente</option>
+							<option value="especialista">Especialista</option>
+						</select></td>
+				</tr>
+			</table>
+		<script>		
+			$(function () {
+
+				var chamarPopup = "{{ HABILIDADES_SEM_NIVEL }}";
+				if (chamarPopup == "True"){
+					TINY.box.show( {iframe:'/profile/skills/new/skill/level',width:700,height:400,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}});
+				}
+
+				// Initialize autocomplete with local lookup
+				$('#nome_habilidade_nova').autocomplete({
+					source: function(request, response) {																			
+						var results = $.ui.autocomplete.filter({{AUTOCOMPLETE_ALL_SKILLS}}, request.term);
+						// limita exibição em 10 itens
+						response(results.slice(0, 5));
+					},
+				
+					select: function (event, ui) {
+						$('#nome_habilidade_nova').val(ui.item.value);
+					}
+				});
+			});
+		</script>
+		{{ modules.ShowMolduraFim("habilidades") }}
+		</form>
+		</br>
+
+		{{modules.ShowMolduraInicio()}}
+		<h2 id="lista_habilidades">Lista de Habilidades</h2>
+		<div id="aviso_atualizacao" style="display:none;">
+			<h5>Algumas alterações foram feitas na sua tabela de habilidades. Para vê-las, <a href="/profile/skills/{{LOGADO}}"><b>atualize a página.</b></a></h5>
+		</div>
+		{% if HABILIDADES_RECUSADAS %}
+			<p>Você recusou algumas habilidades sugeridas. Para vê-las, <a href="#" onclick="TINY.box.show({iframe:'/profile/skills/new/skill/rejected',width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">clique aqui</a></p>
+		{% end %}
+		{% if HABILIDADES %}
+			<p>Você pode alterar o nível que considera ter em suas habilidades. Para isso, basta alterá-los na tabela abaixo.</p>
+			<p>Para ver a origem de uma habilidade da lista, clique no nome da habilidade.</p>
+			{% raw xsrf_form_html() %}
+				<table cellspacing="5" width="60%" align="center">
+					<tr>
+						<td align="center"><b>Habilidade</b></td>
+						<td align="center"><b>Nível</b></td>
+						<td align="center"><b>Remover Habilidade</b></td>
+					</tr>
+					{% for i in range(len(HABILIDADES)) %}
+					<tr>
+						<td align="center"><a id="nome_habilidade{{i}}" href="#" onclick="TINY.box.show({iframe:'/profile/skills/productions/references/confirmed/{{LOGADO}}/{{escape(HABILIDADES[i]['id_habilidade'])}}',width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40}); return false;">{{ escape(HABILIDADES[i]["nome_habilidade"]) }}</a></td>
+						<td align="center"><select name="nivel_habilidade{{i}}" id="nivel_habilidade{{i}}" onchange="atualizaNivel({{i}})">
+							<option value=""  {%if HABILIDADES[i]["nivel_habilidade"] == ""%}selected{%end%}>Sem Informação</option>> </option>
+							<option value="novato" {%if HABILIDADES[i]["nivel_habilidade"] == "novato"%}selected{%end%}>Novato</option>
+							<option value="iniciante" {%if HABILIDADES[i]["nivel_habilidade"] == "iniciante"%}selected{%end%}>Iniciante Avançado</option>
+							<option value="apto" {%if HABILIDADES[i]["nivel_habilidade"] == "apto"%}selected{%end%}>Apto</option>
+							<option value="proficiente" {%if HABILIDADES[i]["nivel_habilidade"] == "proficiente"%}selected{%end%}>Proficiente</option>
+							<option value="especialista" {%if HABILIDADES[i]["nivel_habilidade"] == "especialista"%}selected{%end%}>Especialista</option>
+						</select>
+						<a align="right" id="msg_habilidade_enviada{{i}}" style="color:green;display:none;">Habilidade Atualizada!</a>
+						</td>
+						
+						<td align="center"><a onclick="return confirm('Tem certeza que deseja remover esta habilidade? Se a habilidade estiver ligada à alguma produção, formação acadêmica ou experiência profissional, a ligação será perdida!');" href="/profile/skills/delete/skills/{{ escape(HABILIDADES[i]['id_habilidade']) }}" title="Remover">
+		                    <img src="/static/imagens/icones/delete16.png" alt="Remover" style="hspace:5px;"/></td>
+					</tr>
+					{% end %}
+					 
+				</table>
+
+			{% else %}
+			<h3> Você ainda não informou nenhuma habilidade. </h3>
+		{% end %}
+
+		{{ modules.ShowMolduraFim() }}
+		</br>
+
+    {{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,32 @@
+<script type="text/javascript">
+	tipo   = '{{TIPO}}';
+	escopo = '{{ESCOPO}}';
+	objeto = '{{OBJETO}}';
+   
+    $(function() {
+        $('#testRater').rater({ postHref: '/rating/new/'+escopo+'/'+objeto,
+                                param: tipo,
+                                _xsrf: getCookie("_xsrf"),
+                                canRate: 0=={{ RATINGS[0] }} });
+    });
+</script>
+
+<span style="display:block; text-align:right; padding: 0px 3px;">
+<div id="testRater" class="stat">
+    <label for="rating">Avalie</label>
+    <div class="statVal">
+        <span class="ui-rater">
+            <span class="ui-rater-starsOff" style="width:90px;"><span class="ui-rater-starsOn" style="width:{{ float(RATINGS[1]) * 90 / 5 }}px"></span></span>
+            <!--
+            { % if RATINGS[2]==0 % }
+            <span class="ui-rater-rating"></span>&#160;(<span class="ui-rater-rateCount">Ainda não foi avaliado</span>)
+            { % else % }
+            -->
+            <span class="ui-rater-rating">{{ "%.1f" % RATINGS[1] }}</span>&#160;(<span class="ui-rater-rateCount">{{ RATINGS[2] }}</span>)
+            <!--
+            { % end % }
+            -->
+        </span>
+    </div>
+</div>
+</span>

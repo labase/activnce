@@ -1,0 +1,18 @@
+{% extends "../../base.html" %}
+{% block body %}
+   
+	{{modules.ShowMolduraInicio(titulo=u"Criar grupo")}}
+	 {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+    <form action="{{ request.path }}" name="criaratividades" method="post">
+    <input type="hidden" name="type" value="group" />
+	{% raw xsrf_form_html() %}
+
+	<i>Grupo:</i> <br/>
+	<input type="text" name="titulo" {% if GRUPO["titulo"] %} value="{{(GRUPO['titulo'])}}" {% end %} size="70" maxlengh="300" />
+	<input type="submit" value="Criar grupo"/>
+    </form>
+
+	{{ modules.ShowMolduraFim() }}
+{% end %}
+

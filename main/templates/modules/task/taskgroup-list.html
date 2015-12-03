@@ -1,0 +1,46 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(titulo="Tarefa: "+escape(TASKNAME), width="100%", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> <br/>{% end %}
+
+		{% if PARTICIPANTES_POR_GRUPOS %}
+				<table border="0" cellspacing="5" width="100%">
+					<tr><td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; text-align:center; border-bottom: 1px solid;"><b>Grupo</b></td>
+						<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; text-align:center; border-bottom: 1px solid;"><b>Participantes</b></td>
+						<td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; text-align:center; border-bottom: 1px solid;"><b>Opções de Grupo</b></td>
+					</tr>						
+					{% for grupo in PARTICIPANTES_POR_GRUPOS %}
+					<tr><td style="padding-right:5px; padding-bottom:5px; padding-top:5px; padding-left:5px; text-align:center;"> {{ grupo }} </td>
+						<td style="padding-right:5px;padding-bottom:5px; padding-top:5px; padding-left:5px; text-align:center;">
+						{% for part in PARTICIPANTES_POR_GRUPOS[grupo] %}
+							{{ part }}</br>
+						{% end %}
+						</td>
+						<td style="text-align:center;">
+						{% if PERIODO != 1 %}
+							{% if TEM_GRUPO == False %}
+								{% if GRUPOS_PENDENTE %}
+									<a title="Aguardando aceitação"><img src="/static/imagens/icones/clock16.png" alt="Aguardando aceitação" border="0" /></a>
+								{% else %}
+									<a onclick="return confirm('Deseja realmente entrar para este grupo?');" title="Entrar neste grupo" href="/task/groupjoin/{{REGISTRY_ID}}/{{TASKNAME}}?grupo={{grupo}}">
+				         				<img src="/static/imagens/icones/group-join16.png" alt="Entrar neste grupo" border="0" /></a>
+								{% end %}
+							{% end %}
+							{% if MEU_GRUPO == grupo %}
+								<a onclick="return confirm('Deseja realmente sair deste grupo? Se você for o dono, este grupo será apagado.');" title="Sair deste grupo" href="/task/groupleave/{{REGISTRY_ID}}/{{TASKNAME}}?grupo={{grupo}}">
+				         				<img src="/static/imagens/icones/group-leave16.png" alt="Sair deste grupo" border="0" /></a>
+							{% end %}
+							</td>
+						{% else %}
+							Período encerrado
+						{% end %}
+					{% end %}
+					</tr>
+					<tr><td colspan="7" style="border-bottom: 1px solid"></td></tr>
+					</table>
+	    {% else %}
+	    	Não há grupos para esta tarefa.
+	    {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

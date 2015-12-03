@@ -1,0 +1,64 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        $('#data_start').datetimepicker({});
+        $('#data_end').datetimepicker({});
+    });
+    </script>
+{% end %}
+
+{% block body-right %}
+
+    <form name="criar" action="/invites/createform" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio("Criar um Formulário de Solicitação de Convites")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    <br/>
+    <b>Atenção:</b><br/>
+    Um formulário de solicitação de convites é um mecanismo que permite que usuários que não possuam acesso ao {{ PLATAFORMA }} possam solicitar diretamente a você o envio de convites.
+    <br/>
+    Todo formulário terá os campos: nome, email e uma área de preenchimento livre cujo título você pode especificar.
+    <br/>
+    
+    <br/><br/>
+    <h2>Título do Formulário</h2>
+    <input name="titulo" id="titulo" value="{{ escape(FORMDATA["titulo"]) }}" type="text" size="50"/>
+    
+    <br/><br/>
+    <h2>Instruções de Preenchimento (aceita HTML)</h2>
+    <textarea name="instrucoes" rows="5" cols="50">{{ escape(FORMDATA["instrucoes"]) }}</textarea>
+    
+    <br/><br/>
+    <h2>Título do campo livre</h2>
+    <input name="campolivre" id="campolivre" value="{{ escape(FORMDATA["campolivre"]) }}" type="text" size="50"/>
+        
+    <br/><br/>
+    <h2>Resposta do Formulário (aceita HTML)</h2>
+    <textarea name="resposta" rows="5" cols="50">{{ escape(FORMDATA["resposta"]) }}</textarea>
+    
+    <br/><br/>
+    <h2>Período de Preenchimento</h2>
+    Data/hora de início:
+    <input id="data_start" name="data_inicio" maxlength="16" size="16" type="text"/>
+    <br/>
+    Data/hora de encerramento:
+    <input id="data_end" name="data_encerramento" maxlength="16" size="16" type="text"/>
+    <br/><br/>
+    
+    
+    <br/>
+
+    {{ modules.ShowMolduraFim("criar") }}
+    </form>
+    <br/>
+{% end %}

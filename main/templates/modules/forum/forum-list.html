@@ -1,0 +1,64 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", titulo=TITULO, links=LINKS)}}
+
+   	<table border="0" cellspacing="10"  style="color: black;">
+            {% if len(TOPICOS) > 0 %}
+                <tr>
+                    <td style="border-bottom: 1px solid" align="left"><b>Tópico</b></td>
+                    <td style="border-bottom: 1px solid" align="left"><b>Criado por</b></td>
+                    <td style="border-bottom: 1px solid" align="left"><b>Criado em</b></td>
+                    <td style="border-bottom: 1px solid" align="center"><b>Num de Respostas</b></td>
+                    <td style="border-bottom: 1px solid" align="right"><b>Última Resposta</b></td>
+                    <td style="border-bottom: 1px solid" align="right"> </td>
+                </tr>
+            {% else %}
+                <td colspan="5" align="center"> Nenhum t&oacute;pico cadastrado</td>
+            {% end %}
+            {% for i in range(len(TOPICOS)) %}
+            <tr>
+                <td align="left"><a href={{ request.path }}/{{ TOPICOS[i]['name_id']  }}><u>{{ TOPICOS[i]['titulo'] }}</u></a></td>
+                <td align="left">{{ modules.ShowFoto("/photo/"+escape(TOPICOS[i]['owner'])+"?size=P","",escape(TOPICOS[i]['owner']),"/user/"+escape(TOPICOS[i]['owner']),True)}}</td>
+                <td align="left">{{ escape(TOPICOS[i]['data_cri_fmt']) }}</td>
+                <td align="center">{{ escape( str(TOPICOS[i]['num_replies']) ) }}</td>
+                {% if TOPICOS[i]['ultimo_reply'] == "" %}
+                    <td align="center">-</td>
+                {% else %}
+                    <td align="center">{{ escape(TOPICOS[i]['ultimo_reply_fmt']) }}</td>
+                {% end %}
+                    <td align="right">
+		                {% if TOPICOS[i]['alterar'] %}
+                        <a href='/forum/edit/{{REGISTRY_ID}}/{{TOPICOS[i]["name_id"]}}' title="alterar">
+                        <img src="/static/imagens/icones/edit16.png" border="0" alt="alterar" />
+                        </a>
+                        {% end %}
+                        
+		                {% if TOPICOS[i]['apagar'] %}
+                        <a onclick="return confirm('{{ "Confirma a exclusão deste tópico? Esta operação não poderá ser desfeita." }}');" href='/forum/delete/{{REGISTRY_ID}}/{{TOPICOS[i]["name_id"]}}' title='remover'>
+                        <img src="/static/imagens/icones/delete16.png" border="0" alt="remover" />
+                        </a>
+                        {% end %}
+                    </td>
+            </tr>
+            {% end %}
+ 	</table>
+    {{ modules.ShowMolduraFim() }}    
+    {{ modules.Paginator(PAGE, PAGESIZE, TOPICOS_COUNT) }}
+{% end %}
+
+{% block body-left %}
+	{% if TAGS %}
+        <br/><br/>
+        {{modules.ShowMolduraInicio(width="100%", titulo="Tags")}}
+          <table>
+          <tr><td>
+          <a href="/forum/{{REGISTRY_ID}}">Todas</a> 
+          <br/><br/>
+          {{ modules.ShowTags(TAGS, link="/forum/"+REGISTRY_ID+"?tag=") }}
+          <br/>
+          </td></tr>
+          </table>
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}

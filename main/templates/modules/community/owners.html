@@ -1,0 +1,56 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+{{ modules.ShowMolduraInicio("Gerenciar participantes") }}
+{{ modules.ShowTabs(TABS) }}
+
+{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+<form name="inclusao" action="{{ request.path }}" method="post">
+<input type="hidden" name="tipo" value="incluir_admins"/>
+{% raw xsrf_form_html() %}
+	<p><b>Dono da comunidade:</b> {{ USERDATA["owner"] }}<br/>
+	<b>Administradores:</b> 
+	{{ ", ".join(USERDATA["admins"]) }}
+	</p>
+	
+    <p> 
+    <b>Delegar papel de administrador:</b><br/>
+    <b>Novo administrador:</b> 
+    <select name="novo_admin">
+        <option value="">------------------------ </option>
+        {% for part in USERDATA["participantes"] %}
+            {% if part!=USERDATA["owner"] and part not in USERDATA["admins"] %}
+                <option value="{{ part }}">{{ part }}</option>
+            {% end %}
+        {% end %}
+    </select>
+    <input type="submit" value="Incluir administrador"/>
+    </p>
+</form>
+
+<br/>	
+
+{% if USERDATA["admins"] %}
+    <form name="exclusao"  action="{{ request.path }}" method="post">
+    <input type="hidden" name="tipo" value="excluir_admins"/>
+    {% raw xsrf_form_html() %}
+    <p><b>Retirar papel de administrador:</b><br/>
+    
+    {% for admin in USERDATA["admins"] %}
+        <input type="checkbox" name="users" value="{{ escape(admin) }}" 
+        {% if LOGADO==admin %}
+            onclick="if (this.checked) alert('Deseja realmente deixar de ser administrador?')"
+        {% end %}
+        />{{ escape(admin) }}
+    	<br/>   
+    {% end %}
+    </p>
+	<input type="submit" value="Excluir administradores"/>         
+    </form>
+{% end %}
+{{ modules.ShowMolduraFim() }}
+    
+
+    
+{% end %}

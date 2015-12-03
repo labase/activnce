@@ -1,0 +1,749 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- apresentação da agenda na grade do calendário -->
+	<link rel="stylesheet" href="/static/jquery/jmonthcalendar/core.css" type="text/css" />
+    <script src="/static/jquery/jmonthcalendar/jMonthCalendar.js" type="text/javascript"></script>
+
+	<style type="text/css" media="screen">
+		#jMonthCalendar .Meeting { background-color: #ADD8E6;}
+		#jMonthCalendar .Birthday { background-color: #DD00FF;}
+		#jMonthCalendar #Event_3 { background-color:#0000FF; }
+	</style>
+	
+
+    <script type="text/javascript">
+        $().ready(function() {
+		
+			var dates;
+			var ano;
+			var mes;
+
+			var options = {
+				height: 650,
+				width: 980,
+				navHeight: 25,
+				labelHeight: 25,
+				onMonthChanging: function(dateIn) {
+				
+					//$.jMonthCalendar.ReplaceEventCollection(events);
+					
+					$.jMonthCalendar.ReplaceEventCollection([]);
+					
+					dates = dateIn.toString().split(" ");
+					ano = dates[3];
+					
+					switch(dates[1].toString()){
+					case "Jan":
+						mes = "01";
+						mes_num = 1;
+						break;
+					case "Feb":
+						mes = "02";
+						mes_num = 2;
+						break;
+					case "Mar":
+						mes = "03";
+						mes_num = 3;
+						break;
+					case "Apr":
+						mes = "04";
+						mes_num = 4;
+						break;
+					case "May":
+						mes = "05";
+						mes_num = 5;
+						break;
+					case "Jun":
+						mes = "06";
+						mes_num = 6;
+						break;
+					case "Jul":
+						mes = "07";
+						mes_num = 7;
+						break;
+					case "Aug":
+						mes = "08";
+						mes_num = 8;
+						break;
+					case "Sep":
+						mes = "09";
+						mes_num = 9;
+						break;
+					case "Oct":
+						mes = "10";
+						mes_num = 10;
+						break;
+					case "Nov":
+						mes = "11";
+						mes_num = 11;
+						break;
+					case "Dec":
+						mes = "12";
+						mes_num = 12;
+						break;
+					}
+					ano_mes = ano.toString()+mes.toString();	
+					
+					
+					
+                        
+				    //---------prox mes e ano--
+				    prox_mes=0;
+					prox_ano=0;
+					ant_mes=0;
+					ant_ano=0;
+					
+					if (dates[1]=="Dec"){
+					    prox_mes=1;
+					    prox_ano=dates[3]+1;
+					}
+					else{
+					    prox_mes=mes_num+1;
+					    prox_ano= dates[3];
+					}
+				    //------------------------
+			
+			
+				    //---------ant mes e ano--
+					if (dates[1]=="Jan") {
+					    ant_mes=12;
+					    ant_ano=dates[3]-1;
+					}
+					else{
+					    ant_mes=mes_num-1;
+					    ant_ano= dates[3];
+					}
+				    //------------------------
+				    
+					switch(ant_mes){
+					case 1:
+						ant_mes = "01";
+						break;
+					case 2:
+						ant_mes = "02";
+						break;
+					case 3:
+						ant_mes = "03";
+						break;
+					case 4:
+						ant_mes = "04";
+						break;
+					case 5:
+						ant_mes = "05";
+						break;
+					case 6:
+						ant_mes = "06";
+						break;
+					case 7:
+						ant_mes = "07";
+						break;
+					case 8:
+						ant_mes = "08";
+						break;
+					case 9:
+						ant_mes = "09";
+						break;
+					case 10:
+						ant_mes = "10";
+						break;
+					case 11:
+						ant_mes = "11";
+						break;
+					case 12:
+						ant_mes = "12";
+						break;
+					}
+					
+					switch(prox_mes){
+			
+					case 1:
+						prox_mes = "01";
+						break;
+					case 2:
+						prox_mes = "02";
+						break;
+					case 3:
+						prox_mes = "03";
+						break;
+					case 4:
+						prox_mes = "04";
+						break;
+					case 5:
+						prox_mes = "05";
+						break;
+					case 6:
+						prox_mes = "06";
+						break;
+					case 7:
+						prox_mes = "07";
+						break;
+					case 8:
+						prox_mes = "08";
+						break;
+					case 9:
+						prox_mes = "09";
+						break;
+					case 10:
+						prox_mes = "10";
+						break;
+					case 11:
+						prox_mes = "11";
+						break;
+					case 12:
+						prox_mes = "12";
+						break;
+					}
+
+					ant_ano_mes = ant_ano.toString()+ant_mes.toString();	
+					prox_ano_mes = prox_ano.toString()+prox_mes.toString();	
+					
+					
+					
+					$.ajax({url: "/agenda/json/{{REGISTRY_ID}}?mes="+mes+"&ano="+ano,
+					type: "GET",
+					success: function(response) {
+						//obj = JSON && JSON.parse(response) || $.parseJSON(response);
+						obj = response
+
+					    var events = [];
+					    var single_event = 0;
+					    var totalevents_day = 0;
+					    var mensagem;
+				        if (obj) {
+							
+							for (var dia in obj[ano_mes]) {
+									for (var event_day in obj[ano_mes][dia]){
+															
+										if (event_day < 4 ) {
+											console.log(event_day);
+											mensagem = obj[ano_mes][dia][event_day].msg;
+											mensagem = mensagem.toString().substring(0,13);
+
+											single_event = {"EventID": "", 
+													"StartDateTime": ano+"-"+mes+"-"+dia, 
+													"Title": obj[ano_mes][dia][event_day].hora + " - " + mensagem,
+													"URL": "#", 
+													"Description": ano+"-"+mes+"-"+dia+"-"+event_day , 
+													"CssClass": "Meeting"};
+											events.push(single_event);
+											events.sort();
+										
+										}
+										else{											
+											events.pop()
+											single_event = {"EventID": "", 
+													"StartDateTime": ano+"-"+mes+"-"+dia, 
+													"Title": "+ " + (obj[ano_mes][dia].length - 3) + " evento(s)",
+													"URL": "#", 
+													"Description": ano+"-"+mes+"-"+dia+"-"+event_day , 
+													"CssClass": "Meeting"};
+											events.push(single_event);
+											events.sort();
+											break;
+										}
+									}				
+						       }
+				           } 
+					    
+					    //$.jMonthCalendar.Initialize(options, events);                          
+					    $.jMonthCalendar.ReplaceEventCollection(events);
+					}});
+				
+				$.ajax({url: "/agenda/json/{{REGISTRY_ID}}?mes="+prox_mes+"&ano="+prox_ano,
+					type: "GET",
+					success: function(response) {
+						//obj = JSON && JSON.parse(response) || $.parseJSON(response);
+						obj = response
+
+					    var prox_events = [];
+					    var single_event = 0;
+					    var totalevents_day = 0;
+					    var mensagem;
+				        if (obj) {
+							
+							for (var dia in obj[prox_ano_mes]) {
+									for (var event_day in obj[prox_ano_mes][dia]){
+															
+										if (event_day < 4 ) {
+											console.log(event_day);
+											mensagem = obj[prox_ano_mes][dia][event_day].msg;
+											mensagem = mensagem.toString().substring(0,13);
+
+											single_event = {"EventID": "", 
+													"StartDateTime": prox_ano+"-"+prox_mes+"-"+dia, 
+													"Title": obj[prox_ano_mes][dia][event_day].hora + " - " + mensagem,
+													"URL": "#", 
+													"Description": prox_ano+"-"+prox_mes+"-"+dia+"-"+event_day , 
+													"CssClass": "Meeting"};
+											prox_events.push(single_event);
+											prox_events.sort();
+										
+										}
+										else{											
+											prox_events.pop()
+											single_event = {"EventID": "", 
+													"StartDateTime": prox_ano+"-"+prox_mes+"-"+dia, 
+													"Title": "+ " + (obj[prox_ano_mes][dia].length - 3) + " evento(s)",
+													"URL": "#", 
+													"Description": prox_ano+"-"+prox_mes+"-"+dia+"-"+event_day , 
+													"CssClass": "Meeting"};
+											prox_events.push(single_event);
+											prox_events.sort();
+											break;
+										}
+									}				
+						       }
+				           } 
+					    
+					    //$.jMonthCalendar.Initialize(options, events);          
+					    $.jMonthCalendar.ReplaceEventCollection(prox_events);
+					}});
+				
+				$.ajax({url: "/agenda/json/{{REGISTRY_ID}}?mes="+ant_mes+"&ano="+ant_ano,
+					type: "GET",
+					success: function(response) {
+						//obj = JSON && JSON.parse(response) || $.parseJSON(response);
+						obj = response
+
+					
+					    var ant_events = [];
+					    var single_event = 0;
+					    var totalevents_day = 0;
+					    var mensagem;
+				        if (obj) {
+							
+							for (var dia in obj[ant_ano_mes]) {
+									for (var event_day in obj[ant_ano_mes][dia]){
+															
+										if (event_day < 4 ) {
+											console.log(event_day);
+											mensagem = obj[ant_ano_mes][dia][event_day].msg;
+											mensagem = mensagem.toString().substring(0,13);
+
+											single_event = {"EventID": "", 
+													"StartDateTime": ant_ano+"-"+ant_mes+"-"+dia, 
+													"Title": obj[ant_ano_mes][dia][event_day].hora + " - " + mensagem,
+													"URL": "#", 
+													"Description": ant_ano+"-"+ant_mes+"-"+dia+"-"+event_day , 
+													"CssClass": "Meeting"};
+											ant_events.push(single_event);
+											ant_events.sort();
+										
+										}
+										else{											
+											ant_events.pop()
+											single_event = {"EventID": "", 
+													"StartDateTime": ant_ano+"-"+ant_mes+"-"+dia, 
+													"Title": "+ " + (obj[ant_ano_mes][dia].length - 3) + " evento(s)",
+													"URL": "#", 
+													"Description": ant_ano+"-"+ant_mes+"-"+dia+"-"+event_day , 
+													"CssClass": "Meeting"};
+											ant_events.push(single_event);
+											ant_events.sort();
+											break;
+										}
+									}				
+						       }
+				           } 
+					    
+					    //$.jMonthCalendar.Initialize(options, events);                          
+					    $.jMonthCalendar.ReplaceEventCollection(ant_events);
+					}});
+				
+				
+					return true;
+				},
+				onEventLinkClick: function(event) {
+				
+				TINY.box.show({iframe:'/agenda/day/{{REGISTRY_ID}}?event='+event.Description ,width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()} }); return false;
+
+					return true; 
+				},
+				onEventBlockClick: function(event) { 
+					//alert("block clicked");
+					return true; 
+				},
+				onEventBlockOver: function(event) {
+					//alert(event.Title + " - " + event.Description);
+					return true;
+				},
+				onEventBlockOut: function(event) {
+					return true;
+				},
+				
+				{% if ALTERAR %}
+				onDayLinkClick: function(date) {
+					dia = date.getDate(); 					
+					if(dia<10){dia = ("0"+ dia.toString())}
+					mes = date.getMonth()+1;
+					if(mes<10){mes = ("0"+mes.toString())}
+					ano= date.getFullYear();				
+ 					
+					fulldate= dia+"/"+ mes +"/"+ano
+					//alert(dia+"/"+mes+"/"+ano)
+					TINY.box.show({iframe:'/agenda/new/{{REGISTRY_ID}}?date='+fulldate ,width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()} }); return false;
+
+					
+				},
+				{% end %}
+				
+				onDayCellClick: function(date) { 
+					//alert(date.toLocaleDateString());
+					return true; 
+				}
+			};
+			
+			// buscar no couchdb todos os eventos do mes atual e inclui-los nessa lista
+            hoje = new Date();
+			mes = hoje.getMonth()+1;
+                        ano = hoje.getFullYear();
+                    
+                        prox_mes=0;
+                        prox_ano=0;
+                        ant_mes=0;
+                        ant_ano=0;
+                        
+                        //---------prox mes e ano--
+                        if (mes==12){
+			    prox_mes=1;
+			    prox_ano=ano+1;
+			}
+			else{
+			    prox_mes=mes+1;
+			    prox_ano= ano;
+			}
+			//------------------------
+			
+			
+                        //---------ant mes e ano--
+                        if (mes==1) {
+			    ant_mes=12;
+			    ant_ano=ano-1;
+			}
+			else{
+			    ant_mes=mes-1;
+			    ant_ano= ano;
+			}
+			//------------------------
+			
+			
+			
+			  //esses switch existem pois os meses menores que 10 so possuem 1 algarismo, e o banco requer 2 
+			  switch(mes){
+					case 1:
+						mes = "01";
+						break;
+					case 2:
+						mes = "02";
+						break;
+					case 3:
+						mes = "03";
+						break;
+					case 4:
+						mes = "04";
+						break;
+					case 5:
+						mes = "05";
+						break;
+					case 6:
+						mes = "06";
+						break;
+					case 7:
+						mes = "07";
+						break;
+					case 8:
+						mes = "08";
+						break;
+					case 9:
+						mes = "09";
+						break;
+					case 10:
+						mes = "10";
+						break;
+					case 11:
+						mes = "11";
+						break;
+					case 12:
+						mes = "12";
+						break;
+					}
+					
+			 
+			switch(ant_mes){
+					case 1:
+						ant_mes = "01";
+						break;
+					case 2:
+						ant_mes = "02";
+						break;
+					case 3:
+						ant_mes = "03";
+						break;
+					case 4:
+						ant_mes = "04";
+						break;
+					case 5:
+						ant_mes = "05";
+						break;
+					case 6:
+						ant_mes = "06";
+						break;
+					case 7:
+						ant_mes = "07";
+						break;
+					case 8:
+						ant_mes = "08";
+						break;
+					case 9:
+						ant_mes = "09";
+						break;
+					case 10:
+						ant_mes = "10";
+						break;
+					case 11:
+						ant_mes = "11";
+						break;
+					case 12:
+						ant_mes = "12";
+						break;
+					}
+					
+			switch(prox_mes){
+			
+					case 1:
+						prox_mes = "01";
+						break;
+					case 2:
+						prox_mes = "02";
+						break;
+					case 3:
+						prox_mes = "03";
+						break;
+					case 4:
+						prox_mes = "04";
+						break;
+					case 5:
+						prox_mes = "05";
+						break;
+					case 6:
+						prox_mes = "06";
+						break;
+					case 7:
+						prox_mes = "07";
+						break;
+					case 8:
+						prox_mes = "08";
+						break;
+					case 9:
+						prox_mes = "09";
+						break;
+					case 10:
+						prox_mes = "10";
+						break;
+					case 11:
+						prox_mes = "11";
+						break;
+					case 12:
+						prox_mes = "12";
+						break;
+					}
+					
+			/*alert(ant_mes);
+			alert(mes);
+			alert(prox_mes);*/
+			
+			ano_mes = ano.toString()+mes.toString();
+			prox_ano_mes = prox_ano.toString()+prox_mes.toString();
+			ant_ano_mes = ant_ano.toString()+ant_mes.toString();
+			
+			
+			events = [];
+			$.jMonthCalendar.Initialize(options, events);
+			
+		        $.ajax({url: "/agenda/json/{{REGISTRY_ID}}?mes="+mes+"&ano="+ano,
+		        type: "GET",
+		        success: function(response) {
+
+				//obj = JSON && JSON.parse(response) || $.parseJSON(response);
+				obj = response;
+								
+			
+
+			    var now_events = [];
+			    
+			    var single_event;
+			    var cont= 0;
+			    var mensagem;
+			    
+                if (obj) {
+					for (var dia in obj[ano_mes]) {
+						
+						for (var event_day in obj[ano_mes][dia]){
+							if (event_day < 4 ) {
+								mensagem = obj[ano_mes][dia][event_day].msg;
+								mensagem = mensagem.toString().substring(0,13);
+						
+								single_event = {"EventID": "", 
+										"StartDateTime": ano+"-"+mes+"-"+dia, 
+										"Title": obj[ano_mes][dia][event_day].hora + " - " + mensagem, 
+										"URL": "#", 
+										"Description": ano+"-"+mes+"-"+dia+"-"+event_day, 
+										"CssClass": "Meeting"};
+											
+								now_events.push(single_event);
+								now_events.sort();
+								
+							}
+							else{											
+												now_events.pop()
+												single_event = {"EventID": "", 
+														"StartDateTime": ano+"-"+mes+"-"+dia, 
+														"Title": "+ " + (obj[ano_mes][dia].length - 3) + " evento(s)",
+														"URL": "#", 
+														"Description": ano+"-"+mes+"-"+dia+"-"+event_day , 
+														"CssClass": "Meeting"};
+												now_events.push(single_event);
+												now_events.sort();
+												break;
+							}
+						}				
+		              }
+		             
+		             
+                  } 
+                 
+                  
+			$.jMonthCalendar.ReplaceEventCollection(now_events);
+			//events = events.concat(now_events);
+			
+		        }});
+		        
+		        $.ajax({url: "/agenda/json/{{REGISTRY_ID}}?mes="+prox_mes+"&ano="+prox_ano,
+		        type: "GET",
+		        success: function(response) {
+
+				//obj = JSON && JSON.parse(response) || $.parseJSON(response);
+				obj = response;
+				
+				
+			    var prox_events = [];
+			    
+			    var single_event;
+			    var cont= 0;
+			    var mensagem;
+			    
+			    if (obj) {
+					for (var dia in obj[prox_ano_mes]) {
+						
+						for (var event_day in obj[prox_ano_mes][dia]){
+							if (event_day < 4 ) {
+								mensagem = obj[prox_ano_mes][dia][event_day].msg;
+								mensagem = mensagem.toString().substring(0,13);
+						
+								single_event = {"EventID": "", 
+										"StartDateTime": prox_ano+"-"+prox_mes+"-"+dia, 
+										"Title": obj[prox_ano_mes][dia][event_day].hora + " - " + mensagem, 
+										"URL": "#", 
+										"Description": prox_ano+"-"+prox_mes+"-"+dia+"-"+event_day, 
+										"CssClass": "Meeting"};
+											
+								prox_events.push(single_event);
+								prox_events.sort();
+								
+							}
+							else{											
+												prox_events.pop()
+												single_event = {"EventID": "", 
+														"StartDateTime": prox_ano+"-"+prox_mes+"-"+dia, 
+														"Title": "+ " + (obj[prox_ano_mes][dia].length - 3) + " evento(s)",
+														"URL": "#", 
+														"Description": prox_ano+"-"+prox_mes+"-"+dia+"-"+event_day , 
+														"CssClass": "Meeting"};
+												prox_events.push(single_event);
+												prox_events.sort();
+												break;
+							}
+						}				
+		              }
+		             
+		             
+                  } 
+                 
+			$.jMonthCalendar.ReplaceEventCollection(prox_events);
+			//events = events.concat(prox_events);
+			
+			 
+			   
+			}});
+			
+			$.ajax({url: "/agenda/json/{{REGISTRY_ID}}?mes="+ant_mes+"&ano="+ant_ano,
+		        type: "GET",
+		        success: function(response) {
+
+				//obj = JSON && JSON.parse(response) || $.parseJSON(response);
+				obj = response;
+							
+			var ant_events = [];
+			    
+			    var single_event;
+			    var cont= 0;
+			    var mensagem;
+			    
+			    if (obj) {
+					for (var dia in obj[ant_ano_mes]) {
+						
+						for (var event_day in obj[ant_ano_mes][dia]){
+							if (event_day < 4 ) {
+								mensagem = obj[ant_ano_mes][dia][event_day].msg;
+								mensagem = mensagem.toString().substring(0,13);
+						
+								single_event = {"EventID": "", 
+										"StartDateTime": ant_ano+"-"+ant_mes+"-"+dia, 
+										"Title": obj[ant_ano_mes][dia][event_day].hora + " - " + mensagem, 
+										"URL": "#", 
+										"Description": ant_ano+"-"+ant_mes+"-"+dia+"-"+event_day, 
+										"CssClass": "Meeting"};
+											
+								ant_events.push(single_event);
+								ant_events.sort();
+								
+							}
+							else{											
+												ant_events.pop()
+												single_event = {"EventID": "", 
+														"StartDateTime": ant_ano+"-"+ant_mes+"-"+dia, 
+														"Title": "+ " + (obj[ant_ano_mes][dia].length - 3) + " evento(s)",
+														"URL": "#", 
+														"Description": ant_ano+"-"+ant_mes+"-"+dia+"-"+event_day , 
+														"CssClass": "Meeting"};
+												ant_events.push(single_event);
+												ant_events.sort();
+												break;
+							}
+						}				
+		              }
+		             
+		             
+                  } 
+                 
+			$.jMonthCalendar.ReplaceEventCollection(ant_events);
+			//events = events.concat(ant_events);
+			
+			//events.sort(); 
+		     //  $.jMonthCalendar.Initialize(options, events);
+			
+			}});
+      
+        });
+    </script>
+
+{% end %}
+
+{% block body-right %}
+
+    {{modules.ShowMolduraInicio("Agenda de "+REGISTRY_ID, width="100%", links=LINKS)}}
+    <div id="jMonthCalendar"></div>
+    {{modules.ShowMolduraFim()}}
+    
+{% end %}

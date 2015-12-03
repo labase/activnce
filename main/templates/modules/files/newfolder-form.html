@@ -1,0 +1,18 @@
+{% extends "../../base-foto.html" %}
+
+
+{% block body-right %}
+    <form name="criarpasta" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    <input name="parent_folder" value="{{ escape(FILEDATA["parent_folder"]) }}" type="hidden"/>
+
+        {{modules.ShowMolduraInicio("Criar pasta")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h2>Localização da pasta:</h2>{{ escape(PARENT_NAME) }}<br/><br/>
+        
+        <h2>Nome da pasta:</h2>
+        <input name="filename" value="{{ escape(FILEDATA["filename"]) }}" type="text" size="60"/><br/><br/>
+        
+        {{ modules.ShowMolduraFim("criarpasta") }}
+    </form>
+{% end %}

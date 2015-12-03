@@ -1,0 +1,84 @@
+{% extends "../../base.html" %}
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+   
+    </script>
+{% end %}      
+
+{% block body %}
+
+   
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(titulo="Exibição de atividade")}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	<i>Atividade:</i> 
+	{{(ATIVIDADE['titulo'])}}
+	
+	<br/><br/>
+	<i>Encarregados:</i>
+	</br></br>
+	<table>
+	<tr>
+	<td>{% for user in ATIVIDADE['encarregados'] %}	
+
+			{{ modules.ShowFoto(src="/photo/"+user+"?size=P", pequeno=True) }} 
+	</td>
+	{%end%}
+	</tr>
+	</table>
+	</br>
+	<i>Estado:</i>
+	{% if ATIVIDADE["status"]== "pendente"  %} Pendente 
+	{% elif ATIVIDADE["status"]== "em execucao"  %} Em execução
+	{% elif ATIVIDADE["status"]== "finalizado"  %}Finalizado {% end %}
+	
+		
+	<br/><br/>
+	{% if ATIVIDADE["observacao"]  %}
+		<i>Observações:</i>
+	<br/>
+	 	{{(ATIVIDADE['observacao'])}} 
+	<br/><br/>
+	{% end %}
+	
+
+	{% if ATIVIDADE["data_start"]  %}
+	<i>Data de início:</i>
+		{{(ATIVIDADE['data_start'])}}
+	<br/>	
+	{% end %}
+
+	{% if ATIVIDADE["data_conclusion"]  %}
+ 	<i>Data para conclusão :</i>
+		{{(ATIVIDADE['data_conclusion'])}}
+	<br/>
+	{% end %}
+
+	{% if ATIVIDADE["data_end"]  %}
+ 	<i>Encerrado em:</i>
+		{{(ATIVIDADE['data_end'])}}
+	<br/>
+	{% end %}
+	<br/>
+
+ <span style="color:#999;font-size:small;"> 
+
+        <p>{{ _("Criado por") }} <a href="/user/{{ escape(ATIVIDADE["owner"]) }}" target="_top">{{ escape(ATIVIDADE["owner"]) }}</a> {{ _("at") }} {{ ATIVIDADE["data_cri"] }}
+        {% if "alterado_por" in ATIVIDADE and ATIVIDADE["alterado_por"] %}
+            <br/>{{ _("Alterado por") }} <a href="/user/{{ escape(ATIVIDADE["alterado_por"]) }}" target="_top">{{ escape(ATIVIDADE["alterado_por"]) }}</a> {{ _("at") }} {{ ATIVIDADE["data_alt"] }}
+        {% end %}
+		</p>
+</span>
+
+	{{ modules.ShowMolduraFim() }}
+ 
+{% end %}
+
+

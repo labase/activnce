@@ -1,0 +1,59 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+
+{% end %}
+
+{% block body %} 
+    <br/>
+
+	{{modules.ShowMolduraInicio()}}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<table>
+			<tr>
+				<td><b>Habilidade:</b> {{NOME_HABILIDADE}}</td>
+				<td><b>Usuário:</b> {{USER}}</td>
+			</tr>
+		</table>
+		{% if PRODUCOES_REFERENCIA or (NUM_USUARIOS != 0) or ACADEMICO_REFERENCIA or PROFISSIONAL_REFERENCIA %}
+			{% if PRODUCOES_REFERENCIA %}
+				<p><b> Esta habilidade foi detectada nas seguintes produções: </b></p>
+				<ul>
+				{% for ref in PRODUCOES_REFERENCIA %}
+					<li>{{ escape(ref) }}</li>
+				{% end %}
+				</ul>
+			{% end %}
+			{% if ACADEMICO_REFERENCIA %}
+				<p><b> Esta habilidade foi detectada nas seguintes formações acadêmicas: </b></p>
+				<ul>
+				{% for acad in ACADEMICO_REFERENCIA %}
+					<li><b>Instituição:</b> {{ escape(acad["instituicao"]) }}&nbsp;
+					<b>Nivel:</b> {{ escape(acad["nivel"]) }}&nbsp;
+					{% if acad["curso"] != "" %}
+					<b>Curso:</b> {{ escape(acad["curso"]) }}&nbsp;
+					{% end %}
+					<b>Data de começo:</b> {{ escape(acad["data_ini"]) }}</li>
+				{% end %}
+				</ul>
+			{% end %}
+			{% if PROFISSIONAL_REFERENCIA %}
+				<p><b> Esta habilidade foi detectada nas seguintes experiências profissionais: </b></p>
+				<ul>
+				{% for prof in PROFISSIONAL_REFERENCIA %}
+					<li><b>Empresa/Projeto:</b> {{ escape(prof["empresa"]) }}&nbsp;
+					{% if prof["cargo"] != "" %}
+					<b>Cargo:</b> {{ escape(prof["cargo"]) }}&nbsp;
+					{% end %}
+					<b>Data de começo:</b> {{ escape(prof["data_ini"]) }}</li>
+				{% end %}
+				</ul>
+			{% end %}
+			{% if NUM_USUARIOS > 0 %}
+				<p> Esta habilidade foi atestada por <b>{{NUM_USUARIOS}} usuário(s)</b>. </p>
+			{% end %}
+		{% else %}
+			<p> Esta habilidade foi inserida manualmente. </p>
+		{% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,58 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+	<!-- JQuery UI -->
+	<script src="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.css">
+	
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+	$(function() {
+		$.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+		$('#data').datepicker({});
+		$('#hora').timepicker({});
+		$('#duracao').timepicker({});
+	});
+	</script>
+{% end %}
+
+{% block body %}
+	<p><form name="cadastro" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+		{% raw xsrf_form_html() %}
+		{{modules.ShowMolduraInicio("Criar evento")}}
+			{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		    <table border="0">
+			<tr><td><h3>Data:</h3></td>
+			<td colspan="3">
+			<input id="data" value="{{EVENTO['data']}}" name="data" maxlength="15" size="15" type="text"/>
+			</td></tr>
+			
+			<tr><td><h3>Hora:</h3></td>
+			<td>
+			<input id="hora" name="hora" maxlength="15" size="8" type="text" value="{{EVENTO['hora']}}"/>
+			</td>
+			<td><h3>Duração:</h3></td>
+			<td>
+			<input id="duracao" name="duracao" maxlength="15" size="8" type="text" value="{{EVENTO['duracao']}}"/>
+			</td></tr>
+	
+			<tr><td><h3>Descrição: </h3></td>
+			<td colspan="3">
+			<input id="msg" name="msg" size="40" type="text" value="{{EVENTO['msg']}}"/>
+			</td></tr>
+			
+			<tr><td><h3>URL:</h3></td>
+			<td colspan="3">
+			<input id="url" name="url" size="40" type="text" value="{{EVENTO['url']}}"/> 
+			</td></tr>
+			</table>
+		{{ modules.ShowMolduraFim("cadastro") }}
+	</form></p>
+
+{% end %}

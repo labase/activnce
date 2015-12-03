@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+    <title>Wisconsin</title>
+    <link rel="stylesheet" href="{{ static_url("plugins/wisconsin/wisconsin.css") }}" type="text/css"/>
+    <link rel="stylesheet" href="{{ static_url("plugins/wisconsin/style.css") }}" type="text/css"/>
+    
+  </head>
+  <body>
+    <form action="click" method="post">
+        {% raw xsrf_form_html() %}
+        <input type="hidden" name="shape" value="" />
+        <input type="hidden" name="status" value="" /> 
+        <input type="hidden" name="score" value="" /> 
+        <input type="hidden" name="criteria" value='{{json_encode(CRITERIA)}}' /> 
+        <input type="hidden" name="return_url" value="/wisconsin/index" /> 
+        
+        <div class="center">
+        <input type="submit" name="change" value="Tenta Novamente a Fase"            onClick="this.form.action='/api/retry'; this.form.return_url.value+='?init=0'; this.form.submit();" />
+        <input type="submit" name="change" value="Não quero jogar"                   onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.QUIT}}';this.form.submit();" />
+        <input type="submit" name="change" value="Desisto"                           onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.ABORT}}';this.form.submit();" />
+        <input type="submit" name="change" value="Terminei mas acho que está errado" onClick="this.form.action='/api/next'; this.form.return_url.value+='?init=1'; this.form.status.value='{{RESULT.ALMOST}}';this.form.submit();" />
+        <input type="submit" name="change" value="Terminei e acho que está certo"    onClick="this.form.action='/api/next'; this.form.return_url.value+='?init=1'; this.form.status.value='{{RESULT.SUCCESS}}';this.form.submit();" />
+        </div>
+        <br/>
+        
+        <div id="header">&nbsp;</div>
+        <div id="main_content">
+
+
+
+        {% if MSG %}
+        <div id="status_block" class="flash">{{MSG}}</div>
+        {% end %}
+        
+        {% if CARTAPUXADA %}
+            <p>A carta:</p>
+            <div class="carta puxada {{ CARTAPUXADA.color }}">
+                <img src="{{ CARTAPUXADA.img }}" alt="{{ CARTAPUXADA.pegaAtributosCarta() }}"
+                     title="{{ CARTAPUXADA.pegaAtributosCarta() }}" />
+                {% for item in range(CARTAPUXADA.num-1) %}
+                     <img src="{{ CARTAPUXADA.img }}" alt=" "
+                     title=" " />
+                {% end %}
+            </div>
+            <p>Combina com qual das cartas abaixo?</p>
+            <ul>
+                {% for (indice, carta) in enumerate(CARTASESTIMULO) %}
+                <li>
+                    <a href="click?opcao={{indice}}">
+                        <div class="carta {{carta.color}}">
+                            <img src="{{carta.img}}" alt="{{carta.pegaAtributosCarta()}}"
+                                 title="{{carta.pegaAtributosCarta()}}" />
+                            {% for item in range(carta.num-1) %}
+                                 <img src="{{carta.img}}" alt=" " title=" " />
+                            {% end %}
+                        </div>
+                    </a>
+                </li>
+                {% end %}
+            </ul>
+        {% end %}
+        <br />
+        <!-- End of main_content -->
+        </div>
+        
+        
+    </form>
+</body>
+</html>

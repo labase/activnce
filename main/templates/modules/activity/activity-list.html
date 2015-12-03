@@ -1,0 +1,138 @@
+{% extends "../../base-foto.html" %}
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+    
+    function closeJS()
+    {
+        location.href = "{{request.path}}?{{request.query}}";
+        //history.go(0);
+    }
+    </script>
+{% end %}      
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Atividades de "+REGISTRY_ID, width="100%", links=LINKS)}}
+	
+	<table border="0" cellpadding="5" width="90%">
+	<tr bgcolor="#f0f0f0">
+		<td width="25%" rowspan="2"><b>Grupo</b></td>
+		<td width="75%" colspan="3" align="center"><b>Atividades</b></td>
+	</tr>
+	<tr bgcolor="#f0f0f0">
+		<td width="25%"><b>Pendente</b></td>
+		<td width="25%"><b>Em execução</b></td>
+		<td width="25%"><b>Finalizado
+						<a  href="/activity/finalized/{{REGISTRY_ID}} "><img src="/static/imagens/icones/mais16.png" /> 
+						</b></td>
+	</tr>
+	
+	{% for ativ in ATIVIDADES %}
+		{% if ativ['key'][3] == 0 %}
+			<!-- Grupo -->
+			<tr>
+			<td style="border-top: 1px solid"> <b>{{ ativ['value']['titulo'] }}</b> 
+
+			{% if ativ["value"]["apagar"] and ativ['key'][1] not in GROUPISFILLED %}
+			<a href='/activity/delete/{{REGISTRY_ID}}/{{ativ['value']['_id']}}' onclick='return confirm("Deseja realmente excluir este grupo? Esta operação não poderá ser desfeita.");'><img src="/static/imagens/icones/delete16.png" alt="delete" border="0" /></a>
+			{% end %}
+
+			<br/>
+			{% if ativ["value"]["alterar"] %}
+			<img src="/static/imagens/icones/mais16.png" /> <a  href="#" onclick="TINY.box.show({iframe:'/activity/new/{{REGISTRY_ID}}?id={{ ativ['value']['_id'] }}',width:600,height:400,closejs:function(){closeJS()}}); return false;">Nova atividade</a>
+			{% end %}
+			
+			</td>
+			<td style="border-top: 1px solid"></td>
+			<td style="border-top: 1px solid"></td>
+			<td style="border-top: 1px solid"></td>
+			</tr>
+			
+		{% elif ativ['key'][3] == 1 %}
+			<!-- Atividade -->
+			{% if ativ['value']['status'] == "pendente" %}
+				<tr>
+				<td></td>
+				<td>{% if ativ['value']['prioritario']=="S" %}
+				<span style="color:red">{{ativ['value']['titulo']}}</span>
+				{% else %}
+				{{ativ['value']['titulo']}}
+				{% end %}
+
+				<! icones para alterar e apagar -->
+				{% if ativ["value"]["alterar"] %}
+				  &nbsp;&nbsp;<a href="#" onclick="TINY.box.show({iframe:'/activity/edit/{{REGISTRY_ID}}/{{ativ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+				{% end %}
+				{% if ativ["value"]["apagar"] %}
+				  <a href='/activity/delete/{{REGISTRY_ID}}/{{ativ['value']['_id']}}' onclick='return confirm("Deseja realmente excluir esta atividade? Esta operação não poderá ser desfeita.");'><img src="/static/imagens/icones/delete16.png" alt="delete" border="0" /></a>
+				{% end %}
+				<a href="#" onclick="TINY.box.show({iframe:'/activity/{{REGISTRY_ID}}/{{ativ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/view16.png" alt="expandir" border="0" /></a>
+				</td>
+				<td></td>
+				<td></td>
+				</tr>
+			{% elif ativ['value']['status']== "em execucao" %}
+			    <tr>
+				<td></td>
+				<td></td>
+				<td>{% if ativ['value']['prioritario']=="S" %}
+				    <span style="color:red">{{ativ['value']['titulo']}}</span>
+				    {% else %}
+				    
+				    {{ativ['value']['titulo']}}
+				    {% end %}
+				<! icones para alterar e apagar -->
+				{% if ativ["value"]["alterar"] %}
+				  &nbsp;&nbsp;<a href="#" onclick="TINY.box.show({iframe:'/activity/edit/{{REGISTRY_ID}}/{{ativ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+				{% end %}
+				{% if ativ["value"]["apagar"] %}
+				<a href='/activity/delete/{{REGISTRY_ID}}/{{ativ['value']['_id']}}' onclick='return confirm("Deseja realmente excluir esta atividade? Esta operação não poderá ser desfeita.");'><img src="/static/imagens/icones/delete16.png" alt="delete" border="0" /></a>
+				{% end %}
+				<a href="#" onclick="TINY.box.show({iframe:'/activity/{{REGISTRY_ID}}/{{ativ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/view16.png" alt="expandir" border="0" /></a>
+				</td>
+				<td></td>
+				</tr>
+			{% elif ativ['value']['status']== "finalizado" %}
+				<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>
+
+				{{ativ['value']['titulo']}}
+				<! icones para alterar e apagar -->
+				{% if ativ["value"]["alterar"] %}
+				  &nbsp;&nbsp;<a href="#" onclick="TINY.box.show({iframe:'/activity/edit/{{REGISTRY_ID}}/{{ativ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>				
+				{% end %}
+				{% if ativ["value"]["apagar"] %}
+				  <a href='/activity/delete/{{REGISTRY_ID}}/{{ativ['value']['_id']}}' onclick='return confirm("Deseja realmente excluir esta atividade? Esta operação não poderá ser desfeita.");'><img src="/static/imagens/icones/delete16.png" alt="delete" border="0" /></a>
+				{% end %}
+				<a href="#" onclick="TINY.box.show({iframe:'/activity/{{REGISTRY_ID}}/{{ativ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"> <img src="/static/imagens/icones/view16.png" alt="expandir" border="0" /></a>
+				</td>
+				</tr>
+					
+			{% end %}
+		{% end %}
+		
+	 {% end %}
+
+
+	<tr><td colspan="4" style="border-top: 1px solid">
+	<br/>
+	{% if ADMIN %}
+		<img src="/static/imagens/icones/mais16.png" /> <a  href="#" onclick="TINY.box.show({iframe:'/activity/newgroup/{{REGISTRY_ID}}',width:600,height:400,closejs:function(){closeJS()}}); return false;">Novo grupo</a>
+		<br/>
+	{% end %}
+	</td></tr>
+	</table>
+
+	{{ modules.ShowMolduraFim() }}
+{% end %}
+
+	

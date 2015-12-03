@@ -1,0 +1,67 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- Estilos do chat -->
+    <link rel="stylesheet" href="/static/chat/chat.css" type="text/css">
+
+    <script type="text/javascript">
+       var user_anterior = "";
+       var user_atual = "";
+       var caixa = "";
+       
+       function show_chat_message(message){
+          user_atual = find_user(message);
+          if (user_anterior!=user_atual){
+          
+	          // monta imagem com a foto
+	          var img = document.createElement('img');
+	          img.src = '/photo/'+user_atual+'?size=P';
+	          img.className = 'photo';
+	          
+			  // monta link para o chat
+	          var a = document.createElement('a');
+	          a.setAttribute('href', '/chat/'+user_atual);
+	          a.appendChild(img);
+	          a.appendChild(document.createTextNode('Chat com '+user_atual));			  
+	          
+	          // monta caixa com a mensagem
+	          caixa = document.createElement('div');
+           	  caixa.className = "you";
+	          
+	          // inclui foto na caixa
+	          caixa.appendChild(a);
+
+	          // inclui caixa no fim do documento
+	          document.getElementById("msg_area").appendChild(caixa);
+	      }
+
+          var texto = document.createElement('div');
+          texto.className = "text";
+          texto.innerHTML = message;
+	          
+          caixa.appendChild(texto);
+          user_anterior = user_atual;
+       }   
+    </script>
+{% end %}
+
+{% block body-right %}
+        <iframe id="_hidden" name="_hidden" style="display:none"></iframe>
+        
+        {{modules.ShowMolduraInicio("Notificações do chat", width="100%", links=LINKS)}}
+        <br/><br/>
+        {% if MSG_LIST %}
+	        <div id="msg_area">
+               <script>
+	           {% for msg in MSG_LIST %}
+	              show_chat_message("{{ msg.replace('"', '\\"') }}");
+	           {% end %}
+               </script>
+	        </div>
+	    {% else %}
+	        <h3>Sem notificações.</h3>
+	    {% end %}
+	    {{ modules.ShowMolduraFim() }}
+{% end %}
+
+

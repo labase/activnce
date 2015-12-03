@@ -1,0 +1,116 @@
+{% extends "../../base.html" %}
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+	$(function() {
+		$.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+		$('#data_start').datetimepicker([]);
+		$('#data_end').datetimepicker({});   
+		$('#data_conclusion').datetimepicker({});     
+	});
+	 
+	function getFormattedDate(date) {
+	  	var year = date.getFullYear();
+	  	var month = (1 + date.getMonth()).toString();
+	  	month = month.length > 1 ? month : '0' + month;
+	  	var day = date.getDate().toString();
+	  	day = day.length > 1 ? day : '0' + day;
+	  	return day + '/' + month + '/' + year;
+	}	
+
+	function altera_data_end(f) {
+			
+		var date_now=new Date();
+		
+		fim=(f.finalizado.checked == 1);
+		f.data_end.disabled = !(fim);
+		date_now= getFormattedDate(date_now)+" "+date_now.toString().slice(16,21);	
+		f.data_end.value= date_now;
+		if (!(fim)){
+			f.data_end.value= "";
+		}
+	 }
+	 
+
+
+    </script>
+{% end %}      
+
+{% block body %}
+
+    <form action="{{ request.path }}" name="editaratividades" method="post">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(titulo="Alterar Atividade")}}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<i>Atividade:</i> 
+		 <input type="text" name="titulo" {% if ATIVIDADE["titulo"]  %} value="{{(ATIVIDADE['titulo'])}}"{% end %} size="70" maxlengh="300" /> 
+		
+		</br>
+		<i>Estado:</i>
+			<input type="radio"  name="status" value= "pendente"{% if ATIVIDADE["status"]== "pendente"  %} checked= "True" {% end %} onclick="altera_data_conclusion(this.form)"/> Pendente
+			<input type="radio"  name="status" value= "em execucao"{% if ATIVIDADE["status"]== "em execucao"  %} checked= "True" {% end %} onclick="altera_data_end(this.form)"/> Em execução
+			<input type="radio" id="finalizado" name="status" value= "finalizado"{% if ATIVIDADE["status"]== "finalizado"  %} checked= "True" {% end %}  onclick="altera_data_end(this.form)"/> Finalizado
+		</br>
+		
+		<i>Observações:</i>
+		</br>
+		<textarea name="observacao" rows="4" cols="68"  >{% if ATIVIDADE["observacao"]  %} {{(ATIVIDADE['observacao'])}} {% end %}</textarea> 
+		</br>
+		<input type="checkbox" name="prioritario" value= "S"{% if ATIVIDADE["prioritario"]=="S" %} checked= "True" {% end %} /> Marque esta opção se esta atividade for prioritária.
+	
+		</br></br>
+	
+	
+	
+		{% if ATIVIDADE["subtype"]=="comunity" %}	
+			<i>Selecione os escarregados da atividade:</i>		
+			<ul>	
+			{% for user in MEMBERS %}	
+				  <input type="checkbox" name="encarregados" value="{{user[0]}}" 
+					{% if user[0] in ATIVIDADE['encarregados'] %}checked="checked"{% end %} />
+					{{user[1]}} ({{user[0]}})<br/>
+	
+			{% end %}
+			</ul>
+		{%end%}
+	 	
+		<table cellspacing="5">      
+		<td valign="top">
+		<tr><td>
+		<i>Data de início:</i>
+		</td>
+		<td colspan="3">
+		<input id="data_start" name="data_start"
+		{% if ATIVIDADE["data_start"] %} value="{{(ATIVIDADE['data_start'])}}" {% end %}			
+		 maxlength="16" size="16" type="text"/>
+		</td></tr>
+		
+		<tr><td>
+		<i>Data do encerramento:</i>
+		</td>
+		<td colspan="3">
+		<input id="data_end" name="data_end" 
+		{% if ATIVIDADE["data_end"] %} value="{{(ATIVIDADE['data_end'])}}" {% end %}
+		maxlength="16" size="16" type="text" {% if not ATIVIDADE["status"]== "finalizado" %} disabled {% end %}/>
+		</td></tr>   
+	
+		<tr><td>
+		<i>Prazo:</i>
+		</td>
+		<td colspan="3">
+		<input id="data_conclusion" name="data_conclusion" 
+		{% if ATIVIDADE["data_conclusion"] %} value="{{(ATIVIDADE['data_conclusion'])}}" {% end %}
+		maxlength="16" size="16" type="text"/>
+		</td></tr> 
+	    </table>
+	{{ modules.ShowMolduraFim("editaratividades") }}
+    </form>
+{% end %}
+
+

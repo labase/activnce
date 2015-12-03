@@ -1,0 +1,75 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+
+<script type="text/javascript">
+
+$(function() {	
+    alert ("vou chamar {{LABVAD_LOGIN_URL}}");
+    alert ("email {{EMAIL}}");
+    alert ("senha {{PASSWD}}");
+    
+    // $( "#fake_form" ).submit();
+    
+	$.ajax({url: "{{LABVAD_LOGIN_URL}}",
+		type: "POST",
+		// async: false,
+		// crossDomain: true,
+		data: {"txtEmail": "{{EMAIL}}", 
+               "txtSenha": "{{PASSWD}}",
+               "acao": "activufrj"},
+		success: function(str_response) {
+     		// response = JSON && JSON.parse(str_response) || $.parseJSON(str_response);
+     		// alert ("retornou erro="+response.erro);
+		
+			document.write (str_response);
+			/*
+			if (response.erro>0) {
+				alert ("msg="+response.msg);
+			}
+			else {
+				alert ("msg="+response.msg);
+
+				// abre aba com LABVAD_URL
+				// window.open("{{LABVAD_URL}}");
+				location.href = "{{LABVAD_URL}}";
+				//self.close();
+			}
+			*/
+		},
+		error: function() {
+			alert ("erro");
+		}
+	});
+
+});
+</script> 
+
+{% end %}
+
+{% block body %} 
+    labvad-login.html
+	<!--
+    {{modules.ShowMolduraInicio(titulo=u"LabVad - Laboratório Virtual de Atividades Didáticas com Robótica")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> <br/>{% end %}
+	    <form name="login_labvad" class="form-horizontal" role="form" name="formLogin" id="formLogin" method="post" action="">
+	    {% raw xsrf_form_html() %}
+	        <div class="form-group">
+	            <label for="txtEmail" class="col-sm-2 control-label">Email:</label>
+	            <div class="col-sm-10">
+	                <input type="email" class="form-control" name="txtEmail" id="txtEmail" placeholder="Email" value="{{EMAIL}}">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <label for="txtSenha" class="col-sm-2 control-label">Senha:</label>
+	            <div class="col-sm-10">
+	                <input type="password" class="form-control" name="txtSenha" id="txtSenha" placeholder="Senha">
+	            </div>
+
+	            <a id="lkRecuperar" href="#" title="Recuperar senha" style="font: 13px Arial; color: #FFF; padding-left: 20px">Recuperar Senha</a>
+	            <a id="lkCadastrarNovo" href="#page5" title="Cadastro de novo usuário" style="font: 13px Arial; color: #FFF; padding-left: 20px">Cadastro</a>
+	        </div>
+	    </form>    
+    {{ modules.ShowMolduraFim("login_labvad") }}
+    -->
+{% end %}

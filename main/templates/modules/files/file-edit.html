@@ -1,0 +1,20 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+<br/>
+	<form name="upload" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+		{% raw xsrf_form_html() %}
+		{{ modules.ShowMolduraInicio(titulo="Alterar atributos de arquivo", width="100%", links=LINKS) }}
+			<h2>Localização:</h2>
+			{{PATH}}
+			<br/><br/>
+			<h2>Arquivo:</h2>
+		    {{ escape(FILE["_id"].split("/")[1]) }}
+		    <br/><br/>
+			<h2>Descrição:</h2> <input name="description" value="{{ escape(FILE["description"]) }}" type="text" size="40"/>
+			<br/><br/>
+			<h2>Tags:</h2> {{ modules.InputTags(FILE["tags"]) }}
+			<br/>
+		{{ modules.ShowMolduraFim("upload") }}
+	</form>
+{% end %}

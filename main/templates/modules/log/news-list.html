@@ -1,0 +1,34 @@
+{% extends "../../base-foto.html" %}
+
+
+{% block body-right %}
+	{{ modules.ShowMolduraInicio("Novidades de "+REGISTRY_ID, width="100%") }}
+	{{ modules.ShowTabs(TABS) }}
+
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	
+	<div>
+	{% if NEWS %}
+		{% for data in NEWS %}
+		    {{ escape(data["data_inclusao"]) }} -
+		    <a href="/user/{{ escape(data["sujeito"]) }}">{{ escape(data["sujeito"]) }}</a>
+		    {{ escape(data["verbo"]) }}
+		    {% if data["objeto"] %}
+		       {% if "link" in data and data["link"] %}
+		            <a href="{{ escape(data["link"]) }}">{{ escape(data["objeto"]) }}</a>
+			   {% elif data["tipo"]=="none" %}
+		            {{ escape(data["objeto"]) }}
+			   {% else %}
+		            <a href="/{{ escape(data["tipo"]) }}/{{ escape(data["objeto"]) }}">{{ escape(data["objeto"]) }}</a>
+			   {% end %}
+		    {% end %}
+		    <br/>
+		{% end %}
+	{% else %}
+	    <p>Nenhuma novidade encontrada.</p>
+	{% end %}
+	</div>
+	{{ modules.ShowMolduraFim() }}
+	
+	{{ modules.Paginator(PAGE, PAGESIZE, NEWS_COUNT) }}
+{% end %}

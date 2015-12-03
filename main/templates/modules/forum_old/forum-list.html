@@ -1,0 +1,59 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS)}}
+
+    <form action="{{ request.path }}" method="post" style="padding:12px;">
+    {% raw xsrf_form_html() %}
+    <input name="texto_busca" value="{{ TEXTO_BUSCA }}"/> <input id="save" name="save" value={{ _("Pesquisar") }} type="submit"/>
+    </form>
+   	<table border="0" cellspacing="10"  style="color: black;">
+            {% if len(LISTA) > 0 %}
+                <tr>
+                    <td style="border-bottom: 1px solid" align="left"><b>Tópico</b></td>
+                    <td style="border-bottom: 1px solid" align="left"><b>Criado em</b></td>
+                    <td style="border-bottom: 1px solid" align="left"><b>Respons&aacute;vel</b></td>
+                    <td style="border-bottom: 1px solid" align="center"><b>Coment&aacute;rios</b></td>
+                    <td style="border-bottom: 1px solid" align="right"><b>Último coment&aacute;rio</b></td>
+                    <td style="border-bottom: 1px solid" align="right"> </td>
+                </tr>
+            {% else %}
+                <td colspan="5" align="center"> Nenhum t&oacute;pico cadastrado</td>
+            {% end %}
+            {% for i in range(len(LISTA)) %}
+            <tr>
+                <td align="left"><a href={{ request.path }}/post?t_rel={{ i }}><u>{{ LISTA[i]['title'] }}</u></a></td>
+                <td align="left">{{ escape(LISTA[i]['dt_creation_post']) }}</td>
+                <td align="left">{{ escape(LISTA[i]['name']) }}</td>
+                <td align="center">{{ escape( str(LISTA[i]['num_posts']) ) }}</td>
+                {% if LISTA[i]['dt_last_post'] == "" %}
+                    <td align="center">-</td>
+                {% else %}
+                    <td align="center">{{ escape(LISTA[i]['dt_last_post']) }}</td>
+                {% end %}
+                {% if EXIBIR_DEL or (LISTA[i]['owner']==USER) %}
+                    <td align="right">
+                        <a href={{ request.path }}/newtopic?indice={{ i }} title="alterar">
+                        <img src="/static/imagens/icones/edit16.png" border="0" alt="alterar" />
+                        </a>
+                        <a onclick="return confirm('{{ "Confirma a remoção deste tópico?" }}');" href={{ request.path }}/deltopic?indice={{ i }} title='remover'>
+                        <img src="/static/imagens/icones/delete16.png" border="0" alt="remover" />
+                        </a>
+                    </td>
+                {% else %}
+                    <td align="right"> </td>
+                {% end %}
+            </tr>
+            {% end %}
+            <tr style="background-color: #eeeeee">
+                <td colspan="6" align="right">
+                {% if len(LISTA) > 0 %}
+                    <a href=/forum/{{ REGISTRY_ID }}/{{ ORDEM }}/previous>← Anterior</a>&nbsp;&nbsp;&nbsp;
+                    {{TOTAL}}&nbsp;&nbsp;&nbsp;
+                    <a href=/forum/{{ REGISTRY_ID }}/{{ ORDEM }}/next>Pr&oacute;ximo →</a>
+                {% end %}
+                </td>
+            </tr>
+ 	</table>
+    {{ modules.ShowMolduraFim() }}     
+{% end %}

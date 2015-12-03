@@ -1,0 +1,43 @@
+{% extends "../../base-foto.html" %}
+
+
+{% block head %}
+	<script type="text/javascript">
+      	var escolheu = false;
+
+		$(function () {
+			// Load users
+			source = {{ AUTOCOMPLETE_USERS }};
+			usersArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+			
+			// Initialize autocomplete with local lookup
+			$('#member_name').autocomplete({
+				source: usersArray,
+				minLength: 3,
+				
+				select: function (event, ui) {
+				    escolheu = true;
+					$('#member_name').val(ui.item.value);
+					$('#convidar').submit();
+				}
+			});
+		});
+	</script>    
+{% end %}
+
+{% block body-right %}
+	<form name="convidar" id="convidar" action="/members/search/{{ REGISTRY_ID }}" method="post"
+		 onsubmit="if (!escolheu) { alert('selecione o nome na lista'); return false }">
+	
+		{% raw xsrf_form_html() %}
+		{{ modules.ShowMolduraInicio("Gerenciar participantes") }}
+		{{ modules.ShowTabs(TABS) }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+		<p>Digite o nome do usuário a ser convidado:</p>
+		<input type="text" name="member_name" id="member_name" size=40/>
+	    <input type="hidden" name="member_login" id="member_login"/>
+		{{ modules.ShowMolduraFim() }}
+	</form>
+
+{% end %}

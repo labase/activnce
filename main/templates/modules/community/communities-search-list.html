@@ -1,0 +1,23 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	{{ modules.ShowMolduraInicio("", width="100%") }}
+    {% if RESULTADO %}
+        {% for item in RESULTADO %}
+		    <div>
+			<a href="/community/{{escape(item)}}"><img src="/photo/{{escape(item)}}?size=M" width="45" height="60" /></a><br/>
+		    <h3>{{ RESULTADO[item][0] }}<br/>
+		    ({{ item }})</h3>
+		    Forma de participação: {{ RESULTADO[item][1] }}
+		    <br/>
+		    {% if RESULTADO[item][2] %}
+		    	<a href="{{RESULTADO[item][3]}}">{{RESULTADO[item][2]}}</a>
+		    	<br/>
+		    {% end %}
+		    </div>
+        {% end %}
+    {% else %}
+        Nenhuma comunidade encontrada.
+    {% end %}
+	{{ modules.ShowMolduraFim() }}    
+{% end %}

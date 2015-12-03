@@ -1,0 +1,20 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+	<form action="{{ request.path }}" name="showstats" method="post">
+	{% raw xsrf_form_html() %}
+
+    {{modules.ShowMolduraInicio(titulo="Parâmetros estatísticas")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h2>Tipo do serviço:</h2>
+        <select name="tipo_servico">
+        	<option value="wiki">Wiki</option>
+			<option value="blog">Blog</option>
+			<option value="tarefas">Tarefas</option>
+			<option value="avaliacoes">Alaliações</option>
+		</select>
+        <h2>Data inicial:</h2><input name="data_inicio" value="" type="text" size="60"/> </br>
+        <h2>Data fim:</h2><input name="data_fim" value="" type="text" size="60"/>
+    {{ modules.ShowMolduraFim("showstats") }}
+	</form>
+{% end %}

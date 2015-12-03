@@ -1,0 +1,29 @@
+    <!-- Javscript -->
+    <script src="http://localhost:8888/static/jquery/jquery-1.11.1.min.js"></script>
+    <script src="http://localhost:8888/static/activ_new/dist/js/head.js"></script>
+    <script src="http://localhost:8888/static/activ_new/dist/js/bootstrap.min.js"></script>
+    <script src="http://localhost:8888/static/activ_new/dist/js/bootstrap.js"></script>
+    <script src="http://localhost:8888/static/activ_new/dist/js/dropdown.js"></script>
+
+	<!-- JQuery UI -->
+	<script src="http://localhost:8888/static/jquery/jquery-ui-1.11.0/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="http://localhost:8888/static/jquery/jquery-ui-1.11.0/jquery-ui.min.css">
+
+<script type="text/javascript">
+alert("vou comecar");
+$(function() {	
+	$.ajax({url: "http://localhost/labvad2/t1.php",
+		type: "POST",
+		// async: false,
+		// crossDomain: true,
+		data: {"acao": "activufrj"},
+		success: function(str_response) {
+			alert (str_response);
+			location.href = "http://localhost/labvad2/t2.php";
+		},
+		error: function() {
+			alert ("erro");
+		}
+	});
+});	
+</script> 

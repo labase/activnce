@@ -1,0 +1,14 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %} 
+    <form name="perfil" action="{{ request.path }}" method="post">
+
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Reativar uma conta no "+PLATAFORMA)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    	<h2>Digite aqui o login do usuário a ser reativado:</h2>
+    	<input name="user" value="" type="text" size="30"/></p>
+	{{ modules.ShowMolduraFim("perfil") }}
+    </form>
+
+{% end %}

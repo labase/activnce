@@ -1,0 +1,14 @@
+
+<div id="activTabs">
+<ul>
+{% for item in tabs %}
+	{% if item[1]=="" %}
+		<li class="tabOn">{{item[0]}}</li>
+	{% else %}
+		<li><a href="{{item[1]}}">{{item[0]}}</a></li>
+	{% end %}
+{% end %}
+</ul>
+</div>
+<br/>		
+

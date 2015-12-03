@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+		<title>{{ TITLE }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="pygwt:module" content="trainmain"/>
+        <script type="text/javascript" src="{{ static_url('raphael.js') }}">
+        </script>
+  </head>
+  <body>
+	<form id='mainform' action="question" method="post" name="App">
+    {% raw xsrf_form_html() %}
+    <input type="hidden" name="sessionid" value="{{ SESSIONID }}" />
+	<input type="hidden" name="score" value="N_O_N_E" />
+    <input type="hidden" name="status" value="" /> 
+    <input type="hidden" name="return_url" value="/trainz/index?init=0" /> 
+    <input type="hidden" name="criteria" value='{{json_encode(CRITERIA)}}' /> 
+    
+    <br/>
+    <input type="submit" name="change" value="Tenta Novamente a Fase" onClick="this.form.action='/api/retry';this.form.submit();" />
+    <input type="submit" name="change" value="Não quero jogar" onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.QUIT}}';this.form.submit();" />
+    <input type="submit" name="change" value="Desisto" onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.ABORT}}';this.form.submit();" />
+    <input type="submit" name="change" value="Terminei mas acho que está errado" onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.ALMOST}}';this.form.submit();" />
+    <input type="submit" name="change" value="Terminei e acho que está certo" onClick="this.form.action='/api/quit';this.form.status.value='{{RESULT.SUCCESS}}';this.form.submit();" />
+    </form>
+        <script language="javascript" src='{{ static_url("app/tornadobootstrap.js") }}'></script>
+  </body>
+</html>

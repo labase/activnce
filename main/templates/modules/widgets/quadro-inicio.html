@@ -1,0 +1,14 @@
+<div>
+ {% if width != "" %}
+  <table cellpadding="0" cellspacing="0" width="{{width}}">
+ {% else %}
+  <table cellpadding="0" cellspacing="0" style="min-width:500px;">
+ {% end %} 
+  <tr>
+   <td style="background: url(/static/imagens/quadro/{{cor}}/NO.png) no-repeat; height:7px; width:7px;"></td>
+   <td style="background: url(/static/imagens/quadro/{{cor}}/N.png)  repeat-x;  height:7px;"></td>
+   <td style="background: url(/static/imagens/quadro/{{cor}}/NE.png) no-repeat; height:7px; width:7px;"></td>
+  </tr>
+  <tr>
+   <td style="background: url(/static/imagens/quadro/{{cor}}/O.png)  repeat-y;  width:7px;"></td>
+   <td style="padding:0px;background-color:{{fundo}};">

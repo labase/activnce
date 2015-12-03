@@ -1,0 +1,41 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS)}}
+    
+    <h2>{{ TOPIC_TITLE }}</h2>
+    <p>{{ DESCRICAO }}</p>
+
+    {% if len(LISTA) == 0 %}
+        <p> Nenhuma mensagem cadastrada</p>
+    {% end %}
+    {% for i in range(len(LISTA)) %}
+        <div style="float:left; width:100%">
+        {{ modules.ShowFoto("/photo/"+escape(LISTA[i]["owner"])+"?size=P","",escape(LISTA[i]["name"]),"/user/"+escape(LISTA[i]["owner"]),True)}}
+        <em>{{ LISTA[i]["title"] }}</em><br/>
+        <p>{{ LISTA[i]["message"] }}<br/>
+        <i><a href="/user/{{ escape(LISTA[i]["owner"]) }}">{{ escape(LISTA[i]["name"]) }}</a> - {{ LISTA[i]["data"] }}</i>
+        &nbsp;&nbsp;
+        {% if EXIBIR_DEL and "***** Mensagem removida *****" not in LISTA[i]["title"] %}
+            <a onclick="return confirm('{{ "Confirma a remoção desta mensagem?" }}');" href=/forum/{{ REGISTRY_ID }}/delpost?indice={{ i }} title="remover">
+            <img src="/static/imagens/icones/delete16.png" border="0" alt="remover" />
+            </a>
+        {% end %}
+        <br/><br/>
+        </p>
+        </div>
+    {% end %}
+        
+   	<table border="0" cellspacing="10" width="100%">
+            <tr style="background-color: #eeeeee">
+                {% if len(LISTA) > 0 %}
+                    <td align="right"><a href=/forum/{{ REGISTRY_ID }}/{{ ORDEM }}/previouspost>← Anterior</a>&nbsp;&nbsp;&nbsp;{{TOTAL}}&nbsp;&nbsp;&nbsp;<a href=/forum/{{ REGISTRY_ID }}/{{ ORDEM }}/nextpost>Pr&oacute;ximo →</a></td>
+                {% else %}
+                    <td align="right"></td>
+                {% end %}
+            </tr>
+ 	</table>
+     
+    {{ modules.ShowMolduraFim() }}     
+    
+{% end %}

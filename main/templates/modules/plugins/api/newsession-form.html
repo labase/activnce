@@ -1,0 +1,228 @@
+{% extends "../../../base-nova.html" %}
+
+{% block body-right %}
+
+{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+<form name="cadastro" action="/api/newsession" method="post">
+	{% raw xsrf_form_html() %}
+	<input type="hidden" name="sessionid" value="{{ SESSIONID }}" />
+	
+	<h1>Identifique-se</h1>
+
+    {{ modules.ShowMolduraInicio() }}
+
+	<h2>Escola:</h2>
+    <table>
+	<tr><td>
+	<label for="escola">Nome</label>
+	</td>
+	<td>
+	<input name="escola" id="escola" value="{{ escape(GAMESESSION["escola"]) }}" type="text" size="50"/>
+	</td></tr>
+	<tr><td>
+	<label for="tipoescola">Tipo</label>
+	</td>
+	<td>	
+	<input type="radio" name="tipoescola" value="publica" 
+	{% if GAMESESSION["tipoescola"]=="publica" %} checked="checked" {%end %} /> Escola Pública
+	<input type="radio" name="tipoescola" value="privada" 
+	{% if GAMESESSION["tipoescola"]=="privada" %} checked="checked" {%end %} /> Escola Privada
+	<input type="radio" name="tipoescola" value="nenhuma" 
+	{% if GAMESESSION["tipoescola"]=="nenhuma" %} checked="checked" {%end %} /> Nenhuma
+	</td></tr>
+	</table>
+	<br/><br/>
+	
+	<h2>Aluno 1:</h2>
+    <table>
+	<tr><td>
+	<label for="idade1">Idade</label>
+	</td>
+	<td>
+	<select name="idade1">
+	<option value=""></option>
+	<option value="0" 
+	{% if GAMESESSION["idade1"]=="0" %} selected="selected" {%end %}> 0 anos </option>
+	<option value="1" 
+	{% if GAMESESSION["idade1"]=="1" %} selected="selected" {%end %}> 1 anos </option>
+	<option value="2" 
+	{% if GAMESESSION["idade1"]=="2" %} selected="selected" {%end %}> 2 anos </option>
+	<option value="3" 
+	{% if GAMESESSION["idade1"]=="3" %} selected="selected" {%end %}> 3 anos </option>
+	<option value="4" 
+	{% if GAMESESSION["idade1"]=="4" %} selected="selected" {%end %}> 4 anos </option>
+	<option value="5" 
+	{% if GAMESESSION["idade1"]=="5" %} selected="selected" {%end %}> 5 anos </option>
+	<option value="6" 
+	{% if GAMESESSION["idade1"]=="6" %} selected="selected" {%end %}> 6 anos </option>
+	<option value="7" 
+	{% if GAMESESSION["idade1"]=="7" %} selected="selected" {%end %}> 7 anos </option>
+	<option value="8" 
+	{% if GAMESESSION["idade1"]=="8" %} selected="selected" {%end %}> 8 anos </option>
+	<option value="9" 
+	{% if GAMESESSION["idade1"]=="9" %} selected="selected" {%end %}> 9 anos </option>
+	<option value="10" 
+	{% if GAMESESSION["idade1"]=="10" %} selected="selected" {%end %}> 10 anos </option>
+	<option value="11" 
+	{% if GAMESESSION["idade1"]=="11" %} selected="selected" {%end %}> 11 anos </option>
+	<option value="12" 
+	{% if GAMESESSION["idade1"]=="12" %} selected="selected" {%end %}> 12 anos </option>
+	<option value="13" 
+	{% if GAMESESSION["idade1"]=="13" %} selected="selected" {%end %}> 13 anos </option>
+	<option value="14" 
+	{% if GAMESESSION["idade1"]=="14" %} selected="selected" {%end %}> 14 anos </option>
+	<option value="15" 
+	{% if GAMESESSION["idade1"]=="15" %} selected="selected" {%end %}> 15 anos </option>
+	<option value="16" 
+	{% if GAMESESSION["idade1"]=="16" %} selected="selected" {%end %}> 16 anos </option>
+	<option value="17" 
+	{% if GAMESESSION["idade1"]=="17" %} selected="selected" {%end %}> 17 anos </option>
+	<option value="18" 
+	{% if GAMESESSION["idade1"]=="18" %} selected="selected" {%end %}> 18 anos ou mais</option>
+	</select>
+	</td></tr>
+
+	<tr><td>
+	<label for="sexo1">Sexo</label>
+	</td>
+	<td>	
+	<input type="radio" name="sexo1" value="M" 
+	{% if GAMESESSION["sexo1"]=="M" %} checked="checked" {%end %} /> Masculino
+	<input type="radio" name="sexo1" value="F" 
+	{% if GAMESESSION["sexo1"]=="F" %} checked="checked" {%end %} /> Feminino
+	</td></tr>
+
+	<tr><td>
+	<label for="ano1">Ano</label>
+	</td>
+	<td>	
+	<select name="ano1">
+	<option value=""></option>
+	<option value="0" 
+	{% if GAMESESSION["ano1"]=="0" %} selected="selected" {%end %}> Educação Infantil</option>
+	<option value="1" 
+	{% if GAMESESSION["ano1"]=="1" %} selected="selected" {%end %}> 1&ordm; Fundamental</option>
+	<option value="2" 
+	{% if GAMESESSION["ano1"]=="2" %} selected="selected" {%end %}> 2&ordm; Fundamental</option>
+	<option value="3" 
+	{% if GAMESESSION["ano1"]=="3" %} selected="selected" {%end %}> 3&ordm; Fundamental</option>
+	<option value="4" 
+	{% if GAMESESSION["ano1"]=="4" %} selected="selected" {%end %}> 4&ordm; Fundamental</option>
+	<option value="5" 
+	{% if GAMESESSION["ano1"]=="5" %} selected="selected" {%end %}> 5&ordm; Fundamental</option>
+	<option value="6" 
+	{% if GAMESESSION["ano1"]=="6" %} selected="selected" {%end %}> 6&ordm; Fundamental</option>
+	<option value="7" 
+	{% if GAMESESSION["ano1"]=="7" %} selected="selected" {%end %}> 7&ordm; Fundamental</option>
+	<option value="8" 
+	{% if GAMESESSION["ano1"]=="8" %} selected="selected" {%end %}> 8&ordm; Fundamental</option>
+	<option value="9" 
+	{% if GAMESESSION["ano1"]=="9" %} selected="selected" {%end %}> 9&ordm; Fundamental</option>
+	<option value="10" 
+	{% if GAMESESSION["ano1"]=="10" %} selected="selected" {%end %}> Ensino Médio</option>
+	<option value="11" 
+	{% if GAMESESSION["ano1"]=="11" %} selected="selected" {%end %}> Ensino Superior</option>
+	</select>
+	</td></tr>
+    </table>
+	<br/><br/>
+
+	<h2>Aluno 2:</h2>
+	<table>
+	<tr><td>
+	<label for="idade2">Idade</label>
+	</td>
+	<td>
+	<select name="idade2">
+	<option value=""></option>
+	<option value="0" 
+	{% if GAMESESSION["idade2"]=="0" %} selected="selected" {%end %}> 0 anos </option>
+	<option value="1" 
+	{% if GAMESESSION["idade2"]=="1" %} selected="selected" {%end %}> 1 anos </option>
+	<option value="2" 
+	{% if GAMESESSION["idade2"]=="2" %} selected="selected" {%end %}> 2 anos </option>
+	<option value="3" 
+	{% if GAMESESSION["idade2"]=="3" %} selected="selected" {%end %}> 3 anos </option>
+	<option value="4" 
+	{% if GAMESESSION["idade2"]=="4" %} selected="selected" {%end %}> 4 anos </option>
+	<option value="5" 
+	{% if GAMESESSION["idade2"]=="5" %} selected="selected" {%end %}> 5 anos </option>
+	<option value="6" 
+	{% if GAMESESSION["idade2"]=="6" %} selected="selected" {%end %}> 6 anos </option>
+	<option value="7" 
+	{% if GAMESESSION["idade2"]=="7" %} selected="selected" {%end %}> 7 anos </option>
+	<option value="8" 
+	{% if GAMESESSION["idade2"]=="8" %} selected="selected" {%end %}> 8 anos </option>
+	<option value="9" 
+	{% if GAMESESSION["idade2"]=="9" %} selected="selected" {%end %}> 9 anos </option>
+	<option value="10" 
+	{% if GAMESESSION["idade2"]=="10" %} selected="selected" {%end %}> 10 anos </option>
+	<option value="11" 
+	{% if GAMESESSION["idade2"]=="11" %} selected="selected" {%end %}> 11 anos </option>
+	<option value="12" 
+	{% if GAMESESSION["idade2"]=="12" %} selected="selected" {%end %}> 12 anos </option>
+	<option value="13" 
+	{% if GAMESESSION["idade2"]=="13" %} selected="selected" {%end %}> 13 anos </option>
+	<option value="14" 
+	{% if GAMESESSION["idade2"]=="14" %} selected="selected" {%end %}> 14 anos </option>
+	<option value="15" 
+	{% if GAMESESSION["idade2"]=="15" %} selected="selected" {%end %}> 15 anos </option>
+	<option value="16" 
+	{% if GAMESESSION["idade2"]=="16" %} selected="selected" {%end %}> 16 anos </option>
+	<option value="17" 
+	{% if GAMESESSION["idade2"]=="17" %} selected="selected" {%end %}> 17 anos </option>
+	<option value="18" 
+	{% if GAMESESSION["idade2"]=="18" %} selected="selected" {%end %}> 18 anos ou mais</option>
+	</select>
+	</td></tr>
+
+	<tr><td>
+	<label for="sexo2">Sexo</label>
+	</td>
+	<td>	
+	<input type="radio" name="sexo2" value="M" 
+	{% if GAMESESSION["sexo2"]=="M" %} checked="checked" {%end %} /> Masculino
+	<input type="radio" name="sexo2" value="F" 
+	{% if GAMESESSION["sexo2"]=="F" %} checked="checked" {%end %} /> Feminino
+	</td></tr>
+
+	<tr><td>
+	<label for="ano2">Ano</label>
+	</td>
+	<td>	
+	<select name="ano2">
+	<option value=""></option>
+	
+	<option value="0" 
+	{% if GAMESESSION["ano2"]=="0" %} selected="selected" {%end %}> Educação Infantil</option>
+	<option value="1" 
+	{% if GAMESESSION["ano2"]=="1" %} selected="selected" {%end %}> 1&ordm; Fundamental</option>
+	<option value="2" 
+	{% if GAMESESSION["ano2"]=="2" %} selected="selected" {%end %}> 2&ordm; Fundamental</option>
+	<option value="3" 
+	{% if GAMESESSION["ano2"]=="3" %} selected="selected" {%end %}> 3&ordm; Fundamental</option>
+	<option value="4" 
+	{% if GAMESESSION["ano2"]=="4" %} selected="selected" {%end %}> 4&ordm; Fundamental</option>
+	<option value="5" 
+	{% if GAMESESSION["ano2"]=="5" %} selected="selected" {%end %}> 5&ordm; Fundamental</option>
+	<option value="6" 
+	{% if GAMESESSION["ano2"]=="6" %} selected="selected" {%end %}> 6&ordm; Fundamental</option>
+	<option value="7" 
+	{% if GAMESESSION["ano2"]=="7" %} selected="selected" {%end %}> 7&ordm; Fundamental</option>
+	<option value="8" 
+	{% if GAMESESSION["ano2"]=="8" %} selected="selected" {%end %}> 8&ordm; Fundamental</option>
+	<option value="9" 
+	{% if GAMESESSION["ano2"]=="9" %} selected="selected" {%end %}> 9&ordm; Fundamental</option>
+	<option value="10" 
+	{% if GAMESESSION["ano2"]=="10" %} selected="selected" {%end %}> Ensino Médio</option>
+	<option value="11" 
+	{% if GAMESESSION["ano2"]=="11" %} selected="selected" {%end %}> Ensino Superior</option>
+</select>
+	</td></tr>
+	</table>
+
+    {{ modules.ShowMolduraFim("cadastro") }}
+</form>
+
+{% end %}

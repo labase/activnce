@@ -1,0 +1,40 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+{% if MSG %}
+    <div class="tnmMSG">{{ MSG }}</div>
+{% else %}
+    {% if USERS %}
+        <table border="1">
+            <tr><td>Login</td>
+                <td>Nome</td>
+                <td>E-mail</td>
+                {% if EDITAR %}
+                    <td></td>
+                {% else %}
+                    <td>Chave Mágica</td>
+                {% end %}
+            </tr>
+                
+            {% for user in USERS %}
+                <tr>
+                    <td>{{ user }}</td>
+                    <td>{{ USERS[user][0] }}</td>
+                    <td>{{ USERS[user][1] }}</td>
+                    {% if EDITAR %}
+                        <td>
+                            <a href="/admin/uploadquota/{{ user }}">alterar quota de upload</a>
+                        </td>
+                    {% end %}
+                </tr>
+            {% end %}
+        </table>
+    {% else %}
+        <p>Nenhum usuário encontrado com estes critérios de busca.</p>
+    {% end %}
+
+{% end %}
+
+
+{% end %}

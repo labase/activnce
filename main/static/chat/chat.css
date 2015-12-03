@@ -1,0 +1,39 @@
+/* chat.css: estilos usados pelas páginas do chat */
+
+.me {
+    background-color:#d0e4fe;
+    width:420px;
+    padding:5px;
+    border:2px solid gray;
+    margin:10px; 
+    word-wrap: break-word;
+}
+.you {
+    background-color:#f9ee74;
+    width:420px;
+    padding:5px;
+    border:2px solid gray;
+    margin:10px;    
+    position:relative;
+    left:80px;
+    word-wrap: break-word;
+}
+.date {
+    color:#999;
+    font-size:small;
+    text-align:right;
+}
+.photo {
+    padding:2px;
+    width: 30px;
+    height: 40px;
+}
+.photo-left {
+    padding:2px;
+    float:left;
+    width: 30px;
+    height: 40px;
+}
+.text {
+    padding:5px;
+}

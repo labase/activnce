@@ -1,0 +1,103 @@
+/*CAFÉ E CÉREBRO - css*/
+
+.corpo {
+    margin: 0 auto;
+    min-height: 800px;
+    width: 1000px;
+    background: #69332b;
+}
+
+.conteudo {
+    background: #69332b url(/static/imagens/activCafe/cafefundo_horizontal.jpg) no-repeat;
+    min-height: 1000px;
+    width: 1000px;
+    text-align: center;
+    position: relative;
+}
+
+.contem_formulario {
+    background: transparent url(/static/imagens/activCafe/contem_formulario.png) no-repeat;
+    position: relative;
+    float: right;
+    margin-right: 30px;
+    margin-top: -45px;
+    width: 368px;
+    height: 669px;
+}
+
+#logotipo_formulario {
+    position: relative;
+    background: transparent url(/static/imagens/activCafe/logotipo_cafeecerebro.png) no-repeat;
+    text-align: center;
+    margin-top: 140px;
+    margin-left: 25px;
+    height: 205px;
+    width: 308px;
+}
+
+.formulario {
+    position: relative;
+    height: 200px;
+    margin-top: 30px;
+}
+
+#logsenha_old {
+    width: 55px;
+    height:20px;
+    float: left;
+    margin-left: 60px;
+    margin-top: 20px;
+
+}
+
+#logsenha {
+    font-family: 'Habibi', serif;
+    font-size: 17px;
+    color: #69332b;
+    float: left;
+    width: 100%;
+    height: 20px;
+    margin-left: -108px;
+    margin-top: 20px;
+    margin-bottom: -10px;
+}
+
+#input {
+    background: #9f837f;
+    border: none;
+    width: 250px;
+    height: 35px;
+    margin-top: 16px;
+    margin-right: 4px;
+    font-family: 'Habibi', serif;
+    font-size: 20px;
+    color: #e2e0e4;
+    padding-left: 3px;
+    padding-top: 3px;
+    padding-right: 3px;
+
+    
+}
+
+#enviar {
+   /* background: transparent url(/static/imagens/activCafe/botao_entrar.png) no-repeat center top;*/
+    /*text-indent: -1000px;*/
+    /*width: 128px;
+    height: 48px;*/
+    background: #a35e2a;
+    width: 100px;
+    height: 40px;
+    float: right;
+    margin-top: 15px;
+    margin-right: 60px;
+    border: none;
+    padding: 0px;
+    font-family: 'Habibi', serif;
+    font-size: 17px;
+    font-weight: 400;
+    padding-top: 3px;
+    color: #e2e0e4;
+    cursor: pointer;
+    cursor: hand;
+    
+}

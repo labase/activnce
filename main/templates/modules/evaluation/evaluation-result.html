@@ -1,0 +1,27 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	{{modules.ShowMolduraInicio(u"Resultado da avaliação " + AVALDATA["_id"].split("/")[1])}}	
+		<p>
+		{% if AVALDATA["descricao"] %}
+			{{ escape(AVALDATA["descricao"]) }}<br/><br/>
+		{% end %}
+		<i>Período de avaliação: {{ escape(AVALDATA["data_inicio"]) }} até {{ escape(AVALDATA["data_encerramento"]) }}<br/>
+		Criada por: {{ escape(AVALDATA["owner"]) }}<br/>
+		Em: {{ escape(AVALDATA["data_cri"]) }}<br/>
+		Avaliações recebidas: {{ escape(AVALDATA["n_avaliacoes"]) }} / {{ escape(AVALDATA["n_avaliadores"]) }}</i>
+		</p>
+		<br/><br/>
+		{% if AVALDATA["result_aval"] %}
+			<table class="tnmTabelaInterna">
+			<tr><th class="tnmTabelaInterna">item avaliado</th>
+			<th class="tnmTabelaInterna">pontos</th></tr>
+			{% for p in AVALDATA["result_aval"] %}
+				<tr><td class="tnmTabelaInterna">{{ p[0] }}</td>
+				<td class="tnmTabelaInterna">{{ p[1] }}</td></tr>
+			{% end %}
+			</table>
+			<br/>			
+		{% end %}
+	{{ modules.ShowMolduraFim() }}
+{% end %}

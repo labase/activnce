@@ -1,0 +1,607 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script src="/static/jquery/Chart.js/Chart.min.js"></script>
+{% end %}
+
+{% block body-right %} 
+	{{modules.ShowMolduraInicio(u"Gráfico de habilidades de "+REGISTRY_ID)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<div style="overflow: auto">
+			{% if (LOGADO == REGISTRY_ID) %}
+				<p><b>Aqui você pode ver um gráfico de radar de suas habilidades. {% if len(SKILLDATA_USER) >= MIN_HABILIDADES_GRAFICO %} Veja as opções abaixo! {% end %} </b>
+				 <br>Entrando no perfil de outros usuários da plataforma, também é possível ver o gráfico de habilidade deles, bem como fazer uma comparação com o seu.</p>
+			{% else %}
+				<p><b>Aqui você pode ver um gráfico de radar das habilidades deste usuário, e ainda fazer uma comparação com o seu caso possuam habilidades em comum. {%if len(SKILLDATA_TARGET) >= MIN_HABILIDADES_GRAFICO %} Veja as opções abaixo! {% end %}</b></p>
+			{% end %}
+			{% if (LOGADO == REGISTRY_ID and len(SKILLDATA_USER) >= MIN_HABILIDADES_GRAFICO) or (LOGADO != REGISTRY_ID and len(SKILLDATA_TARGET) >= MIN_HABILIDADES_GRAFICO) %}
+			<div id="grafico" align="center"> <canvas id="myChart" width="800" height="400"> </canvas> </div>
+			<br/><br/>
+			<table id="table_grafico" width="100%">		
+				<tr>
+					<td align="left" width="50%"><b>Habilidades de {{REGISTRY_ID}}:</b><br/>
+					<i>Por favor, selecione ao menos {{MIN_HABILIDADES_GRAFICO}} habilidades</i></td>
+					{% if LOGADO != REGISTRY_ID %}
+						<td align="left" width="50%"><b>Habilidades de {{LOGADO}} em comum com {{REGISTRY_ID}}:</b></td>
+					{% end %}
+				</tr>
+				{% for i in range(MAX_HABILIDADES_GRAFICO) %}
+					<tr>
+						<td width="50%">
+							<input type="checkbox" id="habil_check{{i}}" onclick="gerenciaBotao(this.checked, {{i}}, 0)"/>
+							<select id="habil_select{{i}}" onchange="gerencia_opcoes({{i}})" style="width:300px;"> </select>
+							<input type='image'  id='referencias{{i}}' style="display: none;" src='/static/imagens/icones/ascending16.png' title='Referências desta Habilidade' onclick="pegaReferencias({{i}}, false)"/>
+						</td>
+						{% if LOGADO != REGISTRY_ID %}
+							<td width="50%">
+								<input type="checkbox" id="habil_comparar_check{{i}}" onclick="gerenciaBotao_comparar(this.checked, {{i}}, 0)"/>
+								<select id="habil_comparar_select{{i}}" onchange="gerencia_opcoes_comparar({{i}})" style="width:300px;"> </select>
+								<input type='image' id='referencias_comparar{{i}}' style="display: none;" src='/static/imagens/icones/ascending16.png' title='Referências desta Habilidade' onclick="pegaReferencias({{i}}, true)"/>
+							</td>
+						{% end %}
+					</tr>
+				{% end %}
+			</table>
+			</br>
+			<table>
+			{% if LOGADO != REGISTRY_ID %}
+				<tr><td id="msg_comparar_true" style="display: none;">
+					<input type="checkbox" id="check_comparar" onclick="preencherHabilidadesEmComum(this.checked)"/>
+					<label for="check_comparar"><b>Comparar habilidades em comum (veja acima)</b></label>
+				</td></tr>
+				<tr><td id="msg_comparar_false" style="color: red; display: none;">
+					Você ainda não possui ao menos {{MIN_HABILIDADES_GRAFICO}} habilidades em comum com {{REGISTRY_ID}}. Caso venha a possuir, será possível gerar um gráfico de comparação de habilidades. 
+				</td></tr>
+			{% end %}
+			<tr><td>
+				<input type="button" id="botao_grafico" disabled="disabled" value="Redesenhar Gráfico" onclick="atualizaGrafico()"> 
+			</td></tr>
+			</table>
+			{% elif LOGADO != REGISTRY_ID %}
+				<p> O usuário não possui habilidades suficientes para a montagem do gráfico. São necessárias ao menos {{MIN_HABILIDADES_GRAFICO}} habilidades para que o gráfico possa ser gerado! </p>
+			{% else %}
+				<p> Você não possui ao menos {{MIN_HABILIDADES_GRAFICO}} habilidades. Por favor, preencha-as no seu perfil <a href="/profile/skills/{{LOGADO}}">(clique aqui)</a> para que possa visualizar o gráfico de suas habilidades. </p>
+			{% end %}	
+		</div>
+    {{ modules.ShowMolduraFim() }}
+    
+    	
+		{% if (LOGADO == REGISTRY_ID and len(SKILLDATA_USER) >= MIN_HABILIDADES_GRAFICO) or (LOGADO != REGISTRY_ID and len(SKILLDATA_TARGET) >= MIN_HABILIDADES_GRAFICO) %}
+		<script>
+			//{# Arrays para guardarem os valores e que ficarão selecionados nos selects #}
+			var data_nomes_originais = [];
+			var data_niveis_originais = [];
+			var data_ids_originais = [];
+			var nomes_em_comum_originais = [];
+			var niveis_em_comum_originais = [];
+			var ids_em_comum_originais = [];
+			var nomes_em_comum_grafico = [];
+			var niveis_em_comum_grafico = [];
+			var perfil_target = false; //{# Booleano que diz se o usuário está vendo o gráfico de outro usuário (true) ou o seu próprio (false) #}
+			var comparaveis = false; //{# Booleano que mostra se é possível criar o gráfico de comparação (numero de habils em comum é suficiente) #}
+			{% if LOGADO == REGISTRY_ID %}//{# Se o usuário logado está vendo o próprio gráfico, o gráfico dele é o principal da página #}
+				{% for habil in SKILLDATA_USER %}
+					data_nomes_originais.push("{{escape(habil['nome_habilidade'])}}")
+					data_niveis_originais.push({{habil["nivel_geral"]}})
+					data_ids_originais.push({{habil["id_habilidade"]}})
+				{% end %}
+			{% else %}//{# Se o usuário logado está vendo o gráfico de outro usuário, o gráfico do segundo é o principal da página #}
+				perfil_target = true;
+				{% for habil in SKILLDATA_TARGET %}
+					data_nomes_originais.push("{{escape(habil['nome_habilidade'])}}")
+					data_niveis_originais.push({{habil["nivel_geral"]}})
+					data_ids_originais.push({{habil["id_habilidade"]}})
+				{% end %}
+			
+				{% for habil in SKILLDATA_USER %}
+					nomes_em_comum_originais.push("{{escape(habil['nome_habilidade'])}}")
+					niveis_em_comum_originais.push({{habil["nivel_geral"]}})
+					ids_em_comum_originais.push({{habil["id_habilidade"]}})
+				{% end %}
+				nomes_em_comum_grafico = nomes_em_comum_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+				niveis_em_comum_grafico = niveis_em_comum_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+				//{# Preenchendo demais espaços com vazio, caso haja menos que MAX_HABILIDADES_GRAFICO habilidades no total #}
+				while(nomes_em_comum_grafico.length < {{MAX_HABILIDADES_GRAFICO}}){
+					nomes_em_comum_grafico.push("");
+					niveis_em_comum_grafico.push("");
+				}
+				if(nomes_em_comum_originais.length >= {{MIN_HABILIDADES_GRAFICO}}){
+					document.getElementById("msg_comparar_true").style.display = "inline";
+					comparaveis = true;
+				}
+				else{
+					document.getElementById("msg_comparar_false").style.display = "inline";
+				}
+			{% end %}
+			
+			var options = { //{# Opções do gráfico #}
+				//{# Boolean - Whether to show lines for each scale point #}
+				scaleShowLine : true,
+		
+				//{# Boolean - Whether we show the angle lines out of the radar #}
+				angleShowLineOut : true,
+		
+				//{# Boolean - Whether to show labels on the scale #}
+				scaleShowLabels : false,
+		
+				//{# Boolean - Whether the scale should begin at zero #}
+				scaleBeginAtZero : true,
+		
+				//{# String - Colour of the angle line #}
+				angleLineColor : "rgba(0,0,0,.8)",
+				
+				//{# String - Colour of the scale line #}
+				scaleLineColor: "rgba(0,0,0,.8)",
+		
+				//{# Number - Pixel width of the angle line #}
+				angleLineWidth : 1,
+		
+				//{# String - Point label font declaration #}
+				pointLabelFontFamily : "'Arial'",
+		
+				//{# String - Point label font weight #}}
+				pointLabelFontStyle : "bold",
+		
+				//{# Number - Point label font size in pixels #}
+				pointLabelFontSize : 12,
+		
+				//{# String - Point label font colour #}
+				pointLabelFontColor : "#000",
+		
+				//{# Boolean - Whether to show a dot for each point #}
+				pointDot : true,
+		
+				//{# Number - Radius of each point dot in pixels #}
+				pointDotRadius : 3,
+		
+				//{# Number - Pixel width of point dot stroke #}
+				pointDotStrokeWidth : 1,
+		
+				//{# Number - amount extra to add to the radius to cater for hit detection outside the drawn point #}
+				pointHitDetectionRadius : 20,
+		
+				//{# Boolean - Whether to show a stroke for datasets #}
+				datasetStroke : true,
+		
+				//{# Number - Pixel width of dataset stroke #}
+				datasetStrokeWidth : 2,
+		
+				//{# Boolean - Whether the scale should stick to integers, not floats even if drawing space is there #}
+				scaleIntegersOnly: true,
+				
+				//{# Boolean - Whether to fill the dataset with a colour #}
+				datasetFill : true,
+				
+				//{# String - Template string for single tooltips #}
+				tooltipTemplate: "<%if (label){ %><%=data.nomes_legenda[data.labels.indexOf(label)]%>: <%}%> <%if(value == 1){ %>Novato<%}%><%if(value == 2){ %>Iniciante Avançado<%}%><%if(value == 3){ %>Apto<%}%><%if(value == 4){ %>Proficiente<%}%><%if(value == 5){ %>Especialista<%}%>",
+
+				//{# String - Template string for multi tooltips #}
+    			multiTooltipTemplate: "<%= datasetLabel %> - <%if(value == 1){ %>Novato<%}%><%if(value == 2){ %>Iniciante Avançado<%}%><%if(value == 3){ %>Apto<%}%><%if(value == 4){ %>Proficiente<%}%><%if(value == 5){ %>Especialista<%}%>",
+    			
+    			//{# Escondendo o título da multitooltip #}
+    			tooltipTitleFontSize: 0
+				
+			}
+			
+			//{# Limitando o gráfico em MAX_HABILIDADES_GRAFICO habilidades #}
+			var data_nomes_grafico = data_nomes_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+			var data_niveis_grafico = data_niveis_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+			//{# Preenchendo demais espaços com vazio, caso haja menos que MAX_HABILIDADES_GRAFICO habilidades no total #}
+			while(data_nomes_grafico.length < {{MAX_HABILIDADES_GRAFICO}}){
+				data_nomes_grafico.push("");
+				data_niveis_grafico.push("");
+			}
+			
+			//{# Arrays que serão utilizados para o desenho do gráfico #}
+			var vetor_nomes = [];
+			var vetor_niveis = [];
+			var vetor_legendas = [];
+			//{# Array de nomes truncados em 20 caracteres#}
+			var data_nomes_20char = [];
+						
+			var num_marcados = 0;
+			var num_marcados_comparar = 0;
+			preencheSelect(0);
+			
+			if (!comparaveis){
+				data_nomes_20char = truncaNomes(data_nomes_grafico);
+				for (i=0; i<{{MAX_HABILIDADES_GRAFICO}}; i++){
+					if(data_nomes_20char[i] != ""){
+						vetor_nomes.push(data_nomes_20char[i]);
+						vetor_legendas.push(data_nomes_grafico[i]);
+						vetor_niveis.push(data_niveis_grafico[i]);
+					}
+				}
+				var data = {
+					labels: vetor_nomes,
+					nomes_legenda: vetor_legendas,
+					datasets: [
+						{
+					        label: "Habilidades",
+					        fillColor: "rgba(0,0,220,0.2)",
+					        strokeColor: "rgba(0,0,220,1)",
+					        pointColor: "rgba(0,0,0,1)",
+					        pointStrokeColor: "#fff",
+					        pointHighlightFill: "#000",
+					        pointHighlightStroke: "rgba(0,0,0,1)",
+					        data: vetor_niveis
+						}
+					]
+				}
+				var ctx = document.getElementById("myChart").getContext("2d");
+				var myRadarChart = new Chart(ctx).Radar(data, options);
+			}else{//{# Se são os usuários comparáveis (habilidades em comum suficientes) #}
+				document.getElementById("check_comparar").checked = true;
+				preencherHabilidadesEmComum(true);
+				atualizaGrafico();
+			}
+			
+
+			function gerencia_opcoes(linha){
+				//{# Esta função visa alterar o conteúdo dos demais selects caso uma habilidade seja selecionada em um deles. #}
+				var checked = document.getElementById("habil_check"+linha).checked;
+				if(checked){ //{# Verifica se a checkbox está marcada. Se não estiver, nada a fazer #}
+					var habil_selecionada = $("#habil_select"+linha).val();
+					data_nomes_grafico[linha] = habil_selecionada; //{# Insere a habilidade selecionada no vetor de habilidades selecionadas para o gráfico #}
+					data_niveis_grafico[linha] = data_niveis_originais[data_nomes_originais.indexOf(habil_selecionada)] //{# Insere o nível da habilidade selecionada no vetor de níveis para o gráfico #}
+					preencheSelect(1); //{# Atualizar os selects #}
+				}
+			}
+			
+			function gerencia_opcoes_comparar(linha){
+				//{# Esta função visa alterar o conteúdo dos demais selects caso uma habilidade seja selecionada em um deles. #}
+
+				var comparar_checked = document.getElementById("check_comparar").checked;
+				if(comparar_checked){//{# Se a comparação de habilidades estiver ativada #}
+					var habil_checked = document.getElementById("habil_comparar_check"+linha).checked;
+					if(habil_checked){
+						var habil_selecionada = $("#habil_comparar_select"+linha).val();
+						data_nomes_grafico[linha] = habil_selecionada; //{# Insere a habilidade selecionada no vetor de habilidades selecionadas #}
+						data_niveis_grafico[linha] = data_niveis_originais[data_nomes_originais.indexOf(habil_selecionada)] //{# Insere o nível da habilidade selecionada no vetor de níveis para o gráfico #}
+						nomes_em_comum_grafico[linha] = habil_selecionada; //{# Insere a habilidade selecionada no vetor de habilidades em comum selecionadas #}
+						niveis_em_comum_grafico[linha] = niveis_em_comum_originais[data_nomes_originais.indexOf(habil_selecionada)] //{# Insere o nível da habilidade selecionada no vetor de níveis em comum para o gráfico #}
+					preencheSelect(3); //{# Atualizar os selects #}
+					}
+				}else{//{# Se a comparação não está ativada, mexer apenas nos selects de habilidades em comum #}
+					var habil_checked = document.getElementById("habil_comparar_check"+linha).checked;
+					if(habil_checked){ //{# Verifica se a checkbox está marcada. Se não estiver, nada a fazer #}
+						var habil_selecionada = $("#habil_comparar_select"+linha).val();
+						nomes_em_comum_grafico[linha] = habil_selecionada; //{# Insere a habilidade selecionada no vetor de habilidades selecionadas #}
+						for (i=0; i<niveis_em_comum_originais ; i++){ //{# For para verificar o nível desta habilidade e adicioná-lo no array de níveis das habilidade selecionadas #}
+							if(nomes_em_comum_originais[i] == habil_selecionada){
+								niveis_em_comum_grafico[linha] = niveis_em_comum_originais[i];
+								break;
+							}
+						}
+						preencheSelect(1); //{# Atualizar os selects #}
+					}
+				}
+			}
+			
+			function preencheSelect(tipo){
+				//{# Esta função visa popular os selects com os nomes das habilidades. O parâmetro "tipo" indica de onde a função foi chamada #}
+				//{# Tipo == 0: Função está sendo chamada ao carregar a página #}
+				//{# Tipo == 1: Função está sendo chamada no onchange de um dos selects #}
+				//{# Tipo == 2: Função está sendo chamada no onclick de um dos checkboxes através da função gerenciaBotao #}
+				//{# Tipo == 3: Função está sendo chamada no onclick de um do checkboxes de comparar habilidades em comum (check_comparar) #}
+				for (i=0; i<{{MAX_HABILIDADES_GRAFICO}}; i++){
+					$('#habil_select'+i).empty(); //{# Primeiro, limpa-se o select para realimentá-lo #}
+					if(tipo != 3){ //{# Se tipo NÃO for 3, preencher normalmente: #}
+						if(i < data_nomes_originais.length){ //{# Testa se há mais selects que habilidades, para desabilitar os que sobram no else #}
+							for(j = 0; j<data_nomes_originais.length; j++ ){ //{# Percorre a lista de habilidades #}
+								var temp = data_nomes_grafico.indexOf(data_nomes_originais[j]); //{# Pega-se o índice da habilidade atual na lista das MAX_HABILIDADES_GRAFICO habilidades do grafico #}
+								if(temp < 0){ //{# Se o índice for <0, quer dizer que não está na lista do gráfico. Portanto, deve ser adicionada ao select #}					
+									$('#habil_select'+i).append($('<option />').val(data_nomes_originais[j]).html(data_nomes_originais[j]));
+								}else{
+									if(i == temp){ //{# Se o índice for >=0, adicionar a habilidade apenas à linha que corr}esponder ao seu índice #}
+										if(data_nomes_grafico[temp] != ""){
+											$('#habil_select'+i).append($('<option />').val(data_nomes_grafico[temp]).html(data_nomes_grafico[temp]));
+											$("#habil_select"+i+" option[value='"+data_nomes_grafico[temp]+"']").attr('selected','selected');
+											document.getElementById("referencias"+i).style.display = "inline";
+										}
+										if(tipo == 0){ //{# Se tipo for 0, marcar o checkbox ao lado do select #}
+											document.getElementById("habil_check"+i).checked = true;
+											gerenciaBotao(true, i, 1);
+										}
+									}
+								}
+							}
+						}else{//{# Se há mais selects que habilidades, desabilita os que sobram #}
+							document.getElementById("habil_check"+i).disabled = true;
+							document.getElementById("habil_select"+i).disabled = true;
+						}
+					}else{//{# Se tipo for 3, preencher apenas as opções selecionadas nos selects habil_comparar_select: #}
+						if(data_nomes_grafico[i] != ""){
+							$('#habil_select'+i).append($('<option />').val(data_nomes_grafico[i]).html(data_nomes_grafico[i]));
+							document.getElementById("habil_check"+i).checked = true;
+							document.getElementById("referencias"+i).style.display = "inline";
+						}else{
+							document.getElementById("habil_check"+i).checked = false;
+						}
+					}	
+				}
+				if(perfil_target){//{# Se comparáveis, alimentar selects do usuário logado #}
+					for (i=0; i<{{MAX_HABILIDADES_GRAFICO}}; i++){
+						$('#habil_comparar_select'+i).empty(); //{# Primeiro, limpa-se o select para realimentá-lo #}
+						if(i < nomes_em_comum_originais.length){ //{# Testa se há mais selects que habilidades, para desabilitar os que sobram no else #}
+							for(j = 0; j<nomes_em_comum_originais.length; j++ ){ //{# Percorre a lista de habilidades em comum #}
+								var temp = nomes_em_comum_grafico.indexOf(nomes_em_comum_originais[j]); //{# Pega-se o índice da habilidade atual na lista das MAX_HABILIDADES_GRAFICO habilidades do grafico #}
+								if(temp < 0){ //{# Se o índice for <0, quer dizer que não está na lista do gráfico. Portanto, deve ser adicionada ao select #}					
+									$('#habil_comparar_select'+i).append($('<option />').val(nomes_em_comum_originais[j]).html(nomes_em_comum_originais[j]));
+								}else{
+									if(i == temp){ //{# Se o índice for >=0, adicionar a habilidade apenas à linha que corresponder ao seu índice #}
+										document.getElementById("referencias_comparar"+i).style.display = "inline";
+										if(nomes_em_comum_grafico[temp] != ""){
+											$('#habil_comparar_select'+i).append($('<option />').val(nomes_em_comum_grafico[temp]).html(nomes_em_comum_grafico[temp]));
+											$("#habil_comparar_select"+i+" option[value='"+nomes_em_comum_grafico[temp]+"']").attr('selected','selected');
+										}
+										if(tipo == 0){ //{# Se tipo for 0, marcar o checkbox ao lado do select #}
+											document.getElementById("habil_comparar_check"+i).checked = true;
+											gerenciaBotao_comparar(true, i, 1);
+										}
+									}
+								}
+							}
+						
+						
+						}else{//{# Se há mais selects que habilidades, desabilita os que sobram #}
+							document.getElementById("habil_comparar_check"+i).disabled = true;
+							document.getElementById("habil_comparar_select"+i).disabled = true;
+						}
+						
+					}
+				}
+			}
+
+
+			function gerenciaBotao(valor, linha, tipo){
+				//{# Esta função visa habilitar/desabilitar o botão de desenho do gráfico, baseando-se no número de checkboxes marcadas #}
+				//{# Além disso, ela modifica o conteúdo dos selects caso a checkbox esteja marcada ou não #}
+				//{# O parâmetro valor indica se a checkbox está marcada (true). Linha indica qual a linha da checkbox em questão. #}
+				//{# Já o parâmetro tipo indica de onde a função foi chamada. #} 
+				//{# tipo == 0: Função chamada pelo evento onclick da checkbox habil_check #}
+				//{# tipo == 1: Função chamada pela função preencheSelect (1) #}
+				if(valor){//{# Se o checkbox foi marcado, devo atualiuzar a num_marcados e não permitir a seleção da habilidade do select ao lado nos demais #}
+					num_marcados += 1;
+					if (tipo==0){ //{# Se a função foi chamada pelo onclick, precisa-se atualizar os selects: #}
+						var habil_selecionada = $("#habil_select"+linha).val(); //{# Habilidade a ser excluída dos demais selects #}
+						data_nomes_grafico[linha] = habil_selecionada;
+						for (i=0; i<data_niveis_originais ; i++){
+							if(data_nomes_originais[i] == habil_selecionada){
+								data_niveis_grafico[linha] = data_niveis_originais[i];
+								break;
+							}
+						}
+						preencheSelect(2); //{# Atualização dos selects #}
+					}
+				}else{//{# Se o checkbox foi desmarcado, devo atualizar a num_marcados e permitir a seleção da habilidade do select ao lado nos demais #}
+					num_marcados -= 1;
+					if(tipo == 0){ //{# Se a função foi chamada pelo onclick, precisa-se atualizar os selects: #}
+						data_nomes_grafico[linha] = "";
+						preencheSelect(2); //{# Atualização dos selects #}
+					}
+				}
+				MIN_HABILIDADES_GRAFICO = {{MIN_HABILIDADES_GRAFICO}};
+				if(num_marcados >= MIN_HABILIDADES_GRAFICO){ //{# Habilitar ou não o botão de desenhar gráfico #}
+					document.getElementById("botao_grafico").disabled = false;
+				}else{
+					document.getElementById("botao_grafico").disabled = true;
+				}
+			}
+
+			function gerenciaBotao_comparar(valor, linha, tipo){
+				//{# Esta função visa habilitar/desabilitar o botão de desenho do gráfico, baseando-se no número de checkboxes marcadas #}
+				//{# Além disso, ela modifica o conteúdo dos selects caso a checkbox esteja marcada ou não #}
+				//{# O parâmetro valor indica se a checkbox está marcada (true). Linha indica qual a linha da checkbox em questão. #}
+				//{# Já o parâmetro tipo indica de onde a função foi chamada. #} 
+				//{# tipo == 0: Função chamada pelo evento onclick da checkbox habil_comparar_check #}
+				//{# tipo == 1: Função chamada pela função preencheSelect #}
+				var comparar_checked = document.getElementById("check_comparar").checked;
+				if(valor){//{# Se o checkbox foi marcado, devo atualizar a num_marcados e não permitir a seleção da habilidade do select ao lado nos demais #}
+					num_marcados_comparar += 1;
+					if (tipo==0){ //{# Se a função foi chamada pelo onclick, precisa-se atualizar os selects: #}
+						var habil_selecionada = $("#habil_comparar_select"+linha).val(); //{# Habilidade a ser excluída dos demais selects #}
+						nomes_em_comum_grafico[linha] = habil_selecionada;
+						for (i=0; i<niveis_em_comum_originais ; i++){
+							if(nomes_em_comum_originais[i] == habil_selecionada){
+								niveis_em_comum_grafico[linha] = niveis_em_comum_originais[i];
+								break;
+							}
+						}
+						if(comparar_checked){
+							data_nomes_grafico[linha] = habil_selecionada;
+							for (i=0; i<data_niveis_originais ; i++){
+								if(data_nomes_originais[i] == habil_selecionada){
+									data_niveis_grafico[linha] = data_niveis_originais[i];
+									break;
+								}
+							}
+							num_marcados = num_marcados_comparar;
+							preencheSelect(3);
+						}else{
+							preencheSelect(2); //{# Atualização dos selects #}
+						}
+					}
+				}else{//{# Se o checkbox foi desmarcado, devo atualizar a num_marcados e permitir a seleção da habilidade do select ao lado nos demais #}
+					num_marcados_comparar -= 1;
+					if(tipo == 0){ //{# Se a função foi chamada pelo onclick, precisa-se atualizar os selects: #}
+						nomes_em_comum_grafico[linha] = "";
+						if(comparar_checked){
+							data_nomes_grafico[linha] = "";
+							num_marcados = num_marcados_comparar;
+							preencheSelect(3);
+						}else{
+							preencheSelect(2); //{# Atualização dos selects #}
+						}
+					}
+				}
+				var MIN_HABILIDADES_GRAFICO = {{MIN_HABILIDADES_GRAFICO}};
+				if (comparar_checked){
+					if(num_marcados >= MIN_HABILIDADES_GRAFICO && num_marcados_comparar >= MIN_HABILIDADES_GRAFICO){
+						document.getElementById("botao_grafico").disabled = false;
+					}else{
+						document.getElementById("botao_grafico").disabled = true;
+					}
+				}else{
+					if(num_marcados >= MIN_HABILIDADES_GRAFICO){
+						document.getElementById("botao_grafico").disabled = false;
+					}else{
+						document.getElementById("botao_grafico").disabled = true;
+					}	
+				}
+			}
+			
+			function preencherHabilidadesEmComum(valor){
+				//{# Esta função visa alterar o conteúdo dos selects. É chamada pela checkbox check_comparar#}
+				var MIN_HABILIDADES_GRAFICO = {{MIN_HABILIDADES_GRAFICO}};
+				if(valor){//{# Se a caixa de comparar habilidades está MARCADA #}
+					data_nomes_grafico = nomes_em_comum_grafico;//{# Selects do target serão setados para os mesmos valores dos do usuário que está fazendo a comparação #}					
+					for(i=0; i<{{MAX_HABILIDADES_GRAFICO}}; i++){
+						document.getElementById("habil_select"+i).disabled = true;//{# Desabilitar selects e checkboxes do target #}
+						document.getElementById("habil_check"+i).disabled = true;//{# Desabilitar selects e checkboxes do target #}
+						document.getElementById("referencias"+i).style.display = "none"; //{# Desabilitar os botões de referências #}
+						document.getElementById("referencias_comparar"+i).style.display = "none"; //{# Desabilitar os botões de referências #}
+						var nome_habil = nomes_em_comum_grafico[i]; //{# Pegando o nome da habilidade desta linha para descobrir seu nível #}
+						if(nome_habil != ""){ 
+							var indice_habil = data_nomes_originais.indexOf(nome_habil); //{# Pega-se o índice da habilidade no array de nomes originais #}
+							data_niveis_grafico[i] = data_niveis_originais[indice_habil]; //{# Salva-se o nível desta habilidade no array a ser desenhado #}
+						}
+					}
+					num_marcados = num_marcados_comparar;
+					preencheSelect(3);
+					if(num_marcados_comparar >= MIN_HABILIDADES_GRAFICO){
+						document.getElementById("botao_grafico").disabled = false;
+					}else{
+						document.getElementById("botao_grafico").disabled = true;
+					}
+				}else{//{# Se a caixa de comparar habilidades está DESmarcada #}
+					data_nomes_grafico = data_nomes_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+					data_niveis_grafico = data_niveis_originais.slice(0, {{MAX_HABILIDADES_GRAFICO}});
+					//{# Preenchendo demais espaços com vazio, caso haja menos que MAX_HABILIDADES_GRAFICO habilidades no total #}
+					while(data_nomes_grafico.length < {{MAX_HABILIDADES_GRAFICO}}){
+						data_nomes_grafico.push("");
+						data_niveis_grafico.push("");
+					}
+					for(i=0; i<{{MAX_HABILIDADES_GRAFICO}}; i++){
+						document.getElementById("habil_select"+i).disabled = false;//{# Habilitar selects e checkboxes do target #}
+						document.getElementById("habil_check"+i).disabled = false;//{# Habilitar selects e checkboxes do target #}
+					}
+					num_marcados = 0;
+					num_marcados_comparar = 0;
+					preencheSelect(0);
+					document.getElementById("botao_grafico").disabled = false;
+				}
+			}
+			
+			function atualizaGrafico(){
+				//{# Esta função visa redesenhar o gráfico de habilidades após o clique no botão Desenhar Gráfico #}
+				//{# Cria e popula arrays para o desenho: #}
+				var vetor_nomes = [];
+				var vetor_niveis = [];
+				var vetor_niveis_comparar = [];
+				var vetor_legendas = [];
+				data_nomes_20char = truncaNomes(data_nomes_grafico);
+				for (i=0; i<{{MAX_HABILIDADES_GRAFICO}}; i++){
+					if(data_nomes_grafico[i] != ""){
+						vetor_nomes.push(data_nomes_20char[i]);
+						vetor_legendas.push(data_nomes_grafico[i]);
+						vetor_niveis.push(data_niveis_grafico[i]);
+						if(perfil_target){
+							vetor_niveis_comparar.push(niveis_em_comum_grafico[i]);
+						}
+					}
+				}
+				
+				try{
+					var checked = document.getElementById("check_comparar").checked;	
+				}catch(err){
+					var checked = false;
+				}
+				if(!perfil_target || !checked){
+					data = {
+						labels: vetor_nomes,
+						nomes_legenda: vetor_legendas,
+						datasets: [
+							{
+						        label: "Habilidades",
+						        fillColor: "rgba(0,0,220,0.2)",
+						        strokeColor: "rgba(0,0,220,1)",
+						        pointColor: "rgba(0,0,0,1)",
+						        pointStrokeColor: "#fff",
+						        pointHighlightFill: "#000",
+						        pointHighlightStroke: "rgba(0,0,0,1)",
+						        data: vetor_niveis
+							}
+						]
+					}
+				}else{
+					data = {
+						labels: vetor_nomes,
+						datasets: [
+							{
+							        label: "{{REGISTRY_ID}}",
+							        fillColor: "rgba(0,0,220,0.4)",
+							        strokeColor: "rgba(0,0,220,1)",
+							        pointColor: "rgba(0,0,220,1)",
+							        pointStrokeColor: "#fff",
+							        pointHighlightFill: "#000",
+							        pointHighlightStroke: "rgba(0,0,0,1)",
+							        data: vetor_niveis
+							},
+							{
+							        label: "{{LOGADO}}",
+							        fillColor: "rgba(50,220,50,0.4)",
+							        strokeColor: "rgba(50,220,50,1)",
+							        pointColor: "rgba(0,220,0,1)",
+							        pointStrokeColor: "#fff",
+							        pointHighlightFill: "#000",
+							        pointHighlightStroke: "rgba(0,0,0,1)",
+							        data: vetor_niveis_comparar
+							}
+						]
+					};
+				}
+				$("#myChart").remove(); //{# Remove o gráfico antigo #}
+				var canvas = document.createElement('canvas'); //{# Cria um novo, com as propriedades abaixo #}
+				canvas.id     = "myChart";
+				canvas.width  = 800;
+				canvas.height = 400;
+				document.getElementById("grafico").appendChild(canvas); //{# Adiciona o gráfico à tabela do html #}
+				ctx = document.getElementById("myChart").getContext("2d");
+				myRadarChart = new Chart(ctx).Radar(data, options); //{# Gera o gráfico #}
+			}
+			
+			function pegaReferencias(linha, comparar){
+				//{# Esta função visa gerar um PopUp com as referẽncias de uma habilidade. #}
+				//{# linha = parâmetro que diz qual a linha da habilidade requisitada. #}
+				//{# comparar = booleano que diz se a habilidade é do próprio usuário logado (True) ou do usuário-alvo (False) #}
+				if(comparar){
+					var usuario = "{{LOGADO}}"
+					var habil_selecionada = $("#habil_comparar_select"+linha).val();
+					var id = ids_em_comum_originais[nomes_em_comum_originais.indexOf(habil_selecionada)]
+				}else{
+					var usuario = "{{REGISTRY_ID}}"
+					var habil_selecionada = $("#habil_select"+linha).val();
+					var id = data_ids_originais[data_nomes_originais.indexOf(habil_selecionada)];
+				}
+				TINY.box.show({iframe:'/profile/skills/productions/references/confirmed/'+usuario+"/"+id,width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40});				
+			}
+			function truncaNomes(nomes_grafico){
+				//{# Esta função trunca nomes de habilidades a serem exibidas no gráfico para que possuam no máximo 20 caracteres #}
+				//{# nomes_grafico = array com os nomes a serem truncados #}
+				var nomes_20char = [];
+				for (i=0; i<nomes_grafico.length; i++){
+					if(nomes_grafico[i].length <= 23){
+						nomes_20char[i] = nomes_grafico[i];
+					}else{
+						nomes_20char[i] = nomes_grafico[i].slice(0,20)+"...";
+					}
+				}
+				return nomes_20char;
+			}
+			
+		</script>
+	{% end %}
+{% end %}
+
+

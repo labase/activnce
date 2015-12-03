@@ -1,0 +1,11 @@
+<div style="width:150px; height:21px; padding:0px;">
+ <img src="/static/imagens/escala/{{cor}}.png" width="{{escala}}px" height="21px" />
+ <div style="position:relative; top:-21px; width:150px; height:21px;">
+  {{ modules.ShowMolduraInicio("Laranja","","","150px") }}
+   <div style="width:137px;height:14px;overflow:hidden;margin-top:-4px;margin-bottom:-3px;font-family:Helvetica, Arial;font-size:10pt;">
+    <span style="float:left;color:{{ "white" if escala>10 else "black" }};">{{valor}}</span>
+    <span style="float:right;color:#666;">{{maximo}}</span>
+   </div>
+  {{ modules.ShowMolduraFim("Laranja") }}
+ </div>
+</div>

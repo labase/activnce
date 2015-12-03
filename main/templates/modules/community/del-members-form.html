@@ -1,0 +1,35 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+    {% if MEMBERS %}
+	  	<form action="" method="post" name="select_members" onsubmit="return confirm('Tem certeza que deseja excluir estes participantes da comunidade? Esta operação não poderá ser desfeita.');">
+		{% raw xsrf_form_html() %}
+		
+	    {{ modules.ShowMolduraInicio("Gerenciar participantes") }}
+		{{ modules.ShowTabs(TABS) }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	    <b>Selecione abaixo os participantes a serem excluídos da comunidade (os administradores não podem ser excluídos):</b>
+	    <br/>
+        <table>
+    
+	    {% for part in MEMBERS %}
+        	<tr><td>	    
+	        {% if not part[2] %}
+	        	<input type="checkbox" name="{{part[0]}}" />
+	        {% end %} 
+	        </td>
+	        <td>
+	        <img src="/photo/{{part[0]}}?size=P" width="30" height="40" /> {{part[1]}} ({{part[0]}})
+	        </td></tr>
+	    {% end %}
+	    <tr><td></td><td><br/><input type="submit" value="Excluir participantes da comunidade" />
+
+        </table>
+        	    
+	    {{ modules.ShowMolduraFim() }}
+	    </form>
+    {% end %}
+        
+{% end %}
+

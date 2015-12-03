@@ -1,0 +1,19 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	<form name="novoreply" action="{{ request.path }}" method="post">
+	<input type="hidden" name="id" value="{% if "_id" in REPLY %}{{REPLY['_id']}}{% end %}" />
+	{% raw xsrf_form_html() %}
+	
+	{{ modules.ShowMolduraInicio(titulo=u"Responder tópico") }}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	<h2>{{ _("Titulo") }}</h2>
+	<input name="titulo" value="{{REPLY["titulo"]}}" size="70" type="text"/>
+
+	<h2>{{ _("Content") }}</h2>
+	<textarea name="conteudo" rows="6" cols="70">{%if REPLY["conteudo"]%}{{REPLY["conteudo"]}}{%end%}</textarea>
+
+	
+    {{ modules.ShowMolduraFim("novoreply") }}
+	</form>
+{% end %}	

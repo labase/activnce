@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{{ PAGETITLE }}</title>
+<link rel="stylesheet" href="/static/tnm_medicina.css" type="text/css" />
+<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+</head>
+<body class="body">
+<table width="100%">
+<tr>
+<td align="center"><img src="/static/imagens/activMedicina/logomedicinaufrj_index.png"/></td>
+<td class="form_index">
+<img src="/static/imagens/activMedicina/subtitulo_medicina_index.png"/><br/>
+<br/>
+<form name="logar" action="/login" method="post">
+{{ xsrf_form_html() }}
+<input type="hidden" name="next" value="{{ escape(NEXT) }}"/>
+<input type="hidden" name="tipo" value="tnm"/>
+<table class="form_preencher">
+<tr>
+<td colspan="2" class="bemvindo"><img src="/static/imagens/activMedicina/bemvindomedicina_index.png"/><br/><br/><br/></td>
+</tr>
+<td><img src="/static/imagens/activMedicina/login.png"></td>
+<td><input type="text" name="user" size="20"/></td>
+<td></td>
+</tr>
+<tr>
+<td><img src="/static/imagens/activMedicina/senha.png"/></td>
+<td><input type="password" name="passwd" size="20"/></td>
+<td><input type="image" src="/static/imagens/activMedicina/ok.png" border="0" class="form_enviar"/></td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2">
+<a href="/forgotpasswd"><img src="/static/imagens/activMedicina/esqueceuasenha.png" border="0"/></a>
+<br/><br/>
+<a href="/new/user"><img src="/static/imagens/activMedicina/cadastrese.png" border="0"/></a>
+</td>
+</tr>
+</table>
+</form>
+</td>
+</tr>
+</table>
+</body>
+</html>

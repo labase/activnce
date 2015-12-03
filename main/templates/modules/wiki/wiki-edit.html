@@ -1,0 +1,80 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+    <form name="criarpagina" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    
+    {{modules.ShowMolduraInicio(u"Alterar página")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+    <input type="hidden" name="nomepag" value="{{ escape(WIKIDATA["nomepag"]) }}"/>
+    <input type="hidden" name="revision" value="{{ escape(WIKIDATA["_rev"]) }}"/>
+    <h2>Nome da página:</h2>{{ escape(WIKIDATA["nomepag"]) }} ({{ escape(WIKIDATA["nomepag_id"]) }})
+    <br/><br/>
+    
+    {% if TAGSDB %}
+        <h2>Tags Alteradas pelo Outro Usuário:</h2> {{ modules.InputTags(TAGSDB) }}
+
+    {% else %}
+        <h2>Tags:</h2> {{ modules.InputTags(WIKIDATA["tags"]) }}
+
+    {% end %}
+    <br/><br/>
+    
+       {% if CONTEUDODB %}
+           <h2>Conteúdo Alterado pelo Outro Usuário:</h2>
+
+           
+           <textarea name="conteudo">{{ CONTEUDODB }}</textarea>
+           <script type="text/javascript">
+               CKEDITOR.replace( 'conteudo',
+                   {
+                     allowedContent: true,
+	                 filebrowserBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=wiki',
+	                 filebrowserImageBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=image',
+	                 filebrowserFlashBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=flash'                     
+                   });
+           </script>
+           <p>
+    
+            <h1>Sua Página:</h1>
+            Copie e cole as alterações que deseje aproveitar, desta área para a de cima, e envie novamente o formulário.
+            <br/><br/>
+            <h2>Suas Tags:</h2> 
+            
+            {% if WIKIDATA["tags"] %}
+                {{ modules.ShowTags(WIKIDATA["tags"]) }}
+            {% end %}
+
+			<br/>
+            <h2>Seu Conteúdo:</h2>
+            <textarea name="seuconteudo">{{ CONTEUDO }}</textarea>
+            <script type="text/javascript">
+               CKEDITOR.replace( 'seuconteudo',
+                   {
+                      toolbar : []                  
+                   });
+            </script>
+
+       {% else %}
+           <h2>Conteúdo:</h2>
+           
+           <textarea name="conteudo">{{ CONTEUDO }}</textarea>
+           <script type="text/javascript">
+               CKEDITOR.replace( 'conteudo',
+                   {
+                     allowedContent: true,
+	                 filebrowserBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=wiki',
+	                 filebrowserImageBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=image',
+	                 filebrowserFlashBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=flash'  
+                   });
+           </script>
+           <p>
+    
+       {% end %}
+
+     {{ modules.ShowMolduraFim("criarpagina") }}
+       
+   </form>
+{% end %}

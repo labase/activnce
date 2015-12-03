@@ -1,0 +1,26 @@
+{% extends "../../base-foto.html" %}
+
+
+
+{% block body-right %}
+<p><form name="cadastro" action="{{ request.path }}" method="post" >
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(titulo=u"Registrar conta Google no ActivUFRJ", width="100%")}}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+		<p>Para que sua Agenda Google seja visualizada a partir do ActivUFRJ, você precisa registrar sua conta:</p>
+		<br/>
+		<table>
+		<tr><td valign="top">
+		Digite seu login no <img src="/static/imagens/google/google32.jpeg" align="middle" />
+		</td>
+		<td>
+		<input id="email-google" name="email-google" size="50" type="text" value="{{ ACCOUNT_GOOGLE }}" />
+		<br/>
+		Exemplo: fulano@gmail.com
+		</td></tr>
+		</table> 
+	{{ modules.ShowMolduraFim("cadastro") }}
+</form></p>
+
+{% end %}

@@ -1,0 +1,88 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- interface para exibir árvore cronológica de posts -->
+	<script type="text/javascript" src="/static/mktree/mktree.js"></script>
+	<link rel="stylesheet" href="/static/mktree/mktree.css" type="text/css">
+{% end %}
+
+{% block body-right %}
+
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS)}}
+    {% if LOGADO %}   
+    {{ modules.EditAvaliaArtefato(LOGADO, "blog", POST["registry_id"], POST["post_id"]) }}
+    {% end %}
+
+    {{ POST_DATE }}
+    <h1>{{ escape(POST["titulo"]) }}</h1>
+    <p>{{ POST["conteudo"] }}</p>
+    
+    <span style="color:#999;font-size:small;">
+    <p>{{ _("Posted by") }} <a href="/user/{{ escape(POST["owner"]) }}">{{ escape(POST["owner"]) }}</a> {{ _("at") }} {{ POST["data_cri"] }}</p>
+    {% if "alterado_por" in POST and POST["alterado_por"] %}
+        <p>{{ _("Updated by") }} <a href="/user/{{ escape(POST["alterado_por"]) }}">{{ escape(POST["alterado_por"]) }}</a> {{ _("at") }} {{ POST["data_alt"] }}</p>
+    {% end %}
+    </span>
+    {% if POST["tags"] %}
+        <i>{{ _("Tags") }}:</i><br/>
+       {{ modules.ShowTags(POST["tags"]) }}            
+    {% end %}
+    <br/><br/><br/>
+    
+    <a name="comment"></a>
+    
+    <h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+    {% for comment in POST["comentarios"] %}
+    	<p>
+    	{{ comment["comment"] }}
+    	<br/><span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">{{ comment["owner"] }}</a> em {{ comment["data_fmt"] }}</span>
+            {% if comment["apagar"] %}
+                <a href="/blog/comment/delete?id={{ comment['_id'] }}" title="{{ _("Delete") }}">
+                <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+            {% end %}
+    	</p>
+    {% end %}
+    <br/><br/>
+    
+    {% if POST["comentar"] %}
+        <h2>{{ _("Post a comment") }}:</h2>
+        <form name="postcomment"  action="/blog/comment/{{ escape(POST["registry_id"]) }}/{{ escape(POST["post_id"]) }}" method="post">
+    	{% raw xsrf_form_html() %}
+    
+    	<textarea rows="6" cols="70" name="comment"></textarea>
+    	{{ modules.ShowMolduraFim("postcomment") }}
+        </form>
+    {% else %}
+        {% if TIPO_REGISTRY=="member" %}
+            <span style="color:#999;font-size:small;">Somente os amigos de {{ REGISTRY_ID }} podem comentar.</span>
+        {% elif TIPO_REGISTRY=="community" %}
+            <span style="color:#999;font-size:small;">Somente os participantes de {{ REGISTRY_ID }} podem comentar.</span>
+        {% end %}
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+
+{% end %}
+
+{% block body-left %}
+    <br/><br/><br/>
+    {{modules.ShowMolduraInicio(width="100%", titulo="Arquivo do blog")}}
+
+    <ul class="mktree" id="tree1">
+    {% for ano in SORTEDKEYS(ARCHIVE, rev_order=True) %}
+        <li class="liOpen">{{ ano }}
+        <ul>
+        {% for mes in SORTEDKEYS(ARCHIVE[ano], rev_order=True) %}
+            <li>{{ MESES[int(mes)-1] }}
+                <ul>
+                    {% for item in ARCHIVE[ano][mes] %}
+                       <li><a href="/blog/{{ item[0] }}">{{ item[1] }}</a></li>
+                    {% end %}
+                </ul>
+            </li>
+        {% end %}
+        </ul>
+    {% end %}
+    </ul>
+    <br/>
+    {{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,92 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+	<script src="/static/jquery/jquery-1.6.2.js"></script>
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+	
+
+{% end %}
+
+{% block body %} 
+	{{modules.ShowMolduraInicio()}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	<div style="overflow:auto">
+		{% if REVIEWDATA %}
+			<p> Aqui você pode rever as habilidades que você já avaliou deste usuário, além de mudar seus níveis. </p>
+			<table width="100%">
+				<tr><td align="center"><b>Habilidade</b></td>
+					<td align="center"><b>Nível</b></td>
+					<td width="20%"></td>
+				</tr>
+
+				{% for contador in range(len(REVIEWDATA)) %}
+
+				
+				<tr id="opcoes_habilidade{{contador}}"><td align="center" id="nome_habilidade{{contador}}">{{escape(REVIEWDATA[contador]["nome_habilidade"])}}</td>
+					<td align="center"><select name="nivel_habilidade{{contador}}" id="nivel_habilidade{{contador}}" onchange="validaHabilidade({{contador}})">
+						<option value="" selected></option>
+						<option value="novato" {% if REVIEWDATA[contador]["nivel"] == 'novato' %} selected {%end%}>Novato</option>
+						<option value="iniciante" {% if REVIEWDATA[contador]["nivel"] == 'iniciante' %} selected {%end%}>Iniciante Avançado</option>
+						<option value="apto" {% if REVIEWDATA[contador]["nivel"] == 'apto' %} selected {%end%}>Apto</option>
+						<option value="proficiente" {% if REVIEWDATA[contador]["nivel"] == 'proficiente' %} selected {%end%}>Proficiente</option>
+						<option value="especialista" {% if REVIEWDATA[contador]["nivel"] == 'especialista' %} selected {%end%}>Especialista</option>
+					</select></td>
+					
+						<td align="center" id="habilidade_enviada{{contador}}" style="color:green;display:none;">Habilidade enviada!</td>
+				</tr>
+				{% end %}
+			</table>
+			<script type="text/javascript">
+				var niveis_iniciais = new Array();
+				$(document).ready(
+					function(){
+						for(i=0; i<{{len(REVIEWDATA)}}; i++){
+							niveis_iniciais[niveis_iniciais.length] = $('#nivel_habilidade'+i).find(":selected").val();
+						}
+				});
+
+				function validaHabilidade(linha){
+					var xmlhttp;
+					if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+						xmlhttp=new XMLHttpRequest();
+					}
+					else{// code for IE6, IE5
+						xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					xmlhttp.onreadystatechange=function(){
+						if (xmlhttp.readyState==4 && xmlhttp.status==200){
+							//Codigo ao receber resposta da aplicação
+							if( xmlhttp.responseText == "success"){
+								niveis_iniciais[linha] = nivel;
+								if (document.getElementById("habilidade_enviada"+linha).style.display == 'none'){
+									$('#habilidade_enviada'+linha).fadeIn();
+									$('#habilidade_enviada'+linha).fadeOut(2000);
+								}
+							}
+						}
+					}
+					_xsrf=getCookie("_xsrf");
+					tipo = "existente";
+					target = "{{TARGET}}";
+					nivel = document.getElementById("nivel_habilidade"+linha).value;
+					nome_habilidade = document.getElementById("nome_habilidade"+linha).innerHTML;
+					if((nivel != niveis_iniciais[linha]) && (nivel != "")){
+						data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome_habilidade=" + nome_habilidade + "&target=" + target;
+						xmlhttp.open("POST","/profile/skills/validate/social",true);
+						xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+						xmlhttp.send(data);
+					}
+					if(nivel == ""){
+						$('#nivel_habilidade'+linha+" option[value="+niveis_iniciais[linha]+"]").attr('selected','selected');
+					}
+				}
+			</script>
+		{% else %}
+			<p> Você ainda não sugeriu nenhuma habilidade para este usuário. </p>
+		{% end %}
+	</div>
+    {{ modules.ShowMolduraFim() }}
+{% end %}
+
+

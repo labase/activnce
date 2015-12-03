@@ -1,0 +1,344 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script src="/static/jquery/tagsinput/jquery.tagsinput.js"></script>
+
+	<script>
+		$(function() {
+			$( "#forms-exp-form" ).tooltip({
+				position: {
+					my: "left+15 center",
+					at: "right center",
+					using: function( position ) {
+						$( this ).css( position );
+						$( "<div>" ).appendTo( this );
+					}
+				}
+			});
+	  	});
+  	</script>	
+	 <style>
+		.ui-tooltip  {
+			border: 2px solid white;
+			padding: 10px 20px;
+			border-radius: 20px;
+			font: bold 12px "Arial";
+			box-shadow: 0 0 7px black;
+		}
+	</style>
+
+    <script type="text/javascript">
+    function closeJS()
+    {
+        location.href = "{{request.path}}?{{request.query}}";
+        //history.go(0);
+    }
+    </script>
+
+	<script> 
+		function disable_formacao_data_fim(valor){
+			valor = !valor;
+			document.formacao.formacao_data_fim_mes.disabled = valor;
+			document.formacao.formacao_data_fim_ano.disabled = valor;
+			if(valor){
+				document.formacao.formacao_data_fim_mes.value = "";
+				document.formacao.formacao_data_fim_ano.value = "";
+				document.formacao.formacao_data_fim_mes.style.backgroundColor = "#d3d3d3";
+				document.formacao.formacao_data_fim_ano.style.backgroundColor = "#d3d3d3";
+			}
+			else{
+				document.formacao.formacao_data_fim_mes.style.backgroundColor = "white";
+				document.formacao.formacao_data_fim_ano.style.backgroundColor = "white";
+			}
+		}
+
+		function enable_experiencias_data_fim(valor){
+			document.experiencias.experiencias_data_fim_mes.disabled = valor;
+			document.experiencias.experiencias_data_fim_ano.disabled = valor;
+			if(valor){
+				document.experiencias.experiencias_data_fim_mes.value = "";
+				document.experiencias.experiencias_data_fim_ano.value = "";
+				document.experiencias.experiencias_data_fim_mes.style.backgroundColor = "#d3d3d3";
+				document.experiencias.experiencias_data_fim_ano.style.backgroundColor = "#d3d3d3";
+			}
+			else{
+				document.experiencias.experiencias_data_fim_mes.style.backgroundColor = "white";
+				document.experiencias.experiencias_data_fim_ano.style.backgroundColor = "white";
+			}
+		}
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			for (i = new Date().getFullYear(); i > 1900; i--){
+				$('#formacao_data_ini_ano').append($('<option />').val(i).html(i));
+				$('#formacao_data_fim_ano').append($('<option />').val(i).html(i));
+				$('#experiencias_data_ini_ano').append($('<option />').val(i).html(i));
+				$('#experiencias_data_fim_ano').append($('<option />').val(i).html(i));
+			}
+				document.experiencias.experiencias_data_fim_mes.style.backgroundColor = "#d3d3d3";
+				document.experiencias.experiencias_data_fim_ano.style.backgroundColor = "#d3d3d3";
+				
+				var chamarPopup = "{{ HABILIDADES_SEM_NIVEL }}";
+				if (chamarPopup == "True"){
+					TINY.box.show( {iframe:'/profile/skills/new/skill/level',width:700,height:400,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}});
+				}
+		});
+	</script>
+{% end %}
+
+{% block body-right %} 
+	<div id="forms-exp-form">
+	{{modules.ShowMolduraInicio(escape("Formação e Experiências"))}}
+		{{ modules.ShowTabs(TABS) }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+		<p align="justify">Aqui você pode listar suas experiências acadêmicas e profissionais. O ActivUFRJ utilizará as informações que você disponibilizar para te oferecer recomendações personalizadas de pessoas e conteúdo baseando-se nos seus interesses.</p>
+		{{modules.ShowMolduraInicio()}}
+		<h2>Formação</h2>
+		{% if FORMACAO %}
+			<table cellspacing="10" width="100%">
+				<tr>
+					<td align="center"><b>Instituição</b></td>
+					<td align="center"><b>Curso</b></td>
+					<td align="center"><b>Nível</b></td>
+					<td align="center"><b>Data de Início</b></td>
+					<td align="center"><b>Data de Conclusão</b></td>
+					<td align="center"><b>Editar Formação</b></td>
+					<td align="center"><b>Remover Formação</b></td>
+				</tr>
+				{% for item in FORMACAO %}
+				<tr>
+					<td align="center">{{ escape(item["instituicao"]) }}</td>
+					{% if item["curso"] %}
+						<td align="center">{{ escape(item["curso"]) }}</td>
+					{% else %}
+						<td align="center"> - </td>
+					{% end %}
+					<td align="center">{{ escape(item["nivel"]) }}</td>
+					<td align="center">{{ escape(item["data_ini"]) }}</td>
+					{% if item["data_fim"] %}
+						<td align="center">{{ escape(item["data_fim"]) }}</td>
+					{% else %}
+						<td align="center"> - </td>
+					{% end %}
+					<td align="center"><a href="#" title="Editar" onclick="TINY.box.show({iframe:'/profile/skills/edit/academic/{{ escape(item['id_formacao']) }}',width:700,height:400,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                        <img src="/static/imagens/icones/edit16.png" alt="Editar" style="hspace:5px;"/></td>
+					<td align="center"><a onclick="return confirm('Tem certeza que deseja remover esta formação?');" href="/profile/skills/delete/academic/{{ escape(item['id_formacao']) }}" title="Remover">
+                        <img src="/static/imagens/icones/delete16.png" alt="Remover" style="hspace:5px;"/></td>
+				</tr>
+				{% end %}
+			</table>
+		{% else %}
+			</br>
+			<h3> Você ainda não preencheu uma formação acadêmica. </h3>
+		{% end %}
+		{{ modules.ShowMolduraFim() }}
+
+
+		<form name="formacao" id="Formacao" action="{{ request.path }}/academic" method="post" enctype="multipart/form-data">
+			{% raw xsrf_form_html() %}
+			{{modules.ShowMolduraInicio()}}
+			<h2>Adicionar Formação</h2>
+			<table cellpadding="20">
+			<tr><td>
+				<table cellspacing="15">
+				<tr>
+					<td>Instituição: </td>
+					<td><input name="formacao_instituicao" id="formacao_instituicao" type="text" size="30" title="Nome da Instituição de Ensino. Exemplo: &#013;Universidade Federal do Rio de Janeiro"/></td>
+
+				</tr><tr>
+					<td>Curso: </td>
+					<td><input name="formacao_curso" id="formacao_curso" type="text" size="30" title="Curso, caso se aplique. Exemplo: &#013;Medicina"/></td>
+
+				</tr><tr>
+					<td>Nível: </td>
+					<td><select name="formacao_nivel" title="Nível acadêmico da formação">
+					<option value="Não Informado" selected>Não Informado</option>
+					<option value="Ensino Fundamental">Ensino Fundamental</option>
+					<option value="Ensino Médio">Ensino Médio</option>
+					<option value="Graduação">Graduação</option>
+					<option value="Pós-Graduação">Pós-Graduação</option>
+					<option value="Mestrado">Mestrado</option>
+					<option value="Doutorado">Doutorado</option>
+					<option value="Pós-Doutorado">Pós-Doutorado</option>
+					</select></td>
+
+				</tr><tr>
+				<td><label for="formacao_data_ini">Data de Início: </label></td>
+				<td><select name="formacao_data_ini_mes" title="Mês de começo da formação">
+					<option value="01" >Janeiro</option>
+					<option value="02" >Fevereiro</option>
+					<option value="03" >Março</option>
+					<option value="04" >Abril</option>
+					<option value="05" >Maio</option>
+					<option value="06" >Junho</option>
+					<option value="07" >Julho</option>
+					<option value="08" >Agosto</option>
+					<option value="09" >Setembro</option>
+					<option value="10" >Outubro</option>
+					<option value="11" >Novembro</option>
+					<option value="12" >Dezembro</option>
+					</select>
+					<select name="formacao_data_ini_ano" id="formacao_data_ini_ano" title="Ano de começo da formação"></select>
+				</td>
+				</tr><tr>
+				<td><label for="formacao_check_andamento">Formação concluída </label></td>
+				<td><input type="checkbox" id="formacao_check_andamento" name="formacao_check_andamento" checked onclick="disable_formacao_data_fim(this.checked)"></td>
+
+				</tr><tr>
+				<td><label for="formacao_data_fim">Data de Término: </label></td>
+				<td><select name="formacao_data_fim_mes" title="Mês de término da formação. Se esta continua em andamento, marque acima.">
+					<option value="01" >Janeiro</option>
+					<option value="02" >Fevereiro</option>
+					<option value="03" >Março</option>
+					<option value="04" >Abril</option>
+					<option value="05" >Maio</option>
+					<option value="06" >Junho</option>
+					<option value="07" >Julho</option>
+					<option value="08" >Agosto</option>
+					<option value="09" >Setembro</option>
+					<option value="10" >Outubro</option>
+					<option value="11" >Novembro</option>
+					<option value="12" >Dezembro</option>
+					</select>
+					<select name="formacao_data_fim_ano" id="formacao_data_fim_ano" title="Ano de término da formação. Se esta continua em andamento, marque acima."></select>
+				</td>
+				</tr>
+				</table>
+			</td><td>
+				<table>
+				<tr>	
+				<td>Descrição:</td>
+				<td><textarea rows="3" cols="40" name="formacao_descricao" title="Uma breve descrição do curso/aprendizado desenvolvido." style="resize: none;"></textarea></td>
+
+				</tr><tr>
+				<td>Habilidades</br><i>(separe por vírgulas)</i>:</td>
+				<!-- Campo de Skills -->
+				<td title="Informe habilidades adquiridas e/ou desenvolvidas durante esta formação, estas informações farão parte do seu mapa de habilidades.">{{ modules.InputTags([], "academic_skills") }}</td>
+
+				</tr>
+				</table>
+			</table>
+		</form>      
+		{{ modules.ShowMolduraFim("formacao") }}
+		</br>
+
+		{{modules.ShowMolduraInicio()}}
+		<h2>Experiências Profissionais</h2>
+		{% if EXPERIENCIAS %}
+			<table cellspacing="10" width="100%">
+				<tr>
+					<td align="center"><b>Empresa/Projeto</b></td>
+					<td align="center"><b>Cargo</b></td>
+					<td align="center"><b>Data de Início</b></td>
+					<td align="center"><b>Data de Saída</b></td>
+					<td align="center"><b>Editar Experiência</b></td>
+					<td align="center"><b>Remover Experiência</b></td>
+				</tr>
+				{% for item in EXPERIENCIAS %}
+				<tr>
+					<td align="center">{{ escape(item["empresa"]) }}</td>
+					{% if item["cargo"] %}
+						<td align="center">{{ escape(item["cargo"]) }}</td>
+					{% else %}
+						<td align="center"> Não informado </td>
+					{% end %}
+					<td align="center">{{ escape(item["data_ini"]) }}</td>
+					{% if item["data_fim"] %}
+						<td align="center">{{ escape(item["data_fim"]) }}</td>
+					{% else %}
+						<td align="center"> - </td>
+					{% end %}
+					<td align="center"><a href="#" title="Editar" onclick="TINY.box.show({iframe:'/profile/skills/edit/professional/{{ escape(item['id_experiencias']) }}',width:700,height:400,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                        <img src="/static/imagens/icones/edit16.png" alt="Editar" style="hspace:5px;"/></td>
+					<td align="center"><a onclick="return confirm('Tem certeza que deseja remover esta experiência profissional?');" href="/profile/skills/delete/professional/{{ escape(item['id_experiencias']) }}" title="Remover">
+                        <img src="/static/imagens/icones/delete16.png" alt="Remover" style="hspace:5px;"/></td>
+				</tr>
+				{% end %}
+			</table>
+		{% else %}
+			</br>
+			<h3> Você ainda não informou nenhuma experiência profissional. </h3>
+		{% end %}
+
+		{{ modules.ShowMolduraFim() }}
+
+
+		<form name="experiencias" id="Experiencias" action="{{ request.path }}/professional" method="post" enctype="multipart/form-data">
+			{% raw xsrf_form_html() %}
+			{{modules.ShowMolduraInicio()}}
+			<h2>Adicionar Experiência Profissional</h2>
+			<table cellpadding="20">
+			<tr><td>
+				<table cellspacing="15">
+				<tr>
+					<td>Empresa/Projeto: </td>
+					<td><input name="experiencias_empresa" id="experiencias_empresa" type="text" size="30"/></td>
+
+				</tr><tr>
+					<td>Cargo: </td>
+					<td><input name="experiencias_cargo" id="experiencias_cargo" type="text" size="30"/></td>
+
+				</tr><tr>
+				<td><label for="experiencias_data_ini">Data de Início: </label></td>
+				<td><select name="experiencias_data_ini_mes" title="Mês de começo da experiencia">
+					<option value="01" >Janeiro</option>
+					<option value="02" >Fevereiro</option>
+					<option value="03" >Março</option>
+					<option value="04" >Abril</option>
+					<option value="05" >Maio</option>
+					<option value="06" >Junho</option>
+					<option value="07" >Julho</option>
+					<option value="08" >Agosto</option>
+					<option value="09" >Setembro</option>
+					<option value="10" >Outubro</option>
+					<option value="11" >Novembro</option>
+					<option value="12" >Dezembro</option>
+					</select>
+					<select name="experiencias_data_ini_ano" id="experiencias_data_ini_ano" title="Ano de começo da experiência"></select>
+				</td>
+				</tr><tr>
+				<td><label for="experiencias_check_andamento">Emprego/Projeto atual </label></td>
+				<td><input type="checkbox" id="experiencias_check_andamento" name="experiencias_check_andamento" checked onclick="enable_experiencias_data_fim(this.checked)"></td>
+
+				</tr><tr>
+				<td><label for="experiencias_data_fim">Data de Saída: </label></td>
+				<td><select name="experiencias_data_fim_mes" title="Mês de término da expêriencia. Se esta continua em andamento, marque acima." disabled="true">
+					<option value="01" >Janeiro</option>
+					<option value="02" >Fevereiro</option>
+					<option value="03" >Março</option>
+					<option value="04" >Abril</option>
+					<option value="05" >Maio</option>
+					<option value="06" >Junho</option>
+					<option value="07" >Julho</option>
+					<option value="08" >Agosto</option>
+					<option value="09" >Setembro</option>
+					<option value="10" >Outubro</option>
+					<option value="11" >Novembro</option>
+					<option value="12" >Dezembro</option>
+					</select>
+					<select name="experiencias_data_fim_ano" id="experiencias_data_fim_ano" title="Ano de término da experiência. Se esta continua em andamento, marque acima." disabled="true" style="color: '#d3d3d3';"></select>
+				</td>
+				</tr>
+				</table>
+			</td><td>
+				<table>
+				<tr>	
+				<td>Descrição:</td>
+				<td><textarea rows="3" cols="40" name="experiencias_descricao" style="resize: none;"></textarea></td>
+
+				</tr><tr>
+				<td>Habilidades</br><i>(separe por vírgulas)</i>:</td>
+				<!-- Campo de Skills -->
+				<td title="Habilidades utilizadas e/ou desenvolvidas durante esta atividade profissional.">{{ modules.InputTags([], "professional_skills") }}</td>
+
+				</tr>
+				</table>
+			</table>
+		</form>      
+		{{ modules.ShowMolduraFim("experiencias") }}
+		</br>
+
+    {{ modules.ShowMolduraFim() }}
+	</div>
+{% end %}

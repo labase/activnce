@@ -1,0 +1,35 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+   {{modules.ShowMolduraInicio(width="100%", links=LINKS)}}
+   {{ modules.EditAvaliaArtefato(LOGADO, "question", QUESTION["registry_id"], QUESTION["_id"]) }}
+
+    <p>{{QUESTION["enunciado"] }}</p>
+    
+	{% for i in range (len(QUESTION["respostas"])) %}
+    	{% if QUESTION["resp_certa"] and i==int(QUESTION["resp_certa"]) %}
+	   		<img src="/static/imagens/question/resp_X.gif" >
+	   	{% else %}
+	   		<img src="/static/imagens/question/{{IMGLIST[i]}}" >	   	
+	   	{% end %}
+	   	{{ QUESTION["respostas"][i] }}<br/><br/>
+	{% end %}
+	
+    <span style="color:#999;font-size:small;">
+    {%if QUESTION["subtype"] != "Survey" %}<p>{{ _("Nivel:") }} <a>{{ escape(QUESTION["nivel"]) }}</a> </p>{% end %}
+    <p>{{ _("Posted by") }} <a href="/user/{{ escape(QUESTION["owner"]) }}">{{ escape(QUESTION["owner"]) }}</a> {{ _("at") }} {{ QUESTION["data_cri"] }}</p>
+    {% if "alterado_por" in QUESTION and QUESTION["alterado_por"] %}
+        <p>{{ _("Updated by") }} <a href="/user/{{ escape(QUESTION["alterado_por"]) }}">{{ escape(QUESTION["alterado_por"]) }}</a> {{ _("at") }} {{ QUESTION["data_alt"] }}</p>
+    {% end %}
+    </span>
+    
+    {% if QUESTION["tags"] %}
+        <i>{{ _("Tags") }}:</i><br/>
+       {{ modules.ShowTags(QUESTION["tags"]) }}            
+    {% end %}
+    <br/><br/><br/>
+    
+    {{ modules.ShowMolduraFim() }}  
+  
+{% end %}

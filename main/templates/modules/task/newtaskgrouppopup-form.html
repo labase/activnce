@@ -1,0 +1,14 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+	<form action="{{ request.path }}" name="criargrupo" method="post">
+		{% raw xsrf_form_html() %}
+
+        {{modules.ShowMolduraInicio(titulo="Criar grupo")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <p>
+        <h2>Nome do Grupo:</h2><input name="nome_grupo" value="" type="text" size="60"/>
+        </p>
+        {{ modules.ShowMolduraFim("criargrupo") }}
+	</form>
+{% end %}

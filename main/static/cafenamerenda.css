@@ -1,0 +1,106 @@
+/*CAFÉ NA MERENDA - css
+Prof. Carla Verônica Machado Marques
+Prof. Carlo Emmanoel Tolla de Oliveira
+Design: Ana Carolina Gueiros Azevedo*/
+
+.corpo {
+    margin: 0 auto;
+    min-height: 800px;
+    width: 1000px;
+    background: #ffffff url(/static/imagens/activCafeMerenda/fundo_cafenamerenda.png) repeat;
+}
+
+.conteudo {
+    min-height: 1000px;
+    min-width: 1000px;
+    text-align: center;
+    position: absolute;
+}
+
+.contem_formulario {
+    background: transparent url(/static/imagens/activCafeMerenda/form_fundo.png) no-repeat;
+    position: relative;
+    float: right;
+    margin-right: 30px;
+    margin-top: -20px;
+    width: 368px;
+    height: 669px;
+}
+
+#logotipo {
+    position: relative;
+    float: left;
+    background: transparent url(/static/imagens/activCafeMerenda/logotipo_cafenamerenda.png) no-repeat;
+    text-align: center;
+    margin-top: 140px;
+    margin-left: 65px;
+    height: 367px;
+    width: 350px;
+}
+
+.formulario {
+    position: relative;
+    height: 200px;
+    margin-top: 365px;
+}
+
+#logsenha_old {
+    width: 55px;
+    height:20px;
+    float: left;
+    margin-left: 60px;
+    margin-top: 20px;
+
+}
+
+#logsenha {
+    font-family: 'Habibi', serif;
+    font-size: 17px;
+    color: #501f16;
+    float: left;
+    width: 100%;
+    height: 20px;
+    margin-left: -108px;
+    margin-top: 20px;
+    margin-bottom: -10px;
+}
+
+#input {
+    background: #d5c0aa;
+    border: none;
+    width: 250px;
+    height: 35px;
+    margin-top: 16px;
+    margin-right: 4px;
+    font-family: 'Habibi', serif;
+    font-size: 20px;
+    font-color: #502d16;
+    padding-left: 3px;
+    padding-top: 3px;
+    padding-right: 3px;
+
+    
+}
+
+#enviar {
+   /* background: transparent url(/static/imagens/activCafeMerenda/botao_entrar.png) no-repeat center top;*/
+    /*text-indent: -1000px;*/
+    /*width: 128px;
+    height: 48px;*/
+    background: #b8645f;
+    width: 100px;
+    height: 40px;
+    float: right;
+    margin-top: 15px;
+    margin-right: 60px;
+    border: none;
+    padding: 0px;
+    font-family: 'Habibi', serif;
+    font-size: 17px;
+    font-weight: 400;
+    padding-top: 3px;
+    color: #f4e9d7;
+    cursor: pointer;
+    cursor: hand;
+    
+}

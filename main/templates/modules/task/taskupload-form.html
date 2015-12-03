@@ -1,0 +1,233 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {% if CRIAR == True and PERIODO == 0 %}
+    	<form name="criaarq" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+        {% raw xsrf_form_html() %}
+
+        {{ modules.ShowMolduraInicio("Upload de arquivo", width="100%") }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+       
+        <h2>Arquivo:</h2>
+        <input type="file" value="Procurar..." name="arquivo"/>
+        {{ modules.ShowMolduraFim("criaarq") }}
+   		</form>
+		<br/>
+    {% end %}
+
+    {{modules.ShowMolduraInicio("Tarefa: "+escape(TASKDATA["nome"]) , width="100%")}}
+	
+		<b>Descrição da Tarefa:</b> <br/>
+        {{ TASKDATA["descricao"].replace("\n", "<br/>") }}
+		<br/><br/>
+		
+		{% if TASKDATA["recurso"] or TASKDATA["labvad"]=="S" %}
+			<b>Recursos:</b> <br/>
+
+	        {% if TASKDATA["labvad"]=="S" %}
+		        Para realizar esta tarefa, utilize o <a href="{{LABVAD_URL}}" target="_blank">LabVAD</a> (Laboratório Virtual de Atividades Didáticas com Robótica).
+		        <br/>
+		        <!--
+		        Para realizar esta tarefa, utilize o <a href="#" title="mover" onclick="TINY.box.show({iframe:'/task/labvad',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">LabVAD (Laboratório Virtual de Atividades Didáticas com Robótica)</a>.
+		        <br/>
+		        -->
+                              
+		        
+	        {% end %}
+	        {% if TASKDATA["recurso"] %}
+		        <a href="{{ escape(TASKDATA["recurso"]) }}" target="_blank">Clique aqui para ler um recurso adicional fornecido pelo professor para consulta.</a>
+		        <br/>
+	        {% end %}
+        {% end %}
+		<br/>
+
+	<table cellspacing="5">
+
+		{% if NOME_GRUPO %}
+			<tr><td>
+			<b>Grupo:</b>
+	        </td>
+	        <td colspan="3">
+	         {{ escape(NOME_GRUPO) }}
+	        </td></tr>
+	
+			<tr>
+				<td><b>Integrantes:</b></td>
+	        	<td colspan="3">
+	        		{% if GROUP_OWNER %}
+		 				{% for nome in NOMES_LIST %}
+							{% if PERIODO == 0 %}
+							<a onclick="return confirm('Deseja realmente remover este indivíduo do grupo? Se este indivíduo for você, o grupo será desfeito.');" title="Remover deste grupo" href="/task/groupleave/{{REGISTRY_ID}}/{{TASK}}?grupo={{escape(NOME_GRUPO)}}&nome_remover={{escape(nome)}}">{{escape(nome)}}
+					     		<img src="/static/imagens/icones/remove16.png" alt="Remover deste grupo" border="0" /></a><br/>
+							{% end %}
+						{% end %}
+					{% else %}
+						{% for nome in NOMES_LIST %}
+							{{escape(nome)}}<br/>
+						{% end %}
+					{% end %}
+	        		</td>
+			</tr>
+			<tr>
+				<td><b>Participantes Pendentes:</b></td>
+	        	<td colspan="3">
+					{% if GROUP_OWNER %}
+		 				{% for nome in PARTICIPANTES_PENDENTES %}
+							{{escape(nome)}}
+							{% if PERIODO == 0 %}
+							<a onclick="return confirm('Deseja realmente efetivar esta pessoa no grupo?');" title="Aceitar neste grupo" href="/task/groupaccept/{{REGISTRY_ID}}/{{TASK}}?&add_user={{escape(nome)}}"><img src="/static/imagens/icones/join16.png" alt="Aceitar neste grupo" border="0" /></a>
+							<a onclick="return confirm('Deseja realmente rejeitar esta pessoa no grupo?');" title="Remover neste grupo" href="/task/groupreject/{{REGISTRY_ID}}/{{TASK}}?&remove_user={{escape(nome)}}"><img src="/static/imagens/icones/leave16.png" alt="Remover neste grupo" border="0" /></a><br/>
+							{% end %}
+						{% end %}
+					{% else %}
+						{% for nome in PARTICIPANTES_PENDENTES %}
+							{{escape(nome)}}<br/>
+						{% end %}
+					{% end %}
+	        		</td>
+			</tr>
+		{% end %}
+		
+		<tr><td>
+		<b>N&#176; de Arquivos a serem enviados:</b>
+        </td>
+        <td colspan="3">
+         {{ escape(TASKDATA["num_arquivos"]) }}
+        </td></tr>
+
+		<tr><td>
+		<b>Período para realização da tarefa:</b> 
+        </td>
+        <td colspan="3">
+     	{{ escape(TASKDATA["data_inicio"]) }} até {{ escape(TASKDATA["data_encerramento"]) }}
+        </td></tr>
+
+		<tr><td>
+		<b>Valor:</b> 
+        </td>
+        <td colspan="3">
+     	{{ escape(TASKDATA["valor"]) }}
+        </td></tr>
+		
+		<tr><td>
+		<b>Nota:</b> 
+        </td>
+        <td colspan="3">
+		{% if TASKDOC %}
+			{% if TASKDOC["nota"] %}
+		 		{{ escape(TASKDOC["nota"]) }}
+			{% else %}
+				-
+			{% end %}
+		{% else %}
+				-
+		{% end %}
+        </td></tr>
+	</table>
+
+	<br/><br/>
+	
+    {% if TASKFILES %}
+        <table border="0" cellspacing="10" width="100%" style="color: black;">
+        <tr>
+            
+            <td style="border-bottom: 1px solid" align="left"><b>Arquivo</b></td>
+            <td style="border-bottom: 1px solid" align="left"><b>Última alteração</b></td>
+	   		<td style="border-bottom: 1px solid" align="left"><b>Tamanho</b></td>
+            <td style="border-bottom: 1px solid" align="left"><b>Opções</b></td>
+        </tr>
+            {% for arq in TASKFILES %}
+                <tr>
+                
+                
+                 <td align="left" valign="top">{{ arq[0] }}</td>
+                    
+                 <td align="left" valign="top">{{ arq[1] }}</td>
+
+				 <td align="left" valign="top">{{ arq[2] }}</td>
+                 
+                 <td align="left" valign="top">
+                                 	
+					<a href="/task/fileview/{{ REGISTRY_ID }}/{{ escape(arq[0]) }}/{{TASK}}?groupld={{ escape(OWNER) }}&disp=inline" title="ver">					
+                    <img src="/static/imagens/icones/view16.png" alt="ver" border="0" /></a>
+					<a href="/task/fileview/{{ REGISTRY_ID }}/{{ escape(arq[0]) }}/{{TASK}}?groupld={{ escape(OWNER) }}&disp=attachment" title="baixar">
+	                <img src="/static/imagens/icones/down16.png" alt="baixar" border="0" /></a>
+					{% if PERIODO == 0 %}
+	                <a onclick="return confirm('Deseja realmente apagar este arquivo?');" title="apagar" href="/task/filedelete/{{ REGISTRY_ID }}/{{ escape(arq[0]) }}/{{TASK}}?owner={{OWNER}}">
+                 	<img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+					{% end %}
+
+                 </td>
+
+                
+                </tr>
+
+                <tr><td colspan="4" style="border-bottom: 1px solid"></td></tr>
+                
+                                
+            {% end %}
+
+	</table>
+
+		<br/><br/><br/>
+        	<a name="comment"></a>
+        	<h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+
+        	{% if TASKDOC["comentarios"] %}
+            		{% for comment in TASKDOC["comentarios"] %}
+                		<p>
+                		{{ comment["comment"] }}
+                		<span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">	{{ comment["owner"] }}</a> em {{ comment["data_cri"] }}</span>
+
+			
+                    		<!--Aluno não pode apagar seu comentário na tarefa
+                    		<a href="/task/comment/delete/{{ escape(TASKDOC["registry_id"]) }}/{{TASK}}?owner={{ comment['owner'] }}&data={{ comment['data_cri'] }}" title="apagar">
+                    		<img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" />
+                    		</a>-->
+                    		
+                		</p>
+            		{% end %}
+        	{% else %}
+            		Nenhum comentário até o momento.
+        	{% end %}
+        	<br/><br/>
+    		<!--Falta o if de proteção externa -->
+		<h2>{{ _("Post a comment") }}:</h2>
+		<form name="postcomment"  action="/task/comment/{{ escape(TASKDOC["registry_id"]) }}/{{TASK}}?owner={{OWNER}}" method="post">
+		{% raw xsrf_form_html() %}
+
+		<textarea rows="6" cols="70" name="comment"></textarea>
+		
+		</form>
+		{{ modules.ShowMolduraFim("postcomment") }}
+
+    {% else %}
+		{% if PERIODO == 0 %}
+        <p>&nbsp;&nbsp;Você ainda não enviou nenhum arquivo para esta tarefa.</p>
+		{% end %}
+		{% if PERIODO == 1%}
+		<p>&nbsp;&nbsp;Você não enviou nenhum arquivo para esta tarefa, que agora está fora do prazo.</p>
+		{% end %}
+		<br/><br/>
+    	<a name="comment"></a>
+    	<h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+
+		{% if TASKDOC %}
+			{% if TASKDOC["comentarios"] %}
+		    		{% for comment in TASKDOC["comentarios"] %}
+		        		<p>
+		        		{{ comment["comment"] }}
+		        		<span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">	{{ comment["owner"] }}</a> em {{ comment["data_cri"] }}</span>                		
+		        		</p>
+		    		{% end %}
+			{% else %}
+		    		Nenhum comentário até o momento.
+			{% end %}
+		{% else %}
+		    		Nenhum comentário até o momento.
+		{% end %}
+    	<br/><br/>
+		{{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}
+

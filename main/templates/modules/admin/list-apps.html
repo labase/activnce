@@ -1,0 +1,56 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+	{% if MSG %}
+	    <div class="tnmMSG">{{ MSG }}</div>
+	{% else %}
+	
+	    {% if TIPO_REGISTRY=="member" %}
+			{{ modules.ShowMolduraInicio(titulo=u"Aplicações que eu tenho permissão de executar") }}
+				{% if APPS %}
+				    <table border="0">
+					{% for item in APPS %}
+			      	    <tr>
+			      	    <td width="80" style="border-bottom: 1px solid #b0b0b0">
+						<a href="{{item}}"><img src="/static/imagens/icones/privileges/{{item.replace('/','_')}}.jpg" alt="{{APPS[item]}}"/></a>
+			      		</td>
+			      		<td width="400" style="border-bottom: 1px solid #b0b0b0">
+			      		<h3><a href="{{item}}">{{APPS[item]}}</a></h3>
+			      		</td>
+						</tr>
+					{% end %}
+			        </table>	
+			    {% else %}
+			    	<br/>
+			    	Você não tem permissão para executar nenhuma aplicação.
+			    	<br/>
+			    {% end %}	    
+		    {{ modules.ShowMolduraFim() }}   
+		    
+	    {% elif TIPO_REGISTRY=="community" %}
+			{{ modules.ShowMolduraInicio(titulo=u"Aplicações desta comunidade") }}
+				{% if USERDATA["apps"] %}			
+				    <table border="0">
+					{% for item in USERDATA["apps"] %}
+			      	    <tr>
+			      	    <td width="80" style="border-bottom: 1px solid #b0b0b0">
+						<a href="{{item}}"><img src="/static/imagens/icones/privileges/{{item.replace('/','_')}}.jpg" alt="{{USERDATA["apps"][item]}}"/></a>
+			      		</td>
+			      		<td width="400" style="border-bottom: 1px solid #b0b0b0">
+			      		<h3><a href="{{item}}">{{USERDATA["apps"][item]}}</a></h3>
+			      		</td>
+						</tr>
+					{% end %}
+					</table>
+			    {% else %}
+			    	<br/>
+			    	Esta comunidade não possui nenhuma aplicação.
+			    	<br/>
+			    {% end %}	    
+		    {{ modules.ShowMolduraFim() }}    
+	    {% end %}
+	    
+	{% end %}
+
+{% end %}

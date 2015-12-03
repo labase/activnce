@@ -1,0 +1,240 @@
+#!/bin/bash
+echo Execute este programa como superuser 
+echo -n "Continua? (s | n )? "
+read resp
+if [ $resp != "s" ] 
+then
+  exit
+fi
+#
+#Criando o arquivo de start/stop para o activ
+#Criado a partir do esquema exemplo fornecido em /etc/init.d
+#
+NUMPORTS="8888 8889"
+PIDNAME="PROGRAMA"
+APP_NAME=main.py
+DAEMON="./activnce/$APP_NAME"
+ARGS1="--port="
+ARGS2="--log_file_prefix="
+LOGFILE=/var/log/${PIDNAME}/
+PIDDIR="/var/run/"
+RESP="N"
+echo "Iniciando make activ"
+while [ $RESP != "s" ] && [ $RESP != "S" ] && [ $RESP != "y" ] &&  [ $RESP != "Y" ]
+do
+  echo "valor da aplicacao"
+  nome=""
+  echo -n "Entre com o nome para a sua aplicação. Este valor ficará marcado no PIDNAME, no nome da aplicação em /etc/init.d, no diretório do LOG, etc. NOME? "
+  read nome lixo
+  if [ -n "$nome" ] && [ "$nome" != " " ] 
+  then
+     PIDNAME=$nome
+  fi
+  nome=""
+  echo -n "Entre com o caminho completo + nome da aplicação. Ex: /home/teste/main.py ? "
+  read nome lixo
+  if [ -n "$nome" ] && [ "$nome" != " " ] 
+  then
+     DAEMON=$nome
+  fi
+
+  nome=""
+  echo -n "Local para o log (EX: /var/log) ? "
+  read nome lixo
+  if [ -n "$nome" ] && [ "$nome" != " " ] 
+  then
+     LOGFILE=$nome
+  fi
+  nome=""
+  echo -n "Entre com os números das portas separadas por espaço. (ex: default= $NUMPORTS): "
+  read nome
+  if [ -n "$nome" ] && [ "$nome" != " " ] 
+  then
+    NUMPORTS=$nome
+  fi
+  echo 
+  echo  "NOME APLICAÇÃO = "$PIDNAME
+  echo  "PORTAS = " $NUMPORTS
+  echo  "LOCAL APP = " $DAEMON
+  echo  "LOCAL LOGS = " $LOGFILE
+  echo 
+  echo -n "Está correto (yY|sS|Nn)? "
+  read RESP lixo
+  echo $RESP
+done
+echo "Gravando arquivo"
+echo "#! /bin/sh " >> $PIDNAME 
+echo "### BEGIN INIT INFO " >> $PIDNAME 
+echo "# Provides:          NCE/UFRJ " >> $PIDNAME 
+echo "# Required-Start:    $remote_fs $syslog " >> $PIDNAME 
+echo "# Required-Stop:     $remote_fs $syslog " >> $PIDNAME 
+echo "# Default-Start:     2 3 4 5 " >> $PIDNAME 
+echo "# Default-Stop:      0 1 6 " >> $PIDNAME 
+echo "# Short-Description: Start main $PIDNAME application	 " >> $PIDNAME 
+echo "# Description:       This script starts main.py " >> $PIDNAME 
+echo "#                     " >> $PIDNAME 
+echo "### END INIT INFO " >> $PIDNAME 
+echo " " >> $PIDNAME 
+echo "# Author: NCE/UFRJ " >> $PIDNAME 
+echo "# Do NOT "set -e" " >> $PIDNAME 
+echo "PATH=/sbin:/usr/sbin:/bin:/usr/bin " >> $PIDNAME 
+echo " " >> $PIDNAME 
+echo "DESC=\" Start $PIDNAME app server\" " >> $PIDNAME 
+
+echo "NUMPORTS=\"$NUMPORTS\"" >> $PIDNAME 
+echo "NAME=\"$APP_NAME\"" >> $PIDNAME 
+echo "PIDNAME=\"$PIDNAME\"" >> $PIDNAME 
+echo "DAEMON=\"$DAEMON\"" >> $PIDNAME 
+echo "DAEMON_ARGS1=\"$ARGS1\"" >> $PIDNAME 
+echo "DAEMON_ARGS2=\"$ARGS2\"" >> $PIDNAME 
+echo "LOGFILE=\"$LOGFILE${PIDNAME}/\"" >> $PIDNAME 
+echo "PIDDIR=\"/var/run/\"" >> $PIDNAME 
+echo "SCRIPTNAME=\"/etc/init.d/$PIDNAME\"" >> $PIDNAME 
+
+echo ' ' >> $PIDNAME 
+echo '# Exit if the package is not installed ' >> $PIDNAME 
+echo '[ -x "$DAEMON" ] || exit 0 ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo '# Read configuration variable file if it is present ' >> $PIDNAME 
+echo '[ -r /etc/default/$NAME ] && . /etc/default/$NAME ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo '# Load the VERBOSE setting and other rcS variables ' >> $PIDNAME 
+echo '. /lib/init/vars.sh ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo '# Define LSB log_* functions. ' >> $PIDNAME 
+echo '# Depend on lsb-base (>= 3.0-6) to ensure that this file is present. ' >> $PIDNAME 
+echo '. /lib/lsb/init-functions ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo '# ' >> $PIDNAME 
+echo '# Function that starts the daemon/service ' >> $PIDNAME 
+echo '# ' >> $PIDNAME 
+echo 'do_start() ' >> $PIDNAME 
+echo '{ ' >> $PIDNAME 
+echo '	# Return ' >> $PIDNAME 
+echo '	#   0 if daemon has been started ' >> $PIDNAME 
+echo '	#   1 if daemon was already running ' >> $PIDNAME 
+echo '	#   2 if daemon could not be started ' >> $PIDNAME 
+echo '        for porta in $NUMPORTS ' >> $PIDNAME 
+echo '        do ' >> $PIDNAME 
+echo '            PIDFILE=${PIDDIR}${porta} ' >> $PIDNAME 
+echo '            LOGFIM=${LOGFILE}$PIDNAME.${porta}.log ' >> $PIDNAME 
+echo '            DAEMON=$DAEMON' >> $PIDNAME 
+echo '            DAEMON_ARGS="--port="${porta} ' >> $PIDNAME 
+echo '            DAEMON_ARGS=${DAEMON_ARGS}" --log_file_prefix="$LOGFIM ' >> $PIDNAME 
+echo '	    start-stop-daemon -v --start --quiet --pidfile $PIDFILE  -m --background --exec $DAEMON --test > /dev/null \ ' >> $PIDNAME 
+echo '		|| return 1 ' >> $PIDNAME 
+echo '	    start-stop-daemon -v --start --quiet --pidfile $PIDFILE  -m --background --exec $DAEMON -- \ ' >> $PIDNAME 
+echo '		$DAEMON_ARGS \ ' >> $PIDNAME 
+echo '		|| return 2 ' >> $PIDNAME 
+echo ' '
+echo '	# Add code here, if necessary, that waits for the process to be ready ' >> $PIDNAME 
+echo '	# to handle requests from services started subsequently which depend ' >> $PIDNAME 
+echo '	# on this one.  As a last resort, sleep for some time. ' >> $PIDNAME 
+echo '       done ' >> $PIDNAME 
+echo '} ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo '# ' >> $PIDNAME 
+echo '# Function that stops the daemon/service ' >> $PIDNAME 
+echo '# ' >> $PIDNAME 
+echo 'do_stop() ' >> $PIDNAME 
+echo '{ ' >> $PIDNAME 
+echo '	# Return ' >> $PIDNAME 
+echo '	#   0 if daemon has been stopped ' >> $PIDNAME 
+echo '	#   1 if daemon was already stopped ' >> $PIDNAME 
+echo '	#   2 if daemon could not be stopped ' >> $PIDNAME 
+echo '	#   other if a failure occurred ' >> $PIDNAME 
+echo '        for porta in $NUMPORTS ' >> $PIDNAME 
+echo '        do ' >> $PIDNAME 
+echo '            PIDFILE=${PIDDIR}${porta} ' >> $PIDNAME 
+echo '	    start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME ' >> $PIDNAME 
+echo '	RETVAL="$?" ' >> $PIDNAME 
+echo '	[ "$RETVAL" = 2 ] && return 2 ' >> $PIDNAME 
+echo '	# Wait for children to finish too if this is a daemon that forks ' >> $PIDNAME 
+echo '	# and if the daemon is only ever run from this initscript. ' >> $PIDNAME 
+echo '	# sleep for some time. ' >> $PIDNAME 
+echo '	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON ' >> $PIDNAME 
+echo '	rm -f $PIDFILE ' >> $PIDNAME 
+echo ' done ' >> $PIDNAME 
+echo ' return "$RETVAL" ' >> $PIDNAME 
+echo '        ' >> $PIDNAME 
+echo '} ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo '# ' >> $PIDNAME 
+echo '# Function that sends a SIGHUP to the daemon/service ' >> $PIDNAME 
+echo '# ' >> $PIDNAME 
+echo 'do_reload() { ' >> $PIDNAME 
+echo '	# ' >> $PIDNAME 
+echo '	# If the daemon can reload its configuration without ' >> $PIDNAME 
+echo '	# restarting (for example, when it is sent a SIGHUP), ' >> $PIDNAME 
+echo '	# then implement that here. ' >> $PIDNAME 
+echo '	# ' >> $PIDNAME 
+echo '	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME ' >> $PIDNAME 
+echo '	return 0 ' >> $PIDNAME 
+echo '} ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo 'case "$1" in ' >> $PIDNAME 
+echo '  start) ' >> $PIDNAME 
+echo '	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME" ' >> $PIDNAME 
+echo '	do_start ' >> $PIDNAME 
+echo '	case "$?" in ' >> $PIDNAME 
+echo '		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;; ' >> $PIDNAME 
+echo '		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;; ' >> $PIDNAME 
+echo '	esac ' >> $PIDNAME 
+echo '	;; ' >> $PIDNAME 
+echo '  stop) ' >> $PIDNAME 
+echo '	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME" ' >> $PIDNAME 
+echo '	do_stop ' >> $PIDNAME 
+echo '	case "$?" in ' >> $PIDNAME 
+echo '		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;; ' >> $PIDNAME 
+echo '		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;; ' >> $PIDNAME 
+echo '	esac ' >> $PIDNAME 
+echo '	;; ' >> $PIDNAME 
+echo '  status) ' >> $PIDNAME 
+echo '       status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $? ' >> $PIDNAME 
+echo '       ;; ' >> $PIDNAME 
+echo '  #reload|force-reload) ' >> $PIDNAME 
+echo '	# ' >> $PIDNAME 
+echo '	# If do_reload() is not implemented then leave this commented out ' >> $PIDNAME 
+echo '	# and leave 'force-reload' as an alias for 'restart'. ' >> $PIDNAME 
+echo '	# ' >> $PIDNAME 
+echo '	#log_daemon_msg "Reloading $DESC" "$NAME" ' >> $PIDNAME 
+echo '	#do_reload ' >> $PIDNAME 
+echo '	#log_end_msg $? ' >> $PIDNAME 
+echo '	#;; ' >> $PIDNAME 
+echo '  restart|force-reload) ' >> $PIDNAME 
+echo '	# ' >> $PIDNAME 
+echo '	# If the "reload" option is implemented then remove the ' >> $PIDNAME 
+echo '	# 'force-reload' alias ' >> $PIDNAME 
+echo '	# ' >> $PIDNAME 
+echo '	log_daemon_msg "Restarting $DESC" "$NAME" ' >> $PIDNAME 
+echo '	do_stop ' >> $PIDNAME 
+echo '	case "$?" in ' >> $PIDNAME 
+echo '	  0|1) ' >> $PIDNAME 
+echo '		do_start ' >> $PIDNAME 
+echo '		case "$?" in ' >> $PIDNAME 
+echo '			0) log_end_msg 0 ;; ' >> $PIDNAME 
+echo '			1) log_end_msg 1 ;; # Old process is still running ' >> $PIDNAME 
+echo '			*) log_end_msg 1 ;; # Failed to start ' >> $PIDNAME 
+echo '		esac ' >> $PIDNAME 
+echo '		;; ' >> $PIDNAME 
+echo '	  *) ' >> $PIDNAME 
+echo '	  	# Failed to stop ' >> $PIDNAME 
+echo '		log_end_msg 1 ' >> $PIDNAME 
+echo '		;; ' >> $PIDNAME 
+echo '	esac ' >> $PIDNAME 
+echo '	;; ' >> $PIDNAME 
+echo '  *) ' >> $PIDNAME 
+echo '#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2 ' >> $PIDNAME 
+echo 'echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2 ' >> $PIDNAME 
+echo '	exit 3 ' >> $PIDNAME 
+echo '	;; ' >> $PIDNAME 
+echo 'esac ' >> $PIDNAME 
+echo ' ' >> $PIDNAME 
+echo ': ' >> $PIDNAME 
+
+echo Copiando $PIDNAME para /etc/init.d
+cp $PIDNAME /etc/init.d
+echo Executando update-rc.d
+update-rc.d $PIDNAME defaults
+echo Criando logdir
+mkdir  $LOGFILE

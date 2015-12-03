@@ -1,0 +1,52 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS, titulo=TITLE)}}
+    {% for va in VIDEOAULAS %}
+        <a href="/videoaula/{{ escape(va["registry_id"]) }}/{{ escape(va["name_id"]) }}"><b>{{ escape(va["titulo"]) }}</b></a>
+        <span style="color:#999;font-size:small;">
+        <p>Número de Slides: {{ len(va["slides"]) }} 
+        </p>        
+        <p>{{ _("Postado por") }} <a href="/user/{{ va["owner"] }}">{{ va["owner"] }}</a> {{ _("at") }} {{ va["data_fmt"] }}
+        </p>
+        {% if "alterado_por" in va and va["alterado_por"] %}
+            <p>{{ _("Alterado por") }} <a href="/user/{{ va["alterado_por"] }}">{{ va["alterado_por"] }}</a> {{ _("at") }} {{ va["data_alt"] }}</p>
+        {% end %}
+        </span>
+        
+        {% if va["tags"] %}
+            <i>{{ _("Tags") }}:</i><br/>
+           {{ modules.ShowTags(va["tags"]) }}            
+        {% end %}
+        <p>
+        {% if va["apagar"] %}
+        <a onclick="return confirm('{{ _("Realmente deseja apagar esta videoaula") }}?');" href="/videoaula/delete/{{ va["registry_id"] }}/{{ va["name_id"] }}" title='{{ _("Deletar") }}'><img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a> 
+        {% end %}
+        {% if va["alterar"] %}
+        <a href="/videoaula/edit/{{ va["registry_id"] }}/{{ va["name_id"] }}" title='{{ _("Editar") }}'><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+        {% end %}
+        </p>
+        <br/><br/>
+    {% end %}
+    {% if not VIDEOAULAS %}
+        {{ REGISTRY_ID }} ainda não criou nenhuma videoaula.
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+    
+    {{ modules.Paginator(PAGE, PAGESIZE, VIDEOAULAS_COUNT) }}
+    <br/>  
+{% end %}
+
+{% block body-left %}
+	{% if TAGS %}
+        <br/><br/>
+        {{modules.ShowMolduraInicio(width="100%", titulo="Tags")}}
+        <table><tr><td>
+          <a href="/videoaula/{{REGISTRY_ID}}">Todas</a> 
+          <br/><br/>
+          {{ modules.ShowTags(TAGS, link="/videoaula/tag/"+REGISTRY_ID+"/") }}
+          <br/>
+        </td></tr></table>
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}

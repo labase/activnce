@@ -1,0 +1,14 @@
+{% extends "base-nova.html" %}
+
+{% block foto %}
+    {% if LOGADO %}
+           {% if TIPO_REGISTRY=="member" %}
+            {{ modules.ShowMolduraFoto(COR,"/photo/"+escape(USERDATA['user']),escape(USERDATA["name"])+" "+escape(USERDATA["lastname"]),"/user/"+escape(USERDATA['user'])) }}
+           {% elif TIPO_REGISTRY=="community" %}
+            {{ modules.ShowMolduraFoto(COR,"/photo/"+escape(USERDATA['name']),escape(USERDATA["description"]),"/community/"+escape(USERDATA['name'])) }}
+           {% end %}
+           <br/>
+    {% else %}
+        {{ modules.ShowMolduraFoto(COR,"/static/imagens/LogoHome.png", PLATAFORMA, "http://"+PLATAFORMA_URL) }}
+    {% end %}
+{% end %}

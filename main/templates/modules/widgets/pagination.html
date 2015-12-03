@@ -1,0 +1,17 @@
+{% if pages > 1 %}
+
+	<div class="pagination">
+		{% if previous %}<a href="{{ get_page_url(1) }}" class="page" title="Primeira">&lt;&lt;</a>{% end %}  
+		{% if previous %}<a href="{{ get_page_url(previous) }}" class="page" title="Anterior">&lt;</a>{% end %}  
+		{% for page_num in xrange(first_page, last_page + 1) %}
+			{% if page_num != page %}
+				<a href="{{ get_page_url(page_num) }}" class="page">{{ page_num }}</a>
+			{% else %}
+				<span class="page active">{{ page_num }}</span>
+			{% end %}
+		{% end %}
+		{% if next %}<a href="{{ get_page_url(next) }}" class="page" title="Próxima">&gt;</a>{% end %} 
+		{% if next %}<a href="{{ get_page_url(pages) }}" class="page" title="Última">&gt;&gt;</a>{% end %} 
+	</div>
+
+{% end %}

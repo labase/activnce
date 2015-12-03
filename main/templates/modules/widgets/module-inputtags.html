@@ -1,0 +1,21 @@
+
+        <i>Separe por vírgulas</i><br/>
+        <input name="tags" id="tags" value="{{ escape(",".join(tags)) }}"/>
+        
+		<script type="text/javascript">
+			$(function () {	
+				tagsArray = $.map({{AUTOCOMPLETE_TAGS}}, function (value, key) { return { value: key, data: key }; });
+				source = function(request, response) {																			
+					var results = $.ui.autocomplete.filter(tagsArray, request.term);
+					// limita exibição em 10 itens
+					response(results.slice(0, 10));
+					};	
+		        $('#tags').tagsInput(
+		             { defaultText:'incluir tag',
+		      		   width:'520px',
+		      		   height:'50px',
+						autocomplete_url: source
+				  	 }
+		        );
+		    });
+		</script>

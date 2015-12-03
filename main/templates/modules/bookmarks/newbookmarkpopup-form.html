@@ -1,0 +1,16 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+    <form name="criarfavorito" action="/bookmarks/new/{{REGISTRY_ID}}" method="post">
+		<input type="hidden" name="tipo" value="popup"/>
+		{% raw xsrf_form_html() %}
+
+        {{modules.ShowMolduraInicio(titulo="Adicionar favorito")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <h2>URL:</h2><input name="url" value="{{ escape(URL) }}" type="text" size="60"/>
+        <h2>Título:</h2><input name="title" value="{{ escape(BOOKMARK["title"]) }}" type="text" size="60"/>
+        <h2>Descrição:</h2><textarea name="description" rows="8" cols="60">{{ escape(BOOKMARK['description']) }}</textarea>
+        <h2>Tags:</h2> {{ modules.InputTags(BOOKMARK["tags"]) }}
+        {{ modules.ShowMolduraFim("criarfavorito") }}
+    </form>
+{% end %}

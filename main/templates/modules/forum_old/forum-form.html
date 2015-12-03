@@ -1,0 +1,35 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+<p>
+	<form name="novotopico" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	
+	{{ modules.ShowMolduraInicio() }}
+	<table border="0" cellspacing="10">
+	<tr><td>{{ _("Titulo") }}</td>
+	<td><input name="titulo" value="{{ escape(TOPICO["title"]) }}" size="50" type="text"/></td>
+	</tr>
+
+	<tr><td valign="top">{{ _("Content") }}</td>
+	<td><textarea name="conteudo" rows="6" cols="50">{{ escape(TOPICO["content"]) }}</textarea></td>
+	</tr>
+
+	<tr><td colspan="2">
+	{% if TOPICO["receber_email"] == "" %}
+		<input type="checkbox" name="receber_email" value="yes"> Desejo receber email para cada resposta enviada para este tópico.
+	{% else %}
+		<input type="checkbox" name="receber_email" value="yes" checked="checked"> Desejo receber email para cada resposta enviada para este tópico.
+	{% end %}
+	Obs: Você só receberá mensagens se habilitar notificações de email no seu perfil.
+	</td></tr>
+	</table>
+	
+    {{ modules.ShowMolduraFim("novotopico") }}
+	</form>
+</p>
+
+{% end %}

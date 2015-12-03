@@ -1,0 +1,28 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+
+	<!-- código para produzir o tagcloud do usuário/comunidade -->
+    <script type="text/javascript" src="/static/tagcloud/tagcloud.js"></script>
+    <script type="text/javascript">
+    var tags = new Array();
+    {% for tag in TAGCLOUD %}
+        tags['{{ tag }}'] = {{ TAGCLOUD[tag] }};
+    {% end %}
+    </script>
+{% end %}
+
+{% block body-right %}
+
+    <div style="padding: 0px 0px 0px 22px">
+    {{ modules.ShowMolduraInicio("Minhas Tags","","100%") }}
+       <div id="cloud" style="padding: 0px 5px 0px 5px">
+       </div>
+    {{ modules.ShowMolduraFim() }}
+    </div>
+    
+    <script type='text/javascript'>
+    document.getElementById("cloud").innerHTML = generateCloud(tags, '/search/{{ REGISTRY_ID }}?tags=', false);
+    </script>
+        
+{% end %}

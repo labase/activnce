@@ -1,0 +1,95 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {% if CRIAR %}
+	<form name="criaarq" action="/studio/upload/{{ REGISTRY_ID }}" method="post" enctype="multipart/form-data" accept="image/*">
+        {% raw xsrf_form_html() %}
+        {{ modules.ShowMolduraInicio(width="100%") }}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+        <h2>Fase:</h2>
+        <select name="type">
+        <option value=""></option>
+        <option value="1" {% if TYPE=="1" %}selected{% end %}>Personagens ou Objetos</option>
+        <option value="2" {% if TYPE=="2" %}selected{% end %}>Cenários</option>
+        <option value="3" {% if TYPE=="3" %}selected{% end %}>Storyboard</option>
+        <option value="4" {% if TYPE=="4" %}selected{% end %}>Games</option>
+        </select>
+        <h2>Descrição:</h2> <input name="description" value="" type="text" size="40"/>
+        <h2>URL:</h2> <input name="url" value="" type="text" size="40" />
+        <h2>Tags:</h2> {{ modules.InputTags([]) }}
+        <h2>Arquivo:</h2>
+        <input type="file" value="Procurar..." name="arquivo"/>
+        {{ modules.ShowMolduraFim("criaarq") }}
+	</form>
+    {% end %}
+
+<br/>
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS)}}
+	{{ modules.ShowTabs(TABS) }}    
+    
+    {% if FILES %}
+        <table border="0" cellspacing="10" width="100%" style="color: black;">
+            <tr><td width="25%"></td><td width="25%"></td><td width="25%"></td><td width="25%"></td></tr>
+            <tr>
+            {% for i in range(len(FILES)) %}
+                {% if i % 4 == 0 %}
+                   </tr><tr>
+                {% end %}
+                <td style="border-bottom: 1px solid" align="left">
+                <a href="/studio/info/{{ escape(FILES[i]['file_id']) }}"><img src="/studio/{{FILES[i]['file_id']}}?disp=inline&size=P" /></a>
+                <br/>
+                
+                {% if FILES[i]["owner"] != FILES[i]["registry_id"] %}
+                 {{ escape(FILES[i]["owner"]) }}
+                 <br/>
+                {% end %}
+                
+                {% if FILES[i]["acesso_publico"]=="S" %}
+                   <img src="/static/imagens/icones/lock_open.png" alt="" />
+                {% else %}
+                   <img src="/static/imagens/icones/ponto.gif" width="12" height="12" alt="" />
+                {% end %}
+                <a href="/studio/info/{{ escape(FILES[i]['file_id']) }}">&lt;{{ escape(FILES[i]["file_id"].split("/")[1]) }}&gt;</a>
+                <br/>
+                
+                {% if FILES[i]["description"] %}
+                    {{ escape(FILES[i]["description"]) }}
+                    <br/>
+                {% end %}
+
+                {% if FILES[i]["url"] %}
+                    URL: <a href='{{ escape(FILES[i]["url"]) }}'>{{ escape(FILES[i]["url"]) }}</a>
+                    <br/>
+                {% end %}
+
+                <span style="color:#999;font-size:small;">
+                <a href="/studio/info/{{ escape(FILES[i]["file_id"]) }}#comment">{{ FILES[i]["num_comments"] }}</a>
+                </span>
+                <br/>
+                
+                {{ escape(FILES[i]["alterado_por"]) }} em {{ escape(FILES[i]["data_alt"]) }}
+                <br/>
+                
+                <a href="{{ escape(FILES[i]["file_id"]) }}?disp=inline&size=G" title="ver">
+                <img src="/static/imagens/icones/view16.png" alt="ver" border="0" /></a>
+                <a href="{{ escape(FILES[i]["file_id"]) }}?disp=attachment&size=G" title="baixar">
+                <img src="/static/imagens/icones/down16.png" alt="baixar" border="0" /></a>
+                {% if FILES[i]["apagar"] %}
+                    <a onclick="return confirm('Deseja realmente apagar este arquivo?');" title="apagar" href="/studio/delete/{{ escape(FILES[i]["file_id"]) }}">
+                    <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+                {% end %}
+                {% if FILES[i]["alterar"] %}
+                    <a href="/studio/edit/{{ escape(FILES[i]["file_id"]) }}" title="alterar">
+                    <img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+                {% end %}
+                <br/>
+                </td>
+            {% end %}
+            </tr>
+        </table>
+    {% else %}
+        <br/><br/><br/><p>Nenhuma imagem encontrada.</p><br/><br/><br/>
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

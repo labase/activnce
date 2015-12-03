@@ -1,0 +1,115 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+    <script type="text/javascript">
+		$(function () {
+		    'use strict';
+		        
+			// Carrega lista de sugestões para o autocomplete
+			//
+			var source = {{ AUTOCOMPLETE_LIST }};
+		    var usersArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+
+			function split( val ) {
+      			return val.split( /@\s*/ );
+    		}
+
+            function split_sem_virgula( val ) {
+      			var aux = val.split( /@\s*/ );
+                aux = aux.join("@");
+                return aux;
+    		}
+
+    		function extractLast( term ) {
+      			return split( term ).pop();
+    		}
+
+	        $( "#conteudo" )
+				// don't navigate away from the field on tab when selecting an item
+				.bind( "keydown", function( event ) {
+				    if ( event.keyCode === $.ui.keyCode.TAB &&
+				        $( this ).data( "ui-autocomplete" ).menu.active ) {
+				      event.preventDefault();
+				    }
+				})
+				.autocomplete({
+				    minLength: 3,
+				    source: function( request, response ) {
+				      // delegate back to autocomplete, but extract the last term
+				      response( $.ui.autocomplete.filter(
+				        usersArray, extractLast( request.term ) ) );
+				    },
+				    focus: function() {
+				      // prevent value inserted on focus
+				      return false;
+				    },
+				    select: function( event, ui ) {
+				      var terms = split_sem_virgula( this.value );
+				      var contador = terms.lastIndexOf('@');
+				      var contador2 = terms.length;
+				      terms = terms.replace(terms.substring(contador+1, contador2), "");
+				      this.value = terms+ui.item.data ;
+				      return false;
+				    }
+				});
+    		$('#conteudo').autocomplete( "disable" );
+		});
+
+        function GetChar(event){
+            var chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+	    	if (chCode == 64 /* @ */) {
+				$('#conteudo').autocomplete( "enable" );
+            }else{
+		
+            }
+        }    
+
+		// contador de caracteres da mensagem
+		//    
+	    function textCounter(field, countfield) {
+	        if (field.value.length > {{ MAX_CHR_MBLOG }}) // if too long...trim it!
+	            field.value = field.value.substring(0, {{ MAX_CHR_MBLOG }});
+	        // otherwise, update 'characters left' counter
+	        else
+	            countfield.innerHTML = {{ MAX_CHR_MBLOG }} - field.value.length;
+	    }
+    </script>
+{% end %}
+
+{% block body-right %}
+    <form name="respondermsg"  action="/mblog/new/{{ REGISTRY_ID }}?id={{ MBLOG_ID }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio("Responder mblog")}}
+        Diga alguma coisa: <br/> 
+        <textarea name="conteudo" id="conteudo" rows="3" cols="60"
+            onkeypress="GetChar (event);" 
+            onKeyDown="textCounter(this.form.conteudo,getElementById('restante'));"
+            onKeyUp="textCounter(this.form.conteudo,getElementById('restante'));">{% if POST["owner"] not in POST["mencionados"] %}@{{ POST["owner"] }} {% end %}{% for member in POST["mencionados"] %}@{{ member }} {% end %}</textarea>
+            <div id="restante">&nbsp;&nbsp;&nbsp;</div>
+        <br/>
+    {{ modules.ShowMolduraFim("respondermsg") }}
+    </form>
+    <script type="text/javascript">
+    window.onload = textCounter(document.getElementById('conteudo'), document.getElementById('restante'));
+    </script>
+    <br/>
+    
+    {{modules.ShowMolduraInicio("","","100%",links=LINKS)}}
+    <table>
+    <tr><td>          
+        <div style="float:left; width:100%">
+            {{ modules.ShowFoto("/photo/"+escape(POST['owner'])+"?size=P",escape(POST['owner']),escape(POST['owner']),"/user/"+escape(POST['owner']),True)}}   
+            {{ POST["conteudo"] }}
+            <br/>
+            <i><span style="color:#999;font-size:small;">
+            {{ POST["data_cri"] }}
+            {% if POST["owner"] != POST["registry_id"] %}
+                - na comunidade <a href="/community/{{ POST["registry_id"] }}">{{ escape(POST["registry_id"]) }}</a>
+                <br/>
+            {% end %}
+            </span></i>
+        </div>
+    </td></tr>
+    </table>         
+    {{ modules.ShowMolduraFim() }}
+{% end %}

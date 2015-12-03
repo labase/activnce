@@ -1,0 +1,118 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- Yahoo User Interface: Produz os gráficos das estatísticas -->
+	<script src="/static/yui/3.13.0/yui/yui-min.js"></script>
+
+	<style>
+	#mychart {
+	    margin:10px 10px 10px 10px;
+	    width:90%;
+	    min-width: 800px;
+	    height:500px;
+	}
+	</style>
+
+	<script type="text/javascript">
+	YUI().use('charts-legend', function (Y){ 
+
+		Y.ComboSeries.prototype._defaultLineColors = ["#B0171F", "#FF3E96", "#8B4789", "#0000FF", "#7171C6", "#00FF7F", "#8B5A00", "#008B00", "#FFA500", "#292421", "#FF0000", "#CD3278", "#00F5FF", "#9ACD32", "#CDC673", "#1C86EE", "#FFEC8B", "#C67171", "#999999", "#FFFF00"];
+		Y.ComboSeries.prototype._defaultFillColors = ["#B0171F", "#FF3E96", "#8B4789", "#0000FF", "#7171C6", "#00FF7F", "#8B5A00", "#008B00", "#FFA500", "#292421", "#FF0000", "#CD3278", "#00F5FF", "#9ACD32", "#CDC673", "#1C86EE", "#FFEC8B", "#C67171", "#999999", "#FFFF00"];
+		Y.ComboSeries.prototype._defaultBorderColors = ["#B0171F", "#FF3E96", "#8B4789", "#0000FF", "#7171C6", "#00FF7F", "#8B5A00", "#008B00", "#FFA500", "#292421", "#FF0000", "#CD3278", "#00F5FF", "#9ACD32", "#CDC673", "#1C86EE", "#FFEC8B", "#C67171", "#999999", "#FFFF00"];
+
+		var myDataValues = [ 
+
+		{% for indice in LISTADEDADOS %}
+	
+		    {date:"{{ escape (indice[0]) }}", "{{ escape (indice[2]) }}":{{ escape (indice[1]) }}}
+			{% if indice != LISTADEDADOS[len(LISTADEDADOS)-1] %}
+				,
+			{% end %}
+		
+		{% end %}
+		];
+
+		var myAxes = {
+		    values:{
+		        position:"left",
+		        type:"numeric",
+				maximum:{{ escape(TAMANHO_EIXO) }},
+		        styles:{
+		            majorTicks:{
+		                display: "none"
+		            }
+		        },
+		    },
+		    dateRange:{
+		        keys:["date"],
+		        position:"bottom",
+		        type:"time",
+		        styles:{
+		            majorTicks:{
+		                display: "none"
+		            },
+		            label: {
+		                rotation:-90,
+		                margin:{top:5}
+		            }
+		        }
+		    }
+		};
+
+		var seriesCollection = [
+			{% for indice in LISTADEUSUARIOS %}
+		    {
+		        xAxis:"dateRange",
+		        yAxis:"values",
+		        xKey:"date",
+		        xDisplayName:"Date",           
+		        styles:{
+		                line: {
+		                    weight: 2
+		                },
+						marker: {
+							width: 3,
+							height: 3
+						}
+		        }
+
+		    },
+			{% end %}
+		];
+
+		//instantiate the chart
+		var myChart = new Y.Chart({
+		                    dataProvider:myDataValues,
+		                    legend: {
+		                        position: "right",
+		                        width: 300,
+		                        height: 300,
+		                        styles: {
+		                            hAlign: "center",
+		                            hSpacing: 4
+		                        }
+		                    },
+		                    axes:myAxes,
+		                    seriesCollection:seriesCollection,
+		                    horizontalGridlines: true,
+		                    verticalGridlines: true,
+		                    render:"#mychart"
+		                });
+	});
+
+	</script>
+
+{% end %}
+
+{% block body-right %}
+
+
+<form>
+{{modules.ShowMolduraInicio(width="100%", links="", titulo=u"Estatísticas de acesso a "+REGISTRY_ID)}}
+
+<h1>{{ escape(TITLE) }}</h1>
+<div id="mychart"></div>
+
+{{ modules.ShowMolduraFim() }}
+</form>
+{% end %}

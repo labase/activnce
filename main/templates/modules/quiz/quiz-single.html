@@ -1,0 +1,44 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+<form  action="{{ request.path }}" name="responderquiz" method="post">
+<input type=hidden name="atual" value="{{N_QUESTION}}">
+<input type=hidden name="prox" value="FIM">
+    {% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(QUIZ["titulo"], width="100%")}}
+	
+
+	    <h2>Questão {{N_QUESTION+1}})</h2>
+	    <p>{{QUESTIONS[N_QUESTION]["enunciado"] }}</p>
+	    <input type="hidden" name="pergunta{{N_QUESTION}}" value="{{QUESTIONS[N_QUESTION]['_id']}}"/>
+		{% for j in range (len(QUESTIONS[N_QUESTION]["respostas"])) %}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	    	<input type="radio" name="resposta{{N_QUESTION}}" value="{{j}}" 
+	    	  {% if QUESTIONS[N_QUESTION]['_id'] in ANSWERS and ANSWERS[QUESTIONS[N_QUESTION]['_id']]==str(j) %} checked="checked" {% end %} />
+			<img src="/static/imagens/question/{{IMGLIST[j]}}" >	
+			{{ QUESTIONS[N_QUESTION]["respostas"][j] }} 	
+		   	<br/><br/>
+		{% end %}
+	
+	
+	{% if int(N_QUESTION) > 0 %}
+	<input type="button"  name="anterior" value="Anterior" onclick="this.form.prox.value='{{int(N_QUESTION)-1}}'; this.form.submit()">
+	{% end %}
+	
+	{% if int(N_QUESTION) < len(QUIZ["questions"])-1 %}
+	<input type="button"  name="proxima" value="Próxima"  onclick="this.form.prox.value='{{int(N_QUESTION)+1}}'; this.form.submit()">
+	{% end %}
+	
+	<p>
+	<input  onclick="return confirm('Deseja realmente finalizar este Quiz? Você não poderá mais alterar nenhuma resposta.');" type=submit value="Finalizar o quiz" name="finalizar" >
+	</p>
+	
+	<span style="color:#999;font-size:small;">
+	<p>{{ _("Inicio:") }} <a>{{ escape(QUIZ["data_inicio"]) }}</a></p>
+	<p>{{ _("Encerramento:") }} <a><a>{{ escape(QUIZ["data_fim"]) }}</a> </p>
+	<p>{{ _("Posted by") }} <a href="/user/{{ escape(QUIZ['owner']) }}">{{ escape(QUIZ["owner"]) }}</a> {{ _("at") }} {{ QUIZ["data_cri"] }}</p>
+	</span>
+	{{ modules.ShowMolduraFim() }}
+</form>
+{% end %}

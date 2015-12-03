@@ -1,0 +1,12 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(u"Encerrar sessão no Google")}}
+     
+	<div class="tnmHomeMSG">Sua Sessão no Google foi encerrada.</div>
+     
+    {{modules.ShowMolduraFim()}}
+    
+     <iframe src="https://www.google.com/accounts/Logout" style="border: 0" width="0" height="0" frameborder="0" scrolling="no"></iframe>
+     <iframe src="https://mail.google.com/mail/u/0/?logout" style="border: 0" width="0" height="0" frameborder="0" scrolling="no"></iframe>    
+{% end %}

@@ -1,0 +1,68 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Quizes de "+REGISTRY_ID, width="100%", links=LINKS)}}
+    {% for quiz in QUIZ %}
+        {% if not quiz["nao_pode_responder"] %}
+        	<a href="/quiz/{{ escape(quiz["registry_id"]) }}/{{ escape(quiz["_id"]) }}">
+	        <b>{{ escape(quiz["tipo"]) }}: {{ escape(quiz["titulo"]) }}</b>
+        	<br/>
+	        {% if quiz["descricao"] %}
+		        <span style="color:#999;font-size:small;">
+		        <p>{{ quiz["descricao"] }}</p> 
+		        </span>
+	        {% end %}         	
+        	<br/>
+            <i>Responda agora!</i>
+            </a><br/>
+        {% else %}
+	        <b>{{ escape(quiz["tipo"]) }}: {{ escape(quiz["titulo"]) }}</b>
+	        <br/>
+	        {% if quiz["descricao"] %}
+		        <span style="color:#999;font-size:small;">
+		        <p>{{ quiz["descricao"] }}</p> 
+		        </span>
+	        {% end %}  	        
+        {% end %}        
+        <br/>
+        <i>Período: {{ quiz["data_inicio"] }} até {{ quiz["data_fim"] }}</i>
+
+        <span style="color:#999;font-size:small;">
+        <p>{{ _("Postado por") }} <a href="/user/{{ escape(quiz["owner"]) }}">{{ escape(quiz["owner"]) }}</a> {{ _("at") }} {{ quiz["data_fmt"] }}
+        </p>
+        {% if "alterado_por" in quiz and quiz["alterado_por"] %}
+            <p>{{ _("Alterado por") }} <a href="/user/{{ escape(quiz["alterado_por"]) }}">{{ escape(quiz["alterado_por"]) }}</a> {{ _("at") }} {{ quiz["data_alt"] }}</p>
+        {% end %}
+        </span>
+        
+        <p>
+        {% if IS_ADMIN %}
+        <a href="/quiz/answerkey/{{ escape(quiz["registry_id"]) }}/{{ escape(quiz["_id"]) }}" title="Gabarito">
+        <img src="/static/imagens/icones/join16.png" alt="Gabarito" border="0" />
+        </a>
+	
+        <a href="/quiz/result/{{ escape(quiz["registry_id"]) }}/{{ escape(quiz["_id"]) }}" title="Resultados">
+        <img src="/static/imagens/icones/chart16.png" alt="Resultados" border="0" />
+        </a>
+        {% end %}   	             
+       
+        {% if quiz["alterar"] %}
+        <a href="/quiz/edit/{{ escape(quiz["registry_id"]) }}/{{ escape(quiz["_id"]) }}" title='{{ _("Editar") }}'><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+        {% end %}
+        
+        {% if quiz["apagar"] %}
+        <a onclick="return confirm('Deseja mesmo remover este quiz?');" href="/quiz/delete/{{ escape(quiz["registry_id"]) }}/{{ escape(quiz["_id"]) }}" title="Remover">
+        <img src="/static/imagens/icones/delete16.png" alt="Remover" border="0" />
+        </a>        
+        {% end %}
+        </p>
+        <br/><br/>
+    {% end %}
+    {% if not QUIZ %}
+        {{ REGISTRY_ID }} ainda não criou nenhum Quiz.
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+    {{ modules.Paginator(PAGE, PAGESIZE, QUIZ_COUNT) }}
+    <br/>
+    
+{% end %}

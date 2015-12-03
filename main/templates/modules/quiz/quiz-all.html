@@ -1,0 +1,36 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+<form onsubmit="return confirm('Deseja realmente finalizar este Quiz? Você não poderá mais alterar nenhuma resposta.');" action="{{ request.path }}" name="responderquiz" method="post">
+    {% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(QUIZ["titulo"], width="100%")}}
+	
+	<p>{{ QUIZ["descricao"] }}</p>
+
+	{% for i in range(len(QUESTIONS)) %}
+		
+	    <h2>Questão {{i+1}}</h2>
+	    <p>{{QUESTIONS[i]["enunciado"] }}</p>
+	    
+		{% for j in range (len(QUESTIONS[i]["respostas"])) %}
+
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="hidden" name="pergunta{{i}}" value="{{QUESTIONS[i]['_id']}}"/>
+	    	<input type="radio" name="resposta{{i}}" value="{{j}}"/>
+		<img src="/static/imagens/question/{{IMGLIST[j]}}" >	
+		{{ QUESTIONS[i]["respostas"][j] }}
+		   	
+		   	<br/><br/>
+	
+		{% end %}
+	
+	{% end %}
+	<input type=submit value="finalizar o quiz" >
+	<span style="color:#999;font-size:small;">
+	<p>{{ _("Inicio:") }} <a>{{ escape(QUIZ["data_inicio"]) }}</a></p>
+	<p>{{ _("Encerramento:") }} <a><a>{{ escape(QUIZ["data_fim"]) }}</a> </p>
+	<p>{{ _("Posted by") }} <a href="/user/{{ escape(QUIZ["owner"]) }}">{{ escape(QUIZ["owner"]) }}</a> {{ _("at") }} {{ QUIZ["data_cri"] }}</p>
+	</span>
+	{{ modules.ShowMolduraFim() }}
+</form>
+{% end %}

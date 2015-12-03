@@ -1,0 +1,42 @@
+<html>
+<head>
+</head>
+<body background="/static/imagens/activNCE/activ_fundo.jpg"/>
+<table width="100%">
+<tr>
+<td align="center"><img src="/static/imagens/activNCE/Inst_NCE.png"/></td>
+<td>
+<img src="/static/imagens/activNCE/Inst_tercio_pacitti.png"/><br/>
+<br/>
+<form name="logar" action="/login" method="post">
+{% raw xsrf_form_html() %}
+<input type="hidden" name="next" value="{{ escape(NEXT) }}"/>
+<table>
+<tr>
+<td></td>
+<td colspan="2"><img src="/static/imagens/activNCE/bem_vindo.png"/><br/><br/><br/></td>
+</tr>
+<td><img src="/static/imagens/activNCE/login_NCE.png"></td>
+<td><input type="text" name="user" size="20"/></td>
+<td></td>
+</tr>
+<tr>
+<td><img src="/static/imagens/activNCE/senha_NCE.png"/></td>
+<td><input type="password" name="passwd" size="20"/></td>
+<td><input type="image" src="/static/imagens/activNCE/ok_NCE.png" border="0"/></td>
+</tr>
+<tr>
+<td></td>
+<td colspan="2">
+<a href="/forgotpasswd"><img src="/static/imagens/activNCE/esqueceu_senha.png" border="0"/></a>
+<br/><br/>
+<a href="/new/user"><img src="/static/imagens/activNCE/cadastre-se.png" border="0"/></a>
+</td>
+</tr>
+</table>
+</form>
+</td>
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,27 @@
+/* css dasequencia */
+
+
+#sequencia{
+   font-size: 12pt;
+   font-family: 'Open Sans', Helvetica, Sans Serif, Arial;
+	margin: 0;
+	padding: 0;
+	padding-left: 89px; /* 89 pixels alinha com o menu superior */
+	height: 45px;
+	/*calculando largura descontanto a borda interna */
+	/* Standard */
+	width: calc(100% - 89px); 
+	/* Firefox */
+	width: -moz-calc(100% - 89px);
+	/* WebKit */
+	width: -webkit-calc(100% - 89px);
+	/* Opera */
+	width: -o-calc(100% - 89px);
+		
+	text-align:left;	
+		
+	vertical-align:middle;
+	line-height:45px; /* altura da barra */
+	
+	border: dotted white 1px; /* sem borda o texto nao alinha na esquerda, por isso a borda branca "invisivel" */
+}

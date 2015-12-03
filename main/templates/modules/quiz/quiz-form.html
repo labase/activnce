@@ -1,0 +1,98 @@
+{% extends "../../base-foto.html" %}
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        $('#data_start').datetimepicker([]);
+        $('#data_end').datetimepicker({});        
+    });
+    </script>
+{% end %}      
+ 
+{% block body-right %}
+	
+	{% if QUESTIONS %}
+	    <form action="{{ request.path }}" name="criarquiz" method="post">
+	    {% raw xsrf_form_html() %}
+		<input type="hidden" name="subtype" value="{{SUBTYPE}}" />
+		
+		{{modules.ShowMolduraInicio(titulo=TITLE, links=LINKS)}}
+		
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	    
+		<h2>Título:</h2>
+			<input type="text" name="titulo" 
+			{% if QUIZ["titulo"]  %} value="{{(QUIZ['titulo'])}}"{% end %} 
+			size="70" maxlengh="300" /> 
+		<br/> 	  
+		<br/>
+		<h2>Descrição:</h2> 
+			 <textarea  name="descricao" rows="4" cols=70>{% if QUIZ["descricao"]  %} {{escape(QUIZ['descricao'])}} {% end %}</textarea> 
+		<br/>  
+		<br/>
+		<h2>Forma de Exibição:</h2> 
+		<select  name="exibicao">
+			<option value="Uma questão de cada vez"
+			{% if QUIZ["exibicao"]=="Uma questão de cada vez" %} selected="selected" {% end %}>Uma questão de cada vez
+			</option>
+			 
+			<option value="Todas as questões juntas"
+			{% if QUIZ["exibicao"]=="Todas as questões juntas" %} selected= "selected"{% end %}>Todas as questões juntas
+			</option>
+		</select> <br/>   
+		<br/>	 
+
+		{% if SUBTYPE == "Teste" %}
+			<h2>Selecione as Questões que farão parte do Teste de múltipla escolha:</h2> 
+		{% elif SUBTYPE == "Survey" %}
+			<h2>Selecione as Questões que farão parte da Pesquisa de Opinião:</h2> 
+		{% end %}
+		{% for question in QUESTIONS %}
+			<input type="checkbox" name=questions value="{{question['_id']}}"{%if question["_id"] in QUIZ["questions"]%} checked=checked {% end %}>
+			{{ escape(question["enunciado"]) }}
+			<a href="/question/{{ escape(question["registry_id"]) }}?id={{ escape(question["_id"]) }}" target="_blank">&nbsp;&nbsp;&nbsp;ver questão</a>
+			<br/> 
+		{% end %}		
+		<br/><br/>
+	
+		<br/>
+		<h2>Período de Realização do Quiz:</h2> 	
+			<table cellspacing="5">      
+			<td valign="top">
+			<tr><td>
+			<label for="data_start">Data/hora de início</label>
+			</td>
+			<td colspan="3">
+			<input id="data_start" name="data_start"
+			{% if QUIZ["data_inicio"] %} value="{{(QUIZ['data_inicio'])}}" {% end %}			
+			 maxlength="16" size="16" type="text"/>
+			</td></tr>
+			
+			<tr><td>
+			<label for="data_end">Data/hora de encerramento</label>
+			</td>
+			<td colspan="3">
+			<input id="data_end" name="data_end" 
+			{% if QUIZ["data_fim"] %} value="{{(QUIZ['data_fim'])}}" {% end %}
+			maxlength="16" size="16" type="text"/>
+			</td></tr>   
+		    </table>
+		    
+		{{ modules.ShowMolduraFim("criarquiz") }}
+	    </form>
+	    
+	{% else %}
+		{{modules.ShowMolduraInicio(titulo=TITLE, links=LINKS)}}
+		
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		{{ modules.ShowMolduraFim() }}
+	{% end %}
+	
+{% end %}

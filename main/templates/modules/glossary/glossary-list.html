@@ -1,0 +1,78 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(titulo=TITLE, width="100%", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    
+    <div>
+      <br/>
+       {% if GLOSSARY %}
+            {% for item in GLOSSARY %}
+                 <div style="float:right">
+                    {% if item["alterar"] %}
+                       <a href="/glossary/edit/{{ escape(item["registry_id"]) }}?item_id={{ escape(item["item_id"]) }}" title="alterar">
+                       <img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+                    {% end %}
+                      {% if item["apagar"] %}
+                         <a onclick="return confirm('Deseja realmente apagar este termo deste glossário?');" href="/glossary/delete/{{ escape(item["registry_id"]) }}?item_id={{item["item_id"]}}" title="apagar">
+                         <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+                    {% end %}  
+                 </div>
+
+                 {% if FOTO %}
+                     {{ modules.ShowFoto("/photo/"+escape(item['registry_id'])+"?size=P",escape(item['registry_id']),escape(item['registry_id']),"/user/"+escape(item['registry_id']),True)}}
+                 {% end %}
+                 
+                 <h1>{{item["term"]}}</h1>
+                     
+                 {% if not FOTO and item["term_count"] %}
+                    <br/>
+                    <a href="/glossary/term?item_id={{ escape(item["item_id"]) }}&term={{ escape(url_escape(item["term"])) }}">{{ item["term_count"] }}</a>.<br/>
+                 {% end %}
+                 <br/>
+                 <div style="background-color:#f0f0f0; padding:8px 8px; margin-right:40px; margin-left: 40px;">{{item["definition"]}}</div>
+                 <br/>
+                 
+
+		        {% if item["tags"] %}
+		           <i>Tags:</i><br/>
+		           {{ modules.ShowTags(item["tags"], link="/glossary/"+item["registry_id"]+"/") }}
+		        {% end %}
+		        
+		        <p>                
+                <span style="color:#999;font-size:small;">
+                {% if item["owner"] != item["registry_id"] %}
+                Criado por: {{ escape(item["owner"]) }} em {{ escape(item["registry_id"]) }}<br/>
+                {% end %}
+
+                Última alteração: {{ escape(item["alterado_por"]) }} em {{ escape(item["data_alt"]) }}
+                </span>
+                </p>
+                <br/>{% if GLOSSARY.index(item) < (len(GLOSSARY)-1) %}<hr noshade/>{% end %}<br/>
+            {% end %}
+        {% else %}      
+            <p>{{ REGISTRY_ID }} não possui nenhum termo definido no seu glossário{% if TAG %} com a tag {{TAG}}{% end %}.
+            </p>
+        {% end %}
+    </div>
+    {{ modules.ShowMolduraFim() }}
+    
+    {{ modules.Paginator(PAGE, PAGESIZE, GLOSSARY_COUNT) }}
+    <br/>
+{% end %}
+
+{% block body-left %}
+	{% if TAGS_LIST %}
+        <br/><br/>
+        {{modules.ShowMolduraInicio(width="100%", titulo="Tags")}}
+          <table>
+          <tr><td>
+          <a href="/glossary/{{REGISTRY_ID}}">Todas</a> 
+          <br/><br/>
+          {{ modules.ShowTags(TAGS_LIST, link="/glossary/"+REGISTRY_ID+"/") }}
+          <br/>
+          </td></tr>
+          </table>
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}

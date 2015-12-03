@@ -1,0 +1,76 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+<script type="text/javascript">
+    var times = new Array();
+    var slides = new Array();
+
+	{% for tempo in SORTEDKEYS(VIDEODATA["slides"]) %}
+	    times.push({{ int(tempo.split(":")[0])*60+int(tempo.split(":")[1]) }});
+		slides.push("/file/{{REGISTRY_ID}}/{{ VIDEODATA["slides"][tempo] }}");
+	{% end %}
+	
+	function searchSlide(t) {
+		if (times.length<1 || t<times[0]) return "";
+		for (var i=0; i<times.length-1; i++){
+			if (t>=times[i] && t<times[i+1])
+				return slides[i];
+		}
+		return slides[slides.length-1];
+	}
+</script>
+{% end %}
+
+{% block body-right %}
+	{{modules.ShowMolduraInicio("Videoaula: "+escape(VIDEODATA["titulo"]))}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	
+	<h2>Arquivo de video:</h2> 
+	{{ escape(VIDEODATA["arqvideo"]) }}<br/>
+	
+    <h2>Tags:</h2> 
+	{{ modules.ShowTags(VIDEODATA["tags"]) }}
+
+	<br/><br/> 
+			   
+	<div id="player">
+	<video controls="controls" width="400" height="300" style="margin: 1em 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);">
+		<source src="http://{{PLATAFORMA_URL}}/file/{{REGISTRY_ID}}/{{escape(VIDEODATA["arqvideo"])}}?disp=attachment" type="{{MIME_TYPE}}" /> 
+		Seu navegador n&atilde;o suporta HTML5.
+	</video>
+	
+	<!-- 640x480 -->
+	<img src="" width="400" height="300" id="slide" style="margin: 1em 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.8);"/>	
+	</div>
+	<div id="time"></div>
+	
+
+	
+	<script type="text/javascript">
+		var old=0;
+	
+		(function(){
+		    var v = document.getElementsByTagName('video')[0]
+		    var t = document.getElementById('time');
+		    var s = document.getElementById('slide');
+		    
+		    if (slides.length>0)
+		    	s.src = slides[0];
+		    
+		    v.addEventListener('timeupdate',function(event){
+		    	now = parseInt(v.currentTime);
+		    	if (now>old){
+					// t.innerHTML = parseInt(v.currentTime) + ' - ' + v.currentTime + '-' + searchSlide(parseInt(v.currentTime));
+					newslide = searchSlide(now);
+					if (s.src!=newslide)
+						s.src = newslide;
+				}
+				old = now;
+		    },false);
+		})();
+	</script>
+
+		
+	{{ modules.ShowMolduraFim() }}
+{% end %}
+

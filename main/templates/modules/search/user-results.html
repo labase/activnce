@@ -1,0 +1,37 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{ modules.ShowMolduraInicio("Resultados da busca") }}
+	Mostrando {{ NUM_RESULT }} resultados com a(s) tag(s): {{ TAGS_PROCURADAS }}<br/>
+
+    {% if NUM_RESULT > 0 %}
+        {% for tipo in RESULTADOS %}
+            {% if RESULTADOS[tipo] %}
+                <h3>{{ LEGENDA[tipo] }}</h3>
+                {% for tupla in RESULTADOS[tipo] %}
+                    {% if tipo=="mblog" %}
+                        <a href="{{ escape("/"+tipo+"/post?id="+tupla[3]) }}">{{ escape(tupla[0]) }}</a>
+                    {% elif tipo=="bookmarks" %}
+                        <a href="{{ escape("/"+tipo+"/comment/"+tupla[2]+"?id="+tupla[3]) }}">{{ escape(tupla[0]) }}</a>
+                    {% elif tipo=="question" %}
+                        <a href="{{ escape("/"+tipo+"/"+tupla[2]+"?id="+tupla[3]) }}">{{ escape(tupla[0]) }}</a>
+                    {% elif tipo=="glossary" %}
+                        <a href="{{ escape("/"+tipo+"/view/"+tupla[3]) }}">{{ escape(tupla[0]) }}</a>
+                    {% else %}
+                        <a href="{{ escape("/"+tipo+"/"+tupla[3]) }}">{{ escape(tupla[0]) }}</a>
+                    {% end %}
+                    {% if tupla[1] != tupla[2] %}
+                    [ <span style="color:#999;font-size:small;"><a href="/user/{{ escape(tupla[1]) }}">{{ escape(tupla[1]) }}</a> na comunidade <a href="/community/{{ escape(tupla[2]) }}">{{ escape(tupla[2]) }}</a>, {{ escape(tupla[5]) }}</span> ]
+                    {% else %}
+                    [ <span style="color:#999;font-size:small;"><a href="/user/{{ escape(tupla[1]) }}">{{ escape(tupla[1]) }}</a>, {{ escape(tupla[5]) }}</span> ]
+                    {% end %}
+                    <br/>
+                {% end %}
+                <br/>
+            {% end %}
+        {% end %}
+    {% else %}
+        Nenhum resultado encontrado.
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

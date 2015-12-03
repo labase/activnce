@@ -1,0 +1,18 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+    <form name="renomeararquivo" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(titulo=u"Renomear Pastas")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> <br/>{% end %}
+    
+    <input type="hidden" name="filename" value="{{ escape(FILEDATA["filename"]) }}"/>
+    <input type="hidden" name="revision" value="{{ escape(FILEDATA["_rev"]) }}"/>
+    <h2>Nome atual:</h2>{{ PATH }}
+    <br/><br/>
+
+    <h2>Nome novo:</h2>
+    <input type="text" name="nomepag_novo" value="{{ escape(NEWNAME) }}" size="60" /> 
+    {{ modules.ShowMolduraFim("renomeararquivo") }}
+   </form>
+{% end %}

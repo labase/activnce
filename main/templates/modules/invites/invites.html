@@ -1,0 +1,168 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+<script type="text/javascript">
+function submitForm(f, request_id, email) {
+    f.request_id.value = request_id; 
+    f.email.value = email; 
+    f.submit();
+    return false;
+}
+</script>
+{% end %}
+
+{% block body-right %}
+
+
+
+    {% if IS_ALLOWED_TO_INVITE %}
+        <form name="convidar" action="/invites" method="post">
+        {% raw xsrf_form_html() %}    
+        {{modules.ShowMolduraInicio(u"Convidar usuários", width="100%")}}
+		    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> <br/>{% end %}
+             <table>
+        
+             <tr><td colspan=2><label for="email">E-mails dos usuários a serem convidados, um por linha, ou separados por espaço em branco:</label></td></tr>
+             <tr><td></td><td><textarea name="email" rows="10" cols="40">{{ EMAIL_LIST }}</textarea></td></tr>
+             
+             <tr><td colspan="2"><label for="comunidades">Lista de comunidades nas quais os seus convidados serão inscritos automaticamente, separadas por espaço.<br/>
+             Estas comunidades já devem ter sido criadas anteriormente e você deve ser o dono ou administrador das mesmas:</label></td></tr>
+             <tr><td></td><td><input type="text" name="comunidades" value="{{ COMMUNITY_LIST }}" size="42" maxlength="60"/>
+             </td></tr>
+             </table>  
+        {{ modules.ShowMolduraFim("convidar") }}
+        </form>
+        <br/>
+        
+        
+        
+        {{modules.ShowMolduraInicio(u"Formulários de solicitação de convites", width="100%", links=LINKS)}}
+        {% for key in REQUESTINVITEFORMS %}
+                
+                <div style="background-color: #f0f0f0">
+                <h3>Formulário: <a href="/invites/showform/{{ key }}">{{ escape(REQUESTINVITEFORMS[key]["titulo"]) }}</a> (ativo de {{ escape(REQUESTINVITEFORMS[key]["data_inicio"]) }} a {{ escape(REQUESTINVITEFORMS[key]["data_encerramento"]) }})
+                <div style="float:right; text-align:right"> 
+                    <a onclick="return confirm('Deseja realmente remover este formulário?');" href="/invites/deleteform/{{ key }}" title='Remover'><img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a> 
+                    <a href="/invites/editform/{{ key }}" title='Alterar'><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+                </div>
+                </h3>
+                </div>
+                <br/>
+                
+                {% if REQUESTINVITEFORMS[key]["pendentes"] %}
+                    {% for rqst in REQUESTINVITEFORMS[key]["pendentes"] %}
+                        <img src="/static/imagens/bullet.gif" align="top" /> <b>{{ rqst["nome"] }}</b> - {{ rqst["email"] }} - {{ rqst["campo_livre"] }} 
+                        <span style="color:#999;font-size:small;">({{ rqst["data_cri"] }})</span>
+                        <div style="float:right; text-align:right"> 
+                        Convite solicitado: 
+                        <a href="#" onclick="return submitForm(document.f, '{{ rqst["request_id"] }}', '{{ rqst["email"] }}');">Aprovar</a> | 
+                        <a onclick="return confirm('Deseja realmente recusar esta solicitação?','');" href="/invites/rejectinviterequest?request_id={{ rqst["request_id"] }}">Recusar</a>
+                        </div>
+                        <br/>
+                    {% end %}
+                    <br/>
+                {% end %}
+
+                <form name="adduser" action="/invites/addusertocommunity" method="post">
+                {% raw xsrf_form_html() %}
+                
+                {% if REQUESTINVITEFORMS[key]["aprovados"] %}
+                    {% for rqst in REQUESTINVITEFORMS[key]["aprovados"] %}
+                        <img src="/static/imagens/bullet.gif" align="top" /> <b>{{ rqst["nome"] }}</b> - {{ rqst["email"] }} - {{ rqst["campo_livre"] }} 
+                        <span style="color:#999;font-size:small;">({{ rqst["data_cri"] }})</span>
+                        <div style="float:right; text-align:right"> 
+                        {{ rqst["msg"] }}
+                        </div>
+                        <br/>
+                    {% end %}
+                    <br/>
+                {% end %}
+
+                {% if REQUESTINVITEFORMS[key]["recusados"] %}
+                    {% for rqst in REQUESTINVITEFORMS[key]["recusados"] %}
+                        <img src="/static/imagens/bullet.gif" align="top" /> <b>{{ rqst["nome"] }}</b> - {{ rqst["email"] }} - {{ rqst["campo_livre"] }} 
+                        <span style="color:#999;font-size:small;">({{ rqst["data_cri"] }})</span>
+                        <div style="float:right; text-align:right"> 
+                        Convite recusado.
+                        </div>
+                        <br/>
+                    {% end %}
+                    <br/>
+                {% end %}
+                
+                Comunidade para onde devem ser movidos os usuários selecionados:<br/>
+                <input type="text" name="comunidade" size="40" maxlength="60"/>
+                <input type="submit" value="Enviar usuários para a comunidade" />
+                </form>
+                
+        {% end %}
+        
+        <form name="f" action="/invites" method="post">
+        {% raw xsrf_form_html() %}
+        <input type="hidden" name="email" value="" />
+        <input type="hidden" name="request_id" value="" />
+        </form>
+        {{ modules.ShowMolduraFim() }}
+        <br/>
+
+        
+        {% if MAGICKEYS %}
+            {{modules.ShowMolduraInicio("Convites pendentes", width="100%")}}
+            {% for key in MAGICKEYS %}
+                    {{ escape(MAGICKEYS[key]["datafmt"]) }} - 
+                    {{ escape(MAGICKEYS[key]["email"]) }}
+                    <div style="float:right; text-align:right"> 
+                    <a href="/invites/send?key={{ key }}">Reenviar</a> | 
+                    <a onclick="return confirm('Deseja realmente cancelar o convite de {{ escape(MAGICKEYS[key]["email"]) }}?','');" href="/invites/delete?key={{ key }}">Cancelar</a>
+                    </div>
+                    <br/>
+                    <div style="background-color: #f0f0f0">&nbsp;</div>
+            {% end %}
+            {{ modules.ShowMolduraFim() }}
+        {% end %}
+        <br/>
+   {% end %}
+
+    {{ modules.ShowMolduraInicio("Solicitações de amizade", width="100%") }}
+	{% if USERDATA["amigos_pendentes"] %}
+	    <table>
+	    <tr><td>
+		{% for amigo in USERDATA["amigos_pendentes"] %}
+			<div style="float:left; width:100%">
+			{{ modules.ShowFoto("/photo/"+escape(amigo)+"?size=P","",escape(amigo),"/user/"+escape(amigo),True) }}
+			<h3>{{ escape(amigo) }}</h3> 
+			<a href="/acceptfriend/{{ escape(amigo) }}">Aceitar</a> | 
+			<a href="/rejectfriend/{{ escape(amigo) }}">Recusar</a>
+			<br/>
+			</div>
+		{% end %}
+		</td></tr>
+		</table>
+	{% else %}
+		<p>Você não possui nenhum convite.</p>
+	{% end %}
+    {{ modules.ShowMolduraFim() }}
+    <br/>
+	
+    {{ modules.ShowMolduraInicio("Participação em comunidades", width="100%") }}
+	{% if USERDATA["comunidades_pendentes"] %}
+	    <table>
+	    <tr><td>
+		{% for comunidade in USERDATA["comunidades_pendentes"] %}
+		        <div style="float:left; width:100%">
+			{{ modules.ShowFoto("/photo/"+escape(comunidade)+"?size=P","",escape(comunidade),"/community/"+escape(comunidade),True) }}
+			<h3>{{ escape(comunidade) }}</h3> 
+			<a href="/accept/{{ escape(comunidade) }}">Aceitar</a> | 
+			<a href="/reject/{{ escape(comunidade) }}">Recusar</a>
+			<br/>
+			</div>
+		{% end %}
+		</td></tr>
+		</table>
+	{% else %}
+		<p>Você não possui nenhum convite.</p>
+	{% end %}
+    {{ modules.ShowMolduraFim() }}
+    <br/>
+    
+{% end %}

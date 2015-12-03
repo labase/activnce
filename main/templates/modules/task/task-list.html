@@ -1,0 +1,72 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Tarefas de "+REGISTRY_ID, width="100%", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div>{% end %}
+    
+		{% if TASKDATA %}
+	        {% for aval in TASKDATA %}
+				{% if PERMISSION %}			
+                    <div style="float:right">
+                        <a href="/task/view/{{ escape(aval[0]) }}" title="Correção">
+                        <img src="/static/imagens/icones/tick16.png" alt="Correção"/>
+                        </a>
+                        <a href="/task/edit/{{ escape(aval[0]) }}" title="Alterar">
+                        <img src="/static/imagens/icones/edit16.png" alt="Alterar"/>
+                        </a>
+                        <a onclick="return confirm('Deseja mesmo remover esta tarefa?');" href="/task/delete/{{ escape(aval[0]) }}" title="Remover">
+                        <img src="/static/imagens/icones/delete16.png" alt="Remover" style="hspace:5px;" />
+                        </a>
+                    </div>
+                {% end %}
+				{% if aval[5] != 1 %}
+		            <div style="float:right">
+							<a href="/task/group/list/{{ aval[0] }}" title="Lista de Grupos">
+		                    <img src="/static/imagens/icones/group-list16.png" alt="Lista de Grupos" border="0"/>
+		                    </a>
+		            </div>
+				{% end %}
+
+	            <h2>
+                {% if not aval[4] %}
+                	{% if aval[5] == 1 %}
+                    	<a href="/task/{{ escape(aval[0]) }}">{{ escape(aval[0].split("/")[1]) }}</a>
+                    {% else %}
+                   		<a href="/task/group/list/{{ aval[0] }}">{{ escape(aval[0].split("/")[1]) }}</a>
+                    {% end %}
+                {% else %}
+                    {{ escape(aval[0].split("/")[1]) }}
+                {% end %}
+                </h2>
+                <p><i>
+                {% if aval[1] %}
+                    {{ escape(aval[1]) }} <br/>
+                {% end %}
+                {% if aval[4] == 0 %}
+				    {% if aval[5] == 1 %}
+		                    	</br><a href="/task/{{ escape(aval[0]) }}">Faça a tarefa!</a><br/>
+				    {% else %}
+						{%if aval[6] %}
+		
+							</br><a href="/task/{{ escape(aval[0]) }}">Faça a tarefa!</a><br/>
+						{% else %}
+		
+							</br><a href="/task/group/list/{{ aval[0] }}" title="Lista de Grupos">Entre em um Grupo</a><br/>
+				
+						{% end %}	
+		   			{% end %}
+		   		{% elif aval[4] == 1 %}
+		   			</br><a href="/task/{{ escape(aval[0]) }}" title="Visualização">Visualize a Tarefa</a><br/>
+		   		{% else %}
+					</br><a>Esta tarefa ainda não está disponível.</a></br>
+                {% end %}
+                Período: {{ escape(aval[2]) }} até {{ escape(aval[3]) }}
+                </i>
+                </p></br></br>
+				
+	        {% end %}
+	    {% else %}
+	    	Não há tarefas nesta comunidade.
+	    {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

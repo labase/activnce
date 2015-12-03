@@ -1,0 +1,9 @@
+<div style="width:120px; height:160px;">
+{% if link != "" %}
+ <a href="{{link}}" title="{{alt}}">
+{% end %}
+ <img src="{{src}}" width="120px" height="160px" alt="{{alt}}" title="{{alt}}" />
+{% if link != "" %}
+ </a>
+{% end %}
+</div>

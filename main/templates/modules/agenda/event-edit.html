@@ -1,0 +1,66 @@
+{% extends "../../base.html" %}
+
+{% block head %}
+	
+	<!-- JQuery UI -->
+	<script src="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/jquery-ui.min.css">
+	
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+
+	<script>
+	$(function() {
+		$.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+		$('#data').datepicker({});
+		$('#hora').timepicker({});
+		$('#duracao').timepicker({});
+	});
+	</script>	
+{% end %}
+
+{% block body %}
+	<p><form name="cadastro" id="form_settings_profile" class="form_settings" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Alterar evento", width="95%")}}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	
+		<input id="dia" name="dia" value="{{ EVENTO["dia"] }}" type="hidden"/>
+		<input id="mes" name="mes" value="{{ EVENTO["mes"] }}" type="hidden"/> 
+		<input id="ano" name="ano" value="{{ EVENTO["ano"] }}" type="hidden"/> 
+		<input id="pos" name="pos" value="{{ EVENTO["pos"] }}" type="hidden"/> 
+	
+	    <table border="0">
+		<tr><td><h3>Data:</h3></td>
+		<td colspan="3"> {{ EVENTO["dia"] }}/{{ EVENTO["mes"] }}/{{ EVENTO["ano"] }}
+		</td></tr>
+
+		<tr><td><h3>Hora:</h3></td>
+		<td>
+		<input id="hora" name="hora" maxlength="15" size="8" type="text" value="{{ EVENTO["hora"] }}"/>
+		</td>
+		<td><h3>Duração:</h3></td>
+		<td>
+		<input id="duracao" name="duracao" maxlength="15" size="8" type="text" value="{{ EVENTO["duracao"] }}"/>
+		</td></tr>
+
+		<tr><td><h3>Descrição: </h3></td>
+		<td colspan="3">
+		<input id="msg" name="msg" size="40" type="text" value="{{ EVENTO["msg"] }}"/>
+		</td></tr>
+		
+		<tr><td><h3>URL:</h3></td>
+		<td colspan="3">
+		<input id="url" name="url" size="40" type="text" value="{{ EVENTO["url"] }}"/> 
+		</td></tr>
+		</table>
+			
+	{{ modules.ShowMolduraFim("cadastro") }}
+	</form></p>
+
+{% end %}

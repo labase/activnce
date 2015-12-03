@@ -1,0 +1,78 @@
+/*PULO DO GATO - css*/
+
+.corpo {
+    margin: 0 auto;
+    min-height: 600px;
+    width: 1000px;
+    background: #e8f2f2;
+}
+
+.conteudo {
+    background: #e8f2f2 url(/static/imagens/activGato/PuloGato_fundo.png) no-repeat;
+    min-height: 700px;
+    width: 1000px;
+    text-align: center;
+    position: relative;
+}
+
+.contem_formulario {
+    background: transparent url(/static/imagens/activGato/contem_formulario.png) no-repeat;
+    position: relative;
+    float: right;
+    margin-right: 30px;
+    margin-top: -75px;
+    width: 350px;
+    height: 669px;
+}
+
+#logotipo_formulario {
+    position: relative;
+    background: transparent url(/static/imagens/activGato/gato_logo.png) no-repeat;
+    text-align: center;
+    margin-top: 140px;
+    margin-left: 85px;
+    height: 205px;
+    width: 308px;
+}
+
+.formulario {
+    position: relative;
+    height: 200px;
+    margin-top: 60px;
+}
+
+#senha{
+    margin-left: -200px;
+}
+
+#login{
+    margin-bottom: -4px;
+    margin-left: -208px;
+}
+
+#input {
+    background: #bad7b0;
+    border: none;
+    width: 250px;
+    height: 25px;
+    margin-top: 5px;
+    margin-right: 4px;
+    font-family: 'Habibi', serif;
+    font-size: 20px;
+    color: #e2e0e4;
+    padding-left: 3px;
+    padding-top: 3px;
+    padding-right: 3px;
+
+    
+}
+
+#enviar {
+    background: transparent url(/static/imagens/activGato/entrar.png) no-repeat;
+    width: 100px;
+    height: 50px;
+    margin-top: 25px;
+    border: none;
+    cursor: pointer;
+    cursor: hand;    
+}

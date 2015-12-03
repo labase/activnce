@@ -1,0 +1,16 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+    <form name="updategroups" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(titulo=u"Agrupar "+PART+" em")}}
+    
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div><br/>{% end %}
+    <input type="hidden" name="part" value="{{ PART }}"/>
+    {% for grupo in GROUPS %}
+        <input type="checkbox" name="{{ grupo[0] }}" value="S" {% if grupo[1] %} checked="checked" {% end %}>{{grupo[0]}}<br/>
+    {% end %}
+   
+    {{ modules.ShowMolduraFim("updategroups") }}
+   </form>
+{% end %}

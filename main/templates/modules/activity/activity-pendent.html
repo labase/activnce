@@ -1,0 +1,52 @@
+{% extends "../../base-foto.html" %}  
+
+{% block body-right %}
+	{{modules.ShowMolduraInicio("Atividades pendentes de "+REGISTRY_ID, links=LINKS)}}
+
+	{% if ATIVIDADES  %}
+		<table border="0" cellspacing="10" width="100%">
+			<tr>
+			<td style="border-top: 1px solid"><b>Origem</b></td>
+			<td style="border-top: 1px solid"><b>Atividade</b></td>
+			<td style="border-top: 1px solid"><b>Estado</b></td>
+			<td style="border-top: 1px solid"><b>Prazo</b></td>
+			</tr>
+	
+	
+			{% for activ in ATIVIDADES  %}
+					
+				{% if activ['key'][3] == 1 %}
+					<tr>
+					<td valign="top"><a href="/activity/{{activ['key'][1]}}" target="_top">{{activ['key'][1]}}</a></td>
+					<td valign="top" valign="top">
+					      {% if activ['value']['prioritario']=="S" %}
+							    <span style="color:red">{{activ['value']['titulo']}}</span>
+				          {% else %}  
+						    	{{activ['value']['titulo']}}
+				 	      {% end %}
+					
+						&nbsp;&nbsp;<a href="#" onclick="TINY.box.show({iframe:'/activity/{{REGISTRY_ID}}/{{activ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/view16.png" alt="expandir" border="0" /></a> 
+					</td>			
+		
+					<td valign="top">{{activ['value']['status']}}</td>
+					
+					<td valign="top">
+						{% if activ['value']['data_conclusion'] %}
+							{{activ['value']['data_conclusion']}}
+						{% else %}
+							-
+						{% end %}
+					</td>
+					</tr>
+			 	{% end %}
+					
+			{% end %}
+		</table>
+	{% else %}
+		Nenhuma atividade pendente encontrada.
+	{% end %}
+	
+	{{ modules.ShowMolduraFim() }}
+{% end %}
+
+	

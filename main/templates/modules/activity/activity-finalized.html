@@ -1,0 +1,35 @@
+{% extends "../../base-foto.html" %}  
+
+{% block body-right %}
+	{{modules.ShowMolduraInicio("Atividades finalizadas")}}
+
+	{% for activ in ATIVIDADES  %}
+		
+		{% if activ['key'][3] == 0 and activ['key'][1] in GROUPISFILLED %}
+
+			<!-- Grupo -->	
+			</br><b>{{activ['value']['titulo']}}</b>
+		{%end%}		
+		<ul> 	
+		{% if activ['key'][3] == 1 %}
+		<li>{{activ['value']['titulo']}}
+				 <! icones para alterar e apagar -->
+				{% if activ["value"]["alterar"] %}
+				  &nbsp;&nbsp;<a href="#" onclick="TINY.box.show({iframe:'/activity/edit/{{REGISTRY_ID}}/{{activ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+				{% end %}
+				{% if activ["value"]["apagar"] %}
+				  <a href='/activity/delete/{{REGISTRY_ID}}/{{activ['value']['_id']}}' onclick='return confirm("Deseja realmente excluir esta atividade? Esta operação não poderá ser desfeita.");'><img src="/static/imagens/icones/delete16.png" alt="delete" border="0" /></a>
+				{% end %}
+				<a href="#" onclick="TINY.box.show({iframe:'/activity/{{REGISTRY_ID}}/{{activ['value']['_id']}}',width:600,height:400,closejs:function(){closeJS()}}); return false;"><img src="/static/imagens/icones/view16.png" alt="expandir" border="0" /></a>
+		</li>
+		
+		{% end %}
+		
+		
+		</ul>	
+	{% end %}
+
+	{{ modules.ShowMolduraFim() }}
+{% end %}
+
+	

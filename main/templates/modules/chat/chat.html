@@ -1,0 +1,91 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- Estilos do chat -->
+    <link rel="stylesheet" href="/static/chat/chat.css" type="text/css">
+
+    <script type="text/javascript">
+        function copy_message(){
+           document.getElementById("message").value = document.getElementById("typemessage").value;
+           document.getElementById("typemessage").value = "";
+        }
+       
+       function show_chat_message(message, insert_before){
+          // monta imagem com a foto
+          var img = document.createElement('img');
+          img.src = '/photo/'+find_user(message)+'?size=P';
+          img.className = 'photo-left';
+          
+          var texto = document.createElement('div');
+          texto.className = "text";
+          texto.innerHTML = message;
+          
+          // monta caixa com a mensagem
+          var caixa = document.createElement('div');
+          if (message.indexOf("<b>{{LOGADO}}</b>: ")>=0)
+          	caixa.className = "me";
+          else
+          	caixa.className = "you";
+          //caixa.innerHTML = message;
+          
+          caixa.appendChild(texto);
+          
+          // inclui foto na caixa
+          caixa.insertBefore(img, caixa.childNodes[0]);
+          
+          if (insert_before) {
+	          // inclui caixa no início do documento
+	          document.getElementById("msg_area").insertBefore(caixa, document.getElementById("msg_area").childNodes[0]);
+          } else {
+	          // inclui caixa no fim do documento
+	          document.getElementById("msg_area").appendChild(caixa);
+	      }
+       }
+           
+		$(function() {
+	       protocol = (location.href.substring(0,5)=="https") ? "wss" : "ws";
+		
+		   if ("WebSocket" in window){
+		      //alert ("vou iniciar: " + protocol+"://{{PLATAFORMA_URL}}/chat/{{REGISTRY_ID}}/updates");
+              var ws = new WebSocket(protocol+"://{{PLATAFORMA_URL}}/chat/{{REGISTRY_ID}}/updates");
+           
+              //ws.onopen = function() {
+              //   show_chat_message("Conectado.", true);
+              //};
+              ws.onmessage = function(event) {
+                 //alert ("onmessage");
+                 show_chat_message(event.data, true);
+              };
+              //ws.onclose = function() {
+              //   show_chat_message("Desconectado.", true);
+              //};
+              
+              //alert ("socket iniciado");
+           }
+           else {
+              alert ("Seu navegador não é compatível com o Chat do {{PLATAFORMA}}. Por favor, atualize-o.");
+           }
+		});
+    </script>
+{% end %}
+
+{% block body-right %}
+        <form method="POST" action="/chat/{{REGISTRY_ID}}/new" target="_hidden" onsubmit="copy_message();">
+	     {% raw xsrf_form_html() %}        
+         <input name="typemessage" id="typemessage" style="width: 500px;border: 1px solid #CCC;padding: 3px;" value="" placeholder="Digite aqui sua mensagem e clique no botão enviar."/>
+         <input name="message" id="message" type="hidden" />
+         <input type="submit" value="Enviar"/>
+        </form>
+        <iframe id="_hidden" name="_hidden" style="display:none"></iframe>
+        <br/><br/>
+        <div id="msg_area">
+           <script type="text/javascript">
+           {% for msg in MSG_LIST %}
+              show_chat_message("{{ msg.replace('"', '\\"') }}", false);
+           {% end %}
+           </script>
+        </div>
+
+{% end %}
+
+

@@ -1,0 +1,24 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+<h2>Configuração do fórum</h2>
+    <form name="configurar" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	
+	{{ modules.ShowMolduraInicio() }}
+        
+        <table>
+            <tr>
+                <td>Número de tópicos por tela: </td>
+                <td><input name="num_topics" value="{{NUM_TOPICS}}" type="text" size="5"/></td>
+            </tr>
+            <tr>
+                <td>Número de mensagens por tela: </td>
+                <td><input name="num_posts" value="{{NUM_POSTS}}" type="text" size="5"/></td>
+            </tr>
+        </table>
+        <br/>
+    {{ modules.ShowMolduraFim("configurar") }}
+    </form>
+</p>
+{% end %}

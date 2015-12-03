@@ -1,0 +1,132 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        $('#data_start').datetimepicker({});
+        $('#data_end').datetimepicker({});      
+    });
+    </script>
+    
+    <script type="text/javascript">
+    var DICT_GROUPS = {{ GROUPS }};
+      
+    function setParticipantes(grupo) {
+       // para cada participante do grupo clicado...
+       for (var part in DICT_GROUPS[grupo.name]) {
+          // se marcou o grupo, marca o participante,
+          // se desmarcou o grupo, desmarca o participante.
+          if (document.getElementById(DICT_GROUPS[grupo.name][part]))
+          	  document.getElementById(DICT_GROUPS[grupo.name][part]).checked = grupo.checked;
+       }
+    }
+    
+	function toggleCheckbox(element) {
+	   element.checked = !element.checked;
+	}    
+    </script>
+    
+{% end %}
+
+{% block body-right %}
+
+<form action="{{ request.path }}" name="avaliacao" method="post">
+    {% raw xsrf_form_html() %}
+
+    {{modules.ShowMolduraInicio(u"Criar avaliação de " + EVALUATIONDATA["tipo"])}}    
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+        <table style="border-spacing:10px;">
+            <tr><td>
+            <label for="nome">Título</label>
+            </td>
+            <td colspan="3">
+            <input name="nome" id="nome" value="{{ escape(EVALUATIONDATA["nome"]) }}" type="text" size="30"/>
+            </td></tr>
+            
+            <tr><td>
+            <label for="nome">Descrição</label>
+            </td>
+            <td colspan="3">
+            <input name="descricao" id="descricao" value="{{ escape(EVALUATIONDATA["descricao"]) }}" type="text" size="60"/>
+            </td></tr>
+
+            <tr><td>
+            <label for="nome">Participantes avaliadores</label>
+            </td>
+            <td colspan="3">
+            <i>Para determinar quem pode fazer as avaliações, após o envio deste formulário, altere as permissões da avaliação clicando no ícone do cadeado na página de edição da avaliação.</i>
+            </td></tr>
+            
+                        
+            <tr><td valign="top">
+            {% if EVALUATIONDATA["tipo"]==unicode("páginas","utf-8") %}
+                <label for="avaliados">Páginas a serem avaliadas</label>
+            {% else %}
+                <label for="avaliados">Participantes a serem avaliados</label>
+            {% end %}
+            </td>
+            <td width="10"></td>
+            
+            <td valign="top">
+            {% if EVALUATIONDATA["tipo"]=="participantes" %}
+            <b>Grupos:</b><br/>
+            {% else %}
+            <b>Pastas:</b><br/>
+            {% end %}
+            {% for group in GROUPS %}
+                &nbsp;&nbsp;<input name="{{ group }}" id="{{ group }}" value="S" type="checkbox" onclick="setParticipantes(this);" /> {{ GROUPNAMES[group] }}<br/>
+            {% end %}
+            </td>
+            
+            <td valign="top">
+            {% if EVALUATIONDATA["tipo"]=="participantes" %}
+            	<b>Participantes:</b><br/>
+	            {% for item in AVALIADOS %}
+	                &nbsp;&nbsp;<input name="{{ item[0] }}" id="{{ item[0] }}" value="S" type="checkbox" /> {{ item[1] }}<br/>
+	            {% end %}            
+            {% else %}
+            	<b>Páginas:</b><br/>
+	            {% for item in AVALIADOS %}
+	                &nbsp;&nbsp;<input name="{{ item }}" id="{{ item }}" value="S" type="checkbox" /> {{ item }}<br/>
+	            {% end %}            
+            {% end %}
+            </td>
+            </tr>
+                            
+            <tr><td valign="top">
+            <label for="pontuacao">Pontuação para os votados</label>
+            </td>
+            <td valign="top" colspan="3">
+            <input name="pontuacao" id="pontuacao" type="text" size="30"/><br/>
+            <i>Entre com uma lista de números, separados por vírgulas, indicando a pontuação que será atribuída a cada um dos votos a partir do primeiro colocado.
+            Exemplo: 3,2,1</i>
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_start">Data/hora de início</label>
+            </td>
+            <td colspan="3">
+            <input id="data_start" name="data_start" maxlength="16" size="16" type="text"/>
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_end">Data/hora de encerramento</label>
+            </td>
+            <td colspan="3">
+            <input id="data_end" name="data_end" maxlength="16" size="16" type="text"/>
+            </td></tr>
+                
+        </table>
+    {{ modules.ShowMolduraFim("avaliacao") }}
+</form>
+
+{% end %}

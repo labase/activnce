@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+    <title>{{ TITLE }}</title>
+	<link rel="stylesheet" href="/static/app/tablestyle.css" type="text/css" />
+  </head>
+  <body>
+<h1>{{ TITLE }}</h1>
+<h2>Game: {{GAME}} - Goal: {{GOAL}}</h2>
+	<table id="box-table-a" >
+	{% block thead %}
+		<thead>
+			<tr>
+				{% for cell in ROW %}
+				<th scope="col">
+					<span>
+					{{ escape(cell) }}
+					</span>
+				</th>
+				{% end %}
+			</tr>
+		</thead>
+	{% end %}
+	{% block tbody %}
+		<tbody>
+			{% for row in BODY %}
+			<tr>
+				{% for cell in row %}
+				<td>
+					<span>
+					{{ cell }}
+					</span>
+				</td>
+				{% end %}
+			</tr>
+			{% end %}
+		</tbody>
+	{% end %}
+	</table>
+  </body>
+</html>

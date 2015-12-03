@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "http://my.netscape.com/publish/formats/rss-0.91.dtd">
+<rss version="0.91">
+
+<channel>
+<title>{{ CHANNEL["title"] }}</title>
+<link>{{ CHANNEL["link"] }}</link>
+<description>{{ CHANNEL["description"] }}</description>
+<language>{{ CHANNEL["language"] }}</language>
+<pubDate>{{ CHANNEL["pubdate"] }}</pubDate>
+
+{% for item in ITENS %}
+    <item>
+    <title>{{ item["title"] }}</title>
+    <link>{{ item["link"] }}</link>
+    <description>
+    {{ item["description"] }}
+    </description>
+    </item>
+{% end %}
+</channel>
+</rss> 

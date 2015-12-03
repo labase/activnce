@@ -1,0 +1,19 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	<form name="convidar" id="convidar" action="{{request.path}}" method="post">
+	
+		{% raw xsrf_form_html() %}
+		{{ modules.ShowMolduraInicio("Gerenciar participantes") }}
+		{{ modules.ShowTabs(TABS) }}
+		
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	
+		<p>Digite (ou copie e cole aqui) os e-mails das pessoas a serem convidadas para a comunidade, um por linha, ou separados por espaço em branco.</p>
+		 
+		<br/>
+		<textarea name="emails" rows="10" cols="50"></textarea>
+		{{ modules.ShowMolduraFim("convidar") }}
+	</form>
+
+{% end %}

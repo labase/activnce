@@ -1,0 +1,61 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- interface para exibir árvore cronológica de posts -->
+	<script type="text/javascript" src="/static/mktree/mktree.js"></script>
+	<link rel="stylesheet" href="/static/mktree/mktree.css" type="text/css">
+{% end %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Histórico do post "+BLOGDATA["titulo"], width="100%")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <table border="0" cellspacing="10" width="100%" style="color: black;">
+        <tr>
+        <td style="border-bottom: 1px solid" align="left" >Versão</td>
+        <td style="border-bottom: 1px solid" align="left" >Alterado por</td>
+        <td style="border-bottom: 1px solid" align="left" >Data da alteração</td>
+        <td style="border-bottom: 1px solid" align="left" ></td>
+        </tr>
+        <tr>
+        <td><a href="/blog/{{ REGISTRY_ID }}/{{ BLOGDATA['post_id'] }}"> {{ BLOGDATA['historico'][0]["versao"] }} (atual)</a></td>
+        <td><a href="/user/{{ escape(BLOGDATA['historico'][0]["alterado_por"]) }}">{{ escape(BLOGDATA['historico'][0]["alterado_por"]) }}</a></td>
+        <td>{{ escape(BLOGDATA['historico'][0]["data_alt"]) }}</td>
+        </tr>
+        {% for item in BLOGDATA["historico"][1:] %}
+            <tr>
+            <td><a href="/blog/{{ REGISTRY_ID }}/{{ BLOGDATA['post_id'] }}?versao={{ item['versao'] }}"> {{ item["versao"] }}</a></td>
+            <td><a href="/user/{{ escape(item["alterado_por"]) }}">{{ escape(item["alterado_por"]) }}</a></td>
+            <td>{{ escape(item["data_alt"]) }}</td>
+            <td><a href="/blog/restore/{{ REGISTRY_ID }}/{{ BLOGDATA['post_id'] }}?versao={{ item['versao'] }}" onclick="return confirm('Deseja restaurar esta versão do documento?');">restaurar</a></td>
+            </tr>
+        {% end %}
+        </table>
+        
+        <br/>
+        
+    {{ modules.ShowMolduraFim() }}
+   {% end %}
+
+{% block body-left %}
+    <br/><br/><br/>
+    {{modules.ShowMolduraInicio("Arquivo do blog", width="100%")}}
+
+    <ul class="mktree" id="tree1">
+    {% for ano in SORTEDKEYS(ARCHIVE, rev_order=True) %}
+        <li class="liOpen">{{ ano }}
+        <ul>
+        {% for mes in SORTEDKEYS(ARCHIVE[ano], rev_order=True) %}
+            <li>{{ MESES[int(mes)-1] }}
+                <ul>
+                    {% for item in ARCHIVE[ano][mes] %}
+                       <li><a href="/blog/{{ item[0] }}">{{ item[1] }}</a></li>
+                    {% end %}
+                </ul>
+            </li>
+        {% end %}
+        </ul>
+    {% end %}
+    </ul>
+    <br/>
+    {{ modules.ShowMolduraFim() }}
+{% end %}

@@ -1,0 +1,301 @@
+{% extends "../../base-foto.html" %}
+
+<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+<!-- PAINEL DE CONTROLE DA COMUNIDADE -->
+<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+
+{% block head %}
+	<!-- código para produzir o tagcloud da comunidade -->
+    <script type="text/javascript" src="/static/tagcloud/tagcloud.js"></script>
+    <script type="text/javascript">
+	    var tags = new Array();
+	    {% for tag in TAGCLOUD %}
+	        tags['{{ tag }}'] = {{ TAGCLOUD[tag] }};
+	    {% end %}
+    </script>
+
+    <!-- código para produzir popup com notícias -->
+    <script type="text/javascript">
+	    // lista de usuários online no chat.
+	    // será apresentada no popup de notícias.
+		var usuarios_no_chat = {{USUARIOS_NO_CHAT}};
+    </script>
+    <script type="text/javascript" src="/static/noticia.js"></script>
+    
+{% end %}
+
+{% block body-left %}
+  <!-- LINHA 1 -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<!--  quem criou a comunidade, acesso, permissão e ícones  -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<div style="padding-left:5px">
+			<span style="color:#999;font-size:80%;">
+				Criada por: {{ escape(COMMUNITYDATA["owner"]) }}
+				<br/>
+				Acesso:{{ escape(COMMUNITYDATA["privacidade"]) }}
+				<br/>
+				Participação: {{ escape(COMMUNITYDATA["participacao"]) }}
+			</span>
+	    </div>
+		<br/>
+  {{ modules.ShowMenuLeft(links=LINKS) }}
+
+{% end %}
+
+{% block body-right-2 %}
+
+
+    {% if len(LISTA_NOTICIAS) > 0 %}
+      {{modules.ShowMolduraInicio(u"Atenção","","98%", panel="panel-danger") }}
+        <div id="controlPanelMSG">
+        {% for noticia in LISTA_NOTICIAS %}
+	        {% if noticia["url"] == "" %}
+                <a href="/noticia/{{ REGISTRY_ID+'/'+str(noticia["id"])+'?tr=n' }}">
+            {% else %}
+                <a href="{{ noticia["url"] }}">
+            {% end %}
+	        {{ noticia["titulo"] }}</a><br/>
+	        <i><span style="color:#999;font-size:small;">{{ noticia["dt_publicacao_fmt"] }}</span></i>
+	        <br/><br/>
+        {% end %}
+        </div>
+      {{ modules.ShowMolduraFim() }}
+    {% end %}
+
+
+
+<!-- LINHA 2 -->
+		<!-- XXXXXXXXXXXXX -->
+		<!-- PARTICIPANTES -->
+		<!-- XXXXXXXXXXXXX -->
+        {{ modules.ShowMolduraInicio("<a href='/members/"+REGISTRY_ID+"'>Participantes</a>","","98%") }}
+				{% if MEMBERS %}
+					{% for item in MEMBERS %}
+						{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=P",escape(item[0]),escape(item[1]),"/user/"+escape(item[0]),True,False,item[2]) }}
+					{% end %}
+				{% else %}
+					Não tem nenhum participante.
+				{% end %}
+        {{ modules.ShowMolduraFim() }}
+
+	{% if MBLOGS!=None %}
+		<!--  XXXXX -->
+		<!--  MBLOG -->
+		<!--  XXXXX -->
+		{{ modules.ShowMolduraInicio("<a href='/mblog/"+REGISTRY_ID+"'>Microblog</a>","","98%") }}
+			<div id="controlPanelBlockThin">
+			{% if MBLOGS %}
+				{% for item in MBLOGS %}
+					{{ modules.ShowFoto("/photo/"+escape(item["owner"])+"?size=P",escape(item["owner"]),escape(item["owner"]),"/user/"+escape(item["owner"]),True) }}
+					<div>
+						{{ item["conteudo"] }}
+						{% if item["owner"] != item["registry_id"] %}
+						<br/>
+						<i><span style="color:#999;font-size:small;">na comunidade {{ item["registry_id"] }}</span></i>
+						</div>
+				{% end %}
+			<span style="color:#999;font-size:small;">{{ item["data_cri"] }}</span>
+			{% end %}
+			{% else %}
+				Não tem nenhum post.
+			{% end %}
+			</div>
+		{{ modules.ShowMolduraFim() }}
+	{% end %}
+
+	{% if FORUM!=None %}
+		<!-- XXXXX -->
+		<!-- FÓRUM -->
+		<!-- XXXXX -->
+        <div style="padding-bottom:5px">
+				{{ modules.ShowMolduraInicio("<a href='/forum/"+REGISTRY_ID+"'>Forum</a>","","98%") }}
+					<div id="controlPanelBlockThin">
+						{% if FORUM %}
+							{% for item in FORUM %}
+								{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=P",escape(item[0]),escape(item[0]),"/user/"+escape(item[0]),True) }}
+								<div>
+									{{ item[1] }}<br/>
+									{{ item[2] }}
+								</div>
+								<span style="color:#999;font-size:small;">{{ item[3] }}</span>
+							{% end %}
+						{% else %}
+							 Não tem nenhuma mensagem.
+						{% end %}
+					</div>
+				{{ modules.ShowMolduraFim() }}
+        </div>
+	{% end %}
+
+		<!-- XXXXXXXXXX -->
+		<!--  NOVIDADES -->
+		<!-- XXXXXXXXXX -->
+		<div style="padding-bottom:5px">
+			{{ modules.ShowMolduraInicio("<a href='/news/"+REGISTRY_ID+"'>Novidades</a>","","98%") }}
+				<div id="controlPanelBlockThin">
+					{% if NEWS %}
+						{% for data in NEWS %}
+							{{ escape(data["data_inclusao"]) }} -
+							<a href="/user/{{ escape(data["sujeito"]) }}">{{ escape(data["sujeito"]) }}</a>
+							{{ escape(data["verbo"]) }}
+							{% if data["objeto"] %}
+							   {% if "link" in data and data["link"] %}
+									{% if len(data["objeto"])>50 %}
+										<a href="{{ escape(data["link"]) }}">{{ escape(data["objeto"][:50]) }}...</a>
+									{% else %}
+										<a href="{{ escape(data["link"]) }}">{{ escape(data["objeto"]) }}</a>
+									{% end %}
+							   {% elif data["tipo"]=="none" %}
+									{% if len(data["objeto"])>50 %}
+										{{ escape(data["objeto"][:50]) }}...
+									{% else %}
+										{{ escape(data["objeto"]) }}
+									{% end %}
+							   {% else %}
+									{% if len(data["objeto"])>50 %}
+										<a href="/{{ escape(data["tipo"]) }}/{{ escape(data["objeto"]) }}">{{ escape(data["objeto"][:50]) }}...</a>
+									{% else %}
+										<a href="/{{ escape(data["tipo"]) }}/{{ escape(data["objeto"]) }}">{{ escape(data["objeto"]) }}</a>
+									{% end %}
+							   {% end %}
+							{% end %}
+							<br/>
+						{% end %}
+					{% else %}
+						Não tem nenhuma novidade.
+					{% end %}
+				</div>
+		   {{ modules.ShowMolduraFim() }}
+		</div>
+
+	<!-- XXXXXXX -->
+	<!-- AGENDA -->
+	<!-- XXXXXXX -->
+	{% if EVENTOS!=None %}
+		<div style="padding-bottom:5px">
+			{{ modules.ShowMolduraInicio("<a href='/agenda/"+REGISTRY_ID+"'>Agenda</a>","","98%") }}
+				<div id="controlPanelBlockThin">
+					{% if EVENTOS %}
+						{% for item in EVENTOS %}
+							<div>
+							{{ item["data"] }} às {{ item["hora"] }} - {{ item["msg"] }}
+							</div>
+						{% end %}
+					{% else %}
+						Nenhum evento.
+					{% end %}
+				</div>
+			{{ modules.ShowMolduraFim() }}
+		</div>
+	{% end %}
+	{% end %} <!-- FECHA BODY BLOCK RIGHT 2 -->
+
+	{% block body-right-3 %}
+
+	{% if PAGINAS!=None %}
+		<!-- XXXXXXX -->
+		<!-- PÁGINAS -->
+		<!-- XXXXXXX -->
+        <div style="padding-bottom:5px">
+				{{ modules.ShowMolduraInicio("<a href='/wiki/"+REGISTRY_ID+u"'>Páginas</a>","","98%") }}
+				    <div id="controlPanelBlockThin">
+						{% if PAGINAS %}
+							{% for item in PAGINAS %}
+								{{ modules.ShowFoto("/photo/"+escape(item["owner"])+"?size=P",escape(item["owner"]),escape(item["owner"]),"/user/"+escape(item["owner"]),True) }}
+								<div>
+									<a href="/wiki/{{ item["doc_id"] }}">{{ item["doc_id"] }}</a>
+									<br/>
+									<span style="color:#999;font-size:small;">{{ item["data_alt"] }}</span>
+								</div>
+							{% end %}
+						{% else %}
+							Não tem nenhuma página.
+						{% end %}
+				   </div>
+				{{ modules.ShowMolduraFim() }}
+        </div>
+	{% end %}
+	
+
+	{% if BLOGS!=None %}
+		<!-- XXXX -->
+		<!-- BLOG -->
+		<!-- XXXX -->
+        <div style="padding-bottom:5px">
+				{{ modules.ShowMolduraInicio("<a href='/blog/"+REGISTRY_ID+"'>Blog</a>","","98%") }}
+				    <div id="controlPanelBlockThin">
+					{% if BLOGS %}
+					    {% for item in BLOGS %}
+							{{ modules.ShowFoto("/photo/"+escape(item["owner"])+"?size=P",escape(item["owner"]),escape(item["owner"]),"/user/"+escape(item["owner"]),True) }}
+							<div>
+								{{ item["titulo"] }}<br/>
+								{{ item["conteudo"] }}
+							</div>
+							<span style="color:#999;font-size:small;">{{ item["data_fmt"] }}</span>
+					    {% end %}
+					{% else %}
+						Não tem nenhum post.
+					{% end %}
+				    </div>
+				{{ modules.ShowMolduraFim() }}
+        </div>
+	{% end %}
+
+	<!-- XXXXXXXX -->
+	<!--  RECADOS -->
+	<!-- XXXXXXXX -->
+    <div style="padding-bottom:5px">
+		{{ modules.ShowMolduraInicio("<a href='/scrap/"+REGISTRY_ID+"'>Recados</a>","","98%") }}
+			<div id="controlPanelBlockThin">
+				{% if SCRAPS %}
+				    {% for item in SCRAPS %}
+						{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=P",escape(item[0]),escape(item[0]),"/user/"+escape(item[0]),True) }}
+						<div>
+							{{ item[1] }}
+						</div>
+						<span style="color:#999;font-size:small;">{{ item[3] }}</span>
+				    {% end %}
+				{% else %}
+					Não tem nenhum recado.
+				{% end %}
+			</div>
+		{{ modules.ShowMolduraFim() }}
+    </div>
+
+		<!--  XXXX -->
+		<!--  TAGS -->
+		<!--  XXXX -->
+		<div style="padding: 0px">
+			{{ modules.ShowMolduraInicio("<a href='/tagcloud/"+REGISTRY_ID+"'>Tags</a>","","98%") }}
+			   <div id="cloud" style="overflow: hidden; padding: 0px 5px 0px 5px">
+			   </div>
+			{{ modules.ShowMolduraFim() }}
+		</div>
+		<!-- style="height:160px;overflow:hidden;padding: 0px 5px 0px 5px" -->
+	
+
+	{% if COMMUNITYDATA["apps"] %}
+		<!-- XXXXXX        -->
+		<!-- APPS          -->
+		<!-- XXXXXX        -->
+
+		{{ modules.ShowMolduraInicio("<a href='/admin/apps/"+REGISTRY_ID+u"'>Aplicações</a>","","98%") }}
+			<div id="controlPanelBlockThin"> <!-- overflow:auto para mostrar scrollbar -->
+				{% for item in COMMUNITYDATA["apps"] %}
+					<a href="{{item}}" title="{{COMMUNITYDATA["apps"][item]}}">
+						<img src="/static/imagens/icones/privileges/{{item.replace('/','_')}}.jpg" alt="{{COMMUNITYDATA["apps"][item]}}"/>
+					</a>
+				{% end %}
+			</div>
+	    {{ modules.ShowMolduraFim() }}
+	{% end %}
+
+
+<script type='text/javascript'>
+document.getElementById("cloud").innerHTML = generateCloud(tags, '/search/{{ REGISTRY_ID }}?tags=', false);
+</script>
+
+{% if MSG %}<script>alert("{{ MSG }}");</script>{% end %}
+
+{% end %} <!-- FECHA BODY BLOCK RIGHT 3 -->

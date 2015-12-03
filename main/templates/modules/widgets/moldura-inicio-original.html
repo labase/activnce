@@ -1,0 +1,60 @@
+<div>
+    <div id="cabecMoldura">
+	    {% if titulo %}
+		    <div id="tituloMoldura">
+		        {% if alinha == "" %}
+		            <h3 width="100%"><span style="text-align:left; padding: 0px 3px;">
+		        {% else %}
+		            <h3 width="100%"><span style="text-align:{{alinha}}; padding: 0px 3px;">
+		        {% end %}
+		        {{titulo}}
+		        </span>
+		        </h3>    
+		    </div>
+	    {% end %}
+	    
+	    {% if fechar %}
+		    <div id="xMoldura">
+				<h3>
+		        <span style="text-align:right; padding: 0px 3px;"><a href='/controlpanel/delete?type={{titulo[titulo.find('>')+1:titulo.find('</a>')]}}'>X</a></span>
+		        </h3>    
+		    </div>
+	    {% end %}
+	    
+	    {% if links %}    
+		    <div id="linksMoldura">
+		        <span style="display:block; text-align:right; padding: 0px 3px;">
+		        {% for link in links %}
+		
+		            {% if len(link)>5 and link[5] %}
+		                <!-- abre o link num popup -->
+		                <a href="#" title="{{link[0]}}" onclick="TINY.box.show({iframe:'{{link[2]}}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+
+		                <img src="{{link[1]}}" alt="{{link[0]}}" title="{{link[0]}}" border="0" />
+		                </a>
+		            {% else %}
+		                <!-- abre o link em nova página -->
+			            {% if link[2] %}
+				            <a href="{{link[2]}}" title="{{link[0]}}" {% if len(link)>3 and link[3] %}onclick="{{link[3]}}"{% end %}>
+				            <img src="{{link[1]}}" alt="{{link[0]}}" border="0" />
+				            <span id="{{link[0]}}">{% if len(link)>4 %}{{ link[4] }}{% end %}</span>
+				            </a>
+			            {% else %}
+				            <img src="{{link[1]}}" alt="{{link[0]}}" title="{{link[0]}}" border="0" />
+				            <span id="{{link[0]}}">{% if len(link)>4 %}{{ link[4] }}{% end %}</span>
+			            {% end %}
+			        {% end %}
+		        {% end %}
+		        
+		        </span>    
+		    </div>
+	    {% end %}
+    </div>
+
+	{% if width != "" %}
+	   <div class="borderGenerator" style="width:{{width}}">
+	{% else %}
+	   <div class="borderGenerator" style="min-width:500px;">
+	{% end %} 
+	
+

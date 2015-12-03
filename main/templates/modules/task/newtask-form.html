@@ -1,0 +1,128 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<!-- JQuery UI: timepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.js"></script>
+	<link rel="stylesheet" href="/static/jquery/jquery-ui-1.11.0/external/jquery-ui-timepicker-addon.css">
+	
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        $('#data_start').datetimepicker({});
+        $('#data_end').datetimepicker({});
+        
+		$('[data-toggle="tooltip"]').tooltip();         
+    });
+    	
+	function ehNumero(evt){
+	    var charCode = (evt.which) ? evt.which : event.keyCode
+	    if (charCode > 31 && (charCode < 48 || charCode > 57))
+	        return false;
+	    return true;
+	}    
+		
+	function minMax(value, min, max) 
+	{
+	    if(parseInt(value) < 0 || isNaN(value)) 
+	        return 0; 
+	    else if(parseInt(value) > 100) 
+	        return 100; 
+	    else return value;
+	}
+    </script>
+{% end %}
+
+{% block body-right %}
+
+<form action="{{ request.path }}" name="tarefa" method="post" onsubmit="return CriticarForm(this);">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio("Criar tarefa")}}    
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+        <table cellspacing="5">
+            <tr><td>
+            <label for="nome">Título</label>
+            </td>
+            <td>
+            <input name="nome" id="nome" value="{{ escape(TASKDATA["nome"]) }}" type="text" size="62" placeholder=""/>
+            </td></tr>
+            
+            <tr><td valign="top">
+            <label for="descricao">Enunciado da tarefa</label><br/>
+            </td>
+            <td>
+            <textarea name="descricao" id="descricao" rows="4" cols="60">{{ escape(TASKDATA["descricao"]) }}</textarea>
+            </td></tr>
+
+            <tr><td valign="top">
+            <label for="recursos">Recursos</label>
+            </td>
+            <td>
+			<!-- span data-toggle="tooltip" title="O LabVad é uma plataforma..." -->
+			<input type="checkbox" name="labvad" id="labvad" value="S" {% if TASKDATA["labvad"] == 'S' %}checked="checked"{% end %} /> Marque se esta tarefa deve ser realizada no <b>LabVad</b> - <i>Laboratório Virtual de Atividades Didáticas com Robótica</i> <br/>
+			<br/>
+			<b>Outro recurso a ser consultado pelos alunos para a realização da tarefa:</b><br/>
+			<input type="text" name="recurso" id="recurso" size="62" value="{{ escape(TASKDATA["recurso"]) }}" placeholder="Digite o endereço (URL) do recurso..." />
+            </td></tr>
+
+			<tr><td>
+			<label for="num_arquivos">N&#176; de arquivos a serem enviados pelos alunos<br/>como resultado da tarefa</label>
+			</td>
+			<td colspan="3">
+			<select name="num_arquivos">
+			<option value="1">01</option>
+			<option value="2">02</option>
+			<option value="3">03</option>
+			<option value="4">04</option>
+			<option value="5">05</option>
+			</select>
+			</td></tr>
+            <tr><td>
+            <label for="valor">Valor da tarefa</label>
+            </td>
+            <td>
+            <input name="valor" id="valor" value="" type="text" size="3" onkeypress="return ehNumero(event)" onchange="this.value = minMax(this.value,1,100)"/> <i>Número entre 1 e 100 indicando o valor deste trabalho para o cálculo da média final.</i>
+            </td></tr>
+            
+            <tr><td>
+            <label for="data_start">Período de realização da tarefa</label>
+            </td>
+            <td>
+            <input id="data_start" name="data_start" maxlength="16" size="16" type="text"/> <i>Data e hora de início.</i>
+            </td></tr>
+            
+            <tr><td>
+            </td>
+            <td>
+            <input id="data_end" name="data_end" maxlength="16" size="16" type="text"/> <i>Data e hora de encerramento.</i>
+            </td></tr>
+            
+	        <tr><td>
+	    	<label for="nome">Quem faz a tarefa?</label>
+	    	</td>
+	    
+	    	<td><select name="select_groups">
+        	<option value="Todos">Todos os participantes da comunidade</option>
+        
+       		 {% for part in GROUPSDATA %}    
+            	    <option value="{{ part }}">{{ part }}</option>
+	         {% end %}
+        
+    		</select>
+    		</td></tr>
+
+	        <tr><td valign = "top">		
+	        <label for="nome">Forma de realização</label> </td>
+		<td>
+	        <input type="radio" name="forma_realizacao" value="individual" checked> Individual<br>
+		    <input type="radio" name="forma_realizacao" value="em_grupos_de" id="em_grupo"> Em grupos de: 
+		
+		    <input id="num_participantes" name="num_participantes" size="1" type="text" onkeypress="return ehNumero(event)" onfocus="document.getElementById('em_grupo').checked=true"/> pessoas
+		</td></tr> 
+	   	</table>
+	{{ modules.ShowMolduraFim("tarefa") }}
+</form>
+{% end %}

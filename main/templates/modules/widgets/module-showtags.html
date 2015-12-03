@@ -1,0 +1,10 @@
+<div class="tagslist">
+    {% for tag in tags %}
+        {% if link %}
+           <span class="tag"><a href="{{link}}{{escape(tag)}}">{{ escape(tag) }}</a></span>
+        {% else %}
+           <span class="tag">{{ escape(tag) }}</span>
+        {% end %}
+    {% end %}
+</div>
+<br/>

@@ -1,0 +1,18 @@
+<html>
+<head>
+	<!-- JQuery -->
+	<script src="/static/jquery/jquery-1.11.1.min.js"></script>
+	
+	<script type="text/javascript">
+	$(function() {
+		document.forms[0].submit();
+	})
+	</script>
+</head>
+<body>
+	<form name="convidar" id="convidar" action="/members/searchgroup/{{REGISTRY_ID}}" method="post">
+		{% raw xsrf_form_html() %}
+		<input type="hidden" name="emails" value="{{EMAILS}}" />
+	</form>
+</body>
+</html>

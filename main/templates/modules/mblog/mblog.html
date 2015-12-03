@@ -1,0 +1,175 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+		$(function () {
+		    'use strict';
+		
+			// Carrega lista de sugestões para o autocomplete
+			//
+			var source = {{ AUTOCOMPLETE_LIST }};
+		    var usersArray = $.map(source, function (value, key) { return { value: key+": "+value, data: key }; });
+
+			function split( val ) {
+      			return val.split( /@\s*/ );
+    		}
+
+            function split_sem_virgula( val ) {
+      			var aux = val.split( /@\s*/ );
+                aux = aux.join("@");
+                return aux;
+    		}
+
+    		function extractLast( term ) {
+      			return split( term ).pop();
+    		}
+
+	        $( "#conteudo" )
+				// don't navigate away from the field on tab when selecting an item
+				.bind( "keydown", function( event ) {
+				    if ( event.keyCode === $.ui.keyCode.TAB &&
+				        $( this ).data( "ui-autocomplete" ).menu.active ) {
+				      event.preventDefault();
+				    }
+				})
+				.autocomplete({
+				    minLength: 3,
+				    source: function( request, response ) {
+				      // delegate back to autocomplete, but extract the last term
+				      response( $.ui.autocomplete.filter(
+				        usersArray, extractLast( request.term ) ) );
+				    },
+				    focus: function() {
+				      // prevent value inserted on focus
+				      return false;
+				    },
+				    select: function( event, ui ) {
+				      var terms = split_sem_virgula( this.value );
+				      var contador = terms.lastIndexOf('@');
+				      var contador2 = terms.length;
+				      terms = terms.replace(terms.substring(contador+1, contador2), "");
+				      this.value = terms+ui.item.data ;
+				      return false;
+				    }
+				});
+    		$('#conteudo').autocomplete( "disable" );
+		});
+
+        function GetChar(event){
+            var chCode = ('charCode' in event) ? event.charCode : event.keyCode;
+	    	if (chCode == 64 /* @ */) {
+				$('#conteudo').autocomplete( "enable" );
+            }else{
+		
+            }
+        }
+
+		// contador de caracteres da mensagem
+		//
+	    function textCounter(field, countfield) {
+	        if (field.value.length > {{ MAX_CHR_MBLOG }}) // if too long...trim it!
+	            field.value = field.value.substring(0, {{ MAX_CHR_MBLOG }});
+	        // otherwise, update 'characters left' counter
+	        else
+	            countfield.innerHTML = {{ MAX_CHR_MBLOG }} - field.value.length;
+	    }
+
+    </script>
+
+{% end %}
+
+{% block body-right %}
+    {% if PERMISSION %}
+        <form name="novamsg" action="/mblog/new/{{ REGISTRY_ID }}" method="post">
+        {% raw xsrf_form_html() %}
+        <!-- CAMPO DE ENTRADA DE TEXTO DO MBLOG -->
+        {{modules.ShowMolduraInicio("Escrever mblog", width="100%")}}
+            Diga alguma coisa: <br/>
+            <textarea name="conteudo" id="conteudo" rows="3" cols="60"
+            onkeypress="GetChar (event);" 
+            onKeyDown="textCounter(this.form.conteudo,getElementById('restante'));"
+            onKeyUp="textCounter(this.form.conteudo,getElementById('restante'));"></textarea>
+            <div id="restante">&nbsp;&nbsp;&nbsp;</div>
+            
+        {{ modules.ShowMolduraFim("novamsg") }}
+        </form>
+        <script type="text/javascript">
+			window.onload = textCounter(document.getElementById('conteudo'), document.getElementById('restante'));
+        </script>
+	    <br/>
+            
+    {% end %}
+    
+	<!--  POSTS DO MBLOG -->
+	<!--div class="borderGenerator" style="width:100%; margin-top:20px"-->
+	{{modules.ShowMolduraInicio(width="100%", titulo=TITULO, links=LINKS)}}
+
+    {% if POSTS %}
+        <table width="100%">
+        <tr><td>   
+        {% for post in POSTS %}
+            <div style="width:100%; float:left;">
+                {{ modules.ShowFoto("/photo/"+escape(post['owner'])+"?size=P",escape(post['owner']),escape(post['owner']),"/user/"+escape(post['owner']),True)}}
+                {{ post["conteudo"] }}
+                <br/>
+                <i><span style="color:#999;font-size:small;">
+                {{ post["data_cri"] }}
+                {% if post["owner"] != post["registry_id"] %}
+                    - na comunidade <a href="/community/{{ post["registry_id"] }}">{{ escape(post["registry_id"]) }}</a>
+                {% end %}
+                </span></i>
+                <br/>
+                {% if post["conteudo_original"] %}
+                <div style="background-color:#e0e0e0;clear:both;position:relative;left:70px;width:80%;">
+                    {{ modules.ShowFoto("/photo/"+escape(post['owner_original'])+"?size=P",escape(post['owner_original']),escape(post['owner_original']),"/user/"+escape(post['owner_original']),True)}}
+                    {{ post["conteudo_original"] }}
+                    <br/>
+                    <i><span style="color:#999;font-size:small;">
+                    {{ post["data_original"] }}
+                    {% if post["owner_original"] != post["registry_id_original"] %}
+                        - na comunidade <a href="/community/{{ post["registry_id_original"] }}">{{ escape(post["registry_id_original"]) }}</a>
+                    {% end %}
+                    </span></i>
+                </div>
+                {% end %}
+    
+                <!-- Ações -->
+                <div style="clear:both;">
+	                {% if TIPO != "talk" and "reply_to" in post and post["reply_to"] %}
+	                    <div  style="float:right" >
+	                        <a href="/mblog/talk?id={{ escape(post["_id"]) }}" title="ler conversa">
+	                        <img src="/static/imagens/icones/talk16.png" alt="ler conversa" border="0" /></a>
+	
+	                    </div>
+	                {% end %}
+	                {% if post["apagar"] %}
+	                    <div style="float:right" >
+	                        <a onclick="return confirm('Deseja realmente apagar este post?');" title="apagar" href="/mblog/delete?id={{ escape(post["_id"]) }}">
+	                        <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+	                    </div>
+	                {% end %}
+	                <div style="float:right" >
+	                    {% if post["owner"] != post["registry_id"] %}
+	                    	<a href="/mblog/reply?id={{ escape(post["_id"]) }}&community={{ post["registry_id"] }}" title="responder">
+	                    {% else %}
+	                    	<a href="/mblog/reply?id={{ escape(post["_id"]) }}" title="responder">
+	                    {% end %}
+	                    <img src="/static/imagens/icones/reply16.png" alt="responder" border="0" /></a>
+	                    
+	                    <a href="/mblog/share?id={{ escape(post["_id"]) }}" title="compartilhar">
+	                    <img src="/static/imagens/icones/share16.png" alt="compartilhar" border="0" /></a>
+	                </div>
+	                <br/><hr noshade/><br/>
+                </div>
+            </div>
+        {% end %}
+        </td></tr>
+        </table>         
+    {% else %}
+        Nenhum mblog encontrado.
+    {% end %}
+    
+    {{ modules.ShowMolduraFim() }}   
+
+    {{ modules.Paginator(PAGE, PAGESIZE, MBLOG_COUNT) }}
+{% end %}

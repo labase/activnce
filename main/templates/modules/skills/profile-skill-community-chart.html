@@ -1,0 +1,31 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script src="/static/jquery/Chart.js/Chart.min.js"></script>
+	<script>
+
+	</script>
+{% end %}
+
+{% block body-right %} 
+	{{modules.ShowMolduraInicio()}}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<div style="overflow: auto">
+			<p>Aqui você pode ver o gráfico de radar de habilidades dos membros desta comunidade. Para ver o gráfico de um membro específico,
+				basta selecioná-lo abaixo e clicar no botão Carregar. Para ver o gráfico de comparação entre as habilidades de dois usuários, pode-se escolher 
+				um segundo usuário na caixa da direita antes de clicar no botão Carregar.</p>
+				<table>
+					<tr>
+						<td width="15%"><select id="user_select1"> </select></td>
+						<td width="15%"><select id="user_select2"> </select></td>
+						<td width="15%"><input type="button" id="botao_carregar" value="Carregar Usuario(s)" onclick=""></td>
+					</tr>	
+				</table>
+				
+		</div>
+    {{ modules.ShowMolduraFim() }}
+    
+    	
+{% end %}
+
+

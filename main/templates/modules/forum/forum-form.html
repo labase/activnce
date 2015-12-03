@@ -1,0 +1,32 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+	<form name="novotopico" action="{{ request.path }}" method="post">
+	{% raw xsrf_form_html() %}
+	
+	{{ modules.ShowMolduraInicio(u"Criar tópico") }}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+	<h2>{{ _("Titulo") }}</h2>
+	<input name="titulo" 
+	{% if TOPICO["titulo"] %}value="{{ escape(TOPICO["titulo"]) }}" {% end %}
+	size="70" type="text"/>
+
+	<h2>{{ _("Content") }}</h2>
+	<textarea name="conteudo" rows="6" cols="70">{% if TOPICO["conteudo"] %}{{ escape(TOPICO["conteudo"]) }}{% end %}</textarea>
+
+	<p>
+        <h2>{{ _("Tags") }}:</h2> 
+		   {{ modules.InputTags(TOPICO["tags"]) }}
+	</p>
+	
+	<input type="checkbox" name="receber_email" value="S"
+	{% if TOPICO["receber_email"] == "S" %} checked="checked"{% end %}		
+	> Desejo receber email para cada resposta enviada para este tópico.
+	Obs: Você só receberá mensagens se habilitar notificações de email no seu perfil.
+
+    {{ modules.ShowMolduraFim("novotopico") }}
+	</form>
+
+{% end %}

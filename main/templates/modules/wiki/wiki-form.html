@@ -1,0 +1,39 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+    <form name="criarpagina" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+        <input name="parent_folder" value="{{ escape(WIKIDATA["parent_folder"]) }}" type="hidden"/>
+
+		{{modules.ShowMolduraInicio(u"Criar página")}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+        <h2>Pasta:</h2>{{ escape(PARENT_NAME) }}
+        <h2>Nome da página:</h2><input name="nomepag" value="{{ escape(WIKIDATA["nomepag"]) }}" type="text" size="60"/>
+           <h2>Tags:</h2> 
+		   {{ modules.InputTags(WIKIDATA["tags"]) }}
+
+		<br/>
+		<h2>Permissões desta página:</h2>
+		<p><i>Você poderá alterá-las após salvar este documento, clicando no ícone do cadeado que aparecerá no canto superior direito.</i></p>
+		<b>Quem pode ler:</b> {{ DEFAULT_PERM[0] }} <br/>
+		<b>Quem pode alterar:</b> {{ DEFAULT_PERM[1] }} <br/>
+		<br/>
+		
+		<h2>Conteúdo:</h2>
+		<textarea name="conteudo">{% if WIKIDATA["historico"] %}{{ escape(WIKIDATA["historico"][-1]["conteudo"]) }}{% end %}</textarea>
+		</p>
+		<script type="text/javascript">
+			CKEDITOR.replace( 'conteudo',
+			 {
+			     allowedContent: true,
+                 filebrowserBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=wiki',
+                 filebrowserImageBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=image',
+                 filebrowserFlashBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=flash'
+			 });                
+		</script>
+
+		{{ modules.ShowMolduraFim("criarpagina") }}
+    </form>
+{% end %}

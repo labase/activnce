@@ -1,0 +1,25 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Convidar usuários")}}
+    <br/>
+    Você enviou um convite para que um novo usuário se cadastre na plataforma {{ PLATAFORMA }}.
+    <br/><br/>
+    E-mail convidado: {{ EMAIL }}<br/>
+    <br/>
+    Caso deseje enviar novamente um email automático para este usuário, clique no botão abaixo.
+    <br/>
+    <form action="/invites/send" method="post">
+    {% raw xsrf_form_html() %}    
+    <input type="hidden" name="key" value="{{ KEY }}" />
+    <input type="hidden" name="email" value="{{ EMAIL }}" />
+    <input type="submit" value="Enviar novamente o e-mail com o convite" />
+    </form>
+    <br/>
+
+    Se o usuário convidado não está recebendo nossos emails automáticos, envie a chave abaixo para que ele possa se cadastrar.
+    <br/>
+    Chave mágica: {{ KEY }}<br/><br/>
+    {{ modules.ShowMolduraFim() }}
+    <br/>
+{% end %}

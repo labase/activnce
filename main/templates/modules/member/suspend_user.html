@@ -1,0 +1,22 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %} 
+    <form name="perfil" action="{{ request.path }}" method="post">
+
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio("Remover minha conta no "+PLATAFORMA)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<h2 style="color:#f00;">ATENÇÃO:</h2>
+		<div style="font-size:16px; font-weight:bold">
+			Este procedimento removerá sua conta no {{PLATAFORMA}}.<br/>
+			Só execute-o se tiver certeza de que não deseja mais utilizar esta plataforma, pois o mesmo não poderá ser desfeito.<br/>
+	 		Você não poderá mais fazer login e, caso deseje criar uma nova conta, precisará de um novo convite.<br/>
+		</div>
+		<br/>
+
+    	<h2>Digite aqui a sua senha e clique no botão abaixo para remover sua conta:</h2>
+    	<input name="passwd" value="" type="password" size="30"/></p>
+	{{ modules.ShowMolduraFim("perfil") }}
+    </form>
+
+{% end %}

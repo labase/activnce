@@ -1,0 +1,20 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    
+    <div>
+      <br/>
+       {% if AVALIACOES %}
+            {% for aval in AVALIACOES %}
+                {{aval[0]}} - {{aval[1]}} - {{aval[2]}} <br/>
+            {% end %}
+        {% else %}      
+            <p>{{ DOC_ID }} ainda não possui nenhuma avaliação.</p>
+        {% end %}
+    <div>
+    {{ modules.ShowMolduraFim() }}
+    
+    <br/>
+{% end %}

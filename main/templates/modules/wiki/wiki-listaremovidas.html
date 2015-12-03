@@ -1,0 +1,46 @@
+{% extends "../../base-foto.html" %}
+ 
+{% block body-right %}
+    {{modules.ShowMolduraInicio(titulo="Lixeira de "+REGISTRY_ID, width="100%", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    
+    <div>
+      <br/>
+        {% if PAGINAS %}
+            <table border="0" cellspacing="10" width="100%" style="color: black;">
+                <tr>
+                  {% if TIPO_REGISTRY=="community" %}
+                  <td style="border-bottom: 1px solid" align="left"><b>Quem criou</b></td>
+                  {% end %}
+                  <td style="border-bottom: 1px solid" align="left"><b>Nome da página</b></td>
+                  <td style="border-bottom: 1px solid" align="left"><b>Última alteração</b></td>
+                  <td style="border-bottom: 1px solid" align="left"></td>
+                </tr>
+                {% for pag in PAGINAS %}
+                    <tr>
+                        {% if TIPO_REGISTRY=="community" %}
+                           <td>{{ escape(pag['owner']) }}</td>
+                           
+                        {% end %}
+                         
+                        <!-- Opções de Página -->
+                        <td>
+                        <img src="/static/imagens/icones/document_16x16.png" border="0" alt="" />
+                        {{ escape(str_cut(pag["nomepag"], 80)) }}
+                        </td>
+                        
+                        <td align="left">{{ escape(pag["alterado_por"]) }} em {{ escape(pag["data_alt"]) }}</td>
+                        
+                        <td align="left"><a href="/wiki/history/{{ escape(pag["doc_id"]) }}" title="Ver histórico"><img src="/static/imagens/icones/versions16.png"/></a> 
+                        <a href="/wiki/remove/{{ escape(pag["doc_id"]) }}" onclick="return confirm('Deseja remover definitivamente esta página?\nEsta operação não poderá ser desfeita.');" title="Remover definitivamente"><img src="/static/imagens/icones/remove16.png"/></a></td>
+                     </tr>
+                 {% end %}
+            </table>
+        {% else %}
+            <p>A lixeira de {{ REGISTRY_ID }} está vazia.</p>
+        {% end %}
+    </div>
+    {{ modules.ShowMolduraFim() }}
+    {{ modules.Paginator(PAGE, PAGESIZE, PAG_COUNT) }}
+
+{% end %}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<noticias>
+    {% for i in range(len(LISTA)) %}
+        {% if (LISTA[i].dt_validade == "") or (LISTA[i].dt_validade > NOW) %}
+            {% if LISTA[i].url == "" %}
+                <noticia url="/noticia/{{ REGISTRY_ID+'/'+str(LISTA[i].id)+'?tr=n' }}">
+            {% else %}
+                <noticia url="{{ LISTA[i].url }}">
+            {% end %}
+                <dt_publicacao><![CDATA[{{ LISTA[i].dt_publicacao }}]]></dt_publicacao>
+                <titulo><![CDATA[{{ LISTA[i].titulo }}]]></titulo>
+                <descricao>
+                    <![CDATA[{{ LISTA[i].get_resumo_sem_html() }}]]>
+                </descricao>
+            </noticia>
+        {% end %}
+    {% end %}
+</noticias> 

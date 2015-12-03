@@ -1,0 +1,20 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    <h1>Portfolio de {{ REGISTRY_ID }}</h1>
+    <br/>
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    {% for pag in PAGINAS %}
+        <hr>
+        <b>Página: <a href="/wiki/{{ escape(pag["doc_id"]) }}">{{ escape(pag["nomepag"]) }}</a> - 
+        {% if pag["owner"] != REGISTRY_ID %}
+          Criada por: {{ escape(pag["owner"]) }} - 
+        {% end %}
+        Alterada por: {{ escape(pag["alterado_por"]) }} em {{ escape(pag["data_alt"]) }}
+        </b>
+        <br/><br/>
+        {{ pag["conteudo"] }}
+        <br/><br/>
+    {% end %}
+    {{ modules.Paginator(PAGE, PAGESIZE, PAG_COUNT) }}
+{% end %}

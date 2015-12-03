@@ -1,0 +1,202 @@
+<div style="padding: 0px 5px 0px 5px">
+	<!-- getcookie: Permite obter cookie _xsrf do tornado -->
+	<script src="/static/getcookie.js" type="text/javascript"></script>
+	<script>
+		$(function () {
+			// Initialize autocomplete with local lookup
+			$('#nome_habilidade_nova').autocomplete({
+				source: function(request, response) {																			
+						var results = $.ui.autocomplete.filter({{AUTOCOMPLETE_ALL_SKILLS}}, request.term);
+						// limita exibição em 10 itens
+						response(results.slice(0, 5));
+					},
+				
+				select: function (event, ui) {
+					$('#nome_habilidade_nova').val(ui.item.value);
+				}
+            });
+		});
+
+		var linha_atual = 0;
+		var tamanho_lista = "{{len(SKILLS_TO_VALIDATE)}}";
+		function mudar_habilidade(tipo){
+			if (tipo == "proxima"){
+				var indice = linha_atual + 1;
+				if (indice >= tamanho_lista){
+					indice = 0;
+				}
+			}
+			else if (tipo == "anterior"){
+				var indice = linha_atual - 1;
+				if (indice < 0){
+					indice = tamanho_lista-1;
+				}
+			}
+			$('#habilidade_anterior').prop("disabled", true);
+			$('#proxima_habilidade').prop("disabled", true);
+			$('#nome_habilidade'+linha_atual).slideToggle(400);
+			$('#nome_habilidade'+indice).slideToggle(400, function(){ $('#habilidade_anterior').prop("disabled", false); $('#proxima_habilidade').prop("disabled", false); });
+			$('#nivel_habilidade').prop('selectedIndex',0);
+			linha_atual = indice;
+		}
+
+		function validaHabilidade(tipo){
+			var xmlhttp;
+			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			}
+			else{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					//Codigo ao receber resposta da aplicação
+					if( xmlhttp.responseText == "success"){
+						if (tipo == "existente"){
+							var remover = document.getElementById("nome_habilidade"+linha_atual);
+							remover.parentNode.removeChild(remover);
+							mudar_habilidade("proxima");
+							linha_atual--;
+							for (j = linha_atual+1; j < tamanho_lista ; j++){
+								if (j == 0) { break;}
+								document.getElementById("nome_habilidade"+j).setAttribute("id", "nome_habilidade"+(j-1));
+							}
+							tamanho_lista--;
+							if (tamanho_lista == 0){
+								document.getElementById("linha_habilidades_existentes").style.display = "none";
+							}
+							$('#nivel_habilidade').prop('selectedIndex',0);
+						}
+						else if (tipo == "nova"){
+							if (document.getElementById("habilidade_enviada").style.display == 'none'){
+							$('#habilidade_enviada').fadeIn();
+							$('#habilidade_enviada').fadeOut(2000);								
+							
+							}
+							document.getElementById("nome_habilidade_nova").value = "";
+							document.getElementById("nome_habilidade_nova").focus();
+							$('#nivel_habilidade_nova').prop('selectedIndex',0);
+						}
+					}
+				}
+			}
+			_xsrf=getCookie("_xsrf");
+			target = "{{USERDATA['user']}}";
+			if (tipo == "existente"){
+				nivel = document.getElementById("nivel_habilidade").value;
+				nome_habilidade = document.getElementById("nome_habilidade"+linha_atual).innerHTML;
+			}else if (tipo == "nova"){
+				nivel = document.getElementById("nivel_habilidade_nova").value;
+				nome_habilidade = document.getElementById("nome_habilidade_nova").value;
+			}else if (tipo == "skip"){
+							nivel = "skipped";
+							nome_habilidade = document.getElementById("nome_habilidade"+linha_atual).innerHTML;
+							tipo = "existente"; 
+			}
+			if (nome_habilidade != ""){
+				if (nivel != ""){//Se o nível não for vazio, continue
+					data = "_xsrf="+_xsrf + "&nivel=" + nivel + "&nome_habilidade=" + nome_habilidade + "&target=" + target;
+					xmlhttp.open("POST","/profile/skills/validate/social",true);
+					xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+					xmlhttp.send(data);
+				}
+				else{//Se o nível for vazio, chamar a atenção do usuário e não fazer mais nada
+					if(tipo == "existente"){
+						$('#confirmar_habilidade').prop("disabled", true);
+						$('#nivel_habilidade').slideToggle(100);
+						$('#nivel_habilidade').slideToggle(100);
+						$('#nivel_habilidade').slideToggle(100);
+						$('#nivel_habilidade').slideToggle(100, function(){ $('#confirmar_habilidade').prop("disabled", false);});
+					}
+					else if (tipo == "nova"){
+						$('#confirmar_habilidade_nova').prop("disabled", true);
+						$('#nivel_habilidade_nova').slideToggle(100);
+						$('#nivel_habilidade_nova').slideToggle(100);
+						$('#nivel_habilidade_nova').slideToggle(100);
+						$('#nivel_habilidade_nova').slideToggle(100, function(){ $('#confirmar_habilidade_nova').prop("disabled", false);});
+					}
+				}
+			}
+			else{//Erro para nome da habilidade não
+				alert("O nome da habilidade não pode estar vazio!");
+			}
+		}
+
+
+	</script>
+
+	<style>
+	    .slide {
+			position: relative;
+		}
+		.slide .inner {
+			position: relative;
+			left: 0;
+			bottom: 0;
+		}
+	</style>
+	<div style="float:right">
+		<input type='image'  id='botao_aponte' src='/static/imagens/icones/mais24.png' title='Apontar uma nova habilidade' onclick="$('#linha_habilidades_apontadas').toggle();"/>
+		<input type='image'  id='botao_aponte' src='/static/imagens/icones/restore24.png' title='Rever Habilidades' onclick="TINY.box.show({iframe:'/profile/skills/review/{{USERDATA['user']}}',width:600,height:400,fixed:false,maskid:'bluemask',maskopacity:40}); return false;"/>
+	</div>
+	<p>Ajude {{escape(USERDATA["name"])}} apontando habilidades que ele(a) possua!</p>
+	<table width="100%">
+	{% if SKILLS_TO_VALIDATE %}
+		<tr id="linha_habilidades_existentes">
+			<td align="left">
+				<input type='image'  id='habilidade_anterior' src='/static/imagens/icones/fastRewind24.png' title='Habilidade Anterior' onclick="mudar_habilidade('anterior')"/>
+			</td>
+			<td align="center" width="60%">
+				{% for i in range(len(SKILLS_TO_VALIDATE)) %}
+					<div id="nome_habilidade{{i}}" style="display:none;">
+					{{  SKILLS_TO_VALIDATE[i]  }}
+					</div>
+				{% end %}
+			</td>
+			<td align="center">
+				<select id="nivel_habilidade">
+			    	    <option value="" selected></option>
+						<option value="novato">Novato</option>
+						<option value="iniciante">Iniciante Avançado</option>
+						<option value="apto">Apto</option>
+						<option value="proficiente">Proficiente</option>
+						<option value="especialista">Especialista</option>
+				</select>
+			</td>
+			<td align="center"><input type='image'  id='confirmar_habilidade' src='/static/imagens/icones/cleanCheck24.png' title='Confirmar Habilidade' onclick="validaHabilidade('existente')"/></td>
+			<td align="center"><input type='image'  id='confirmar_habilidade' src='/static/imagens/icones/cancel24.png' title='Não responder sobre esta habilidade agora.' onclick="validaHabilidade('skip')"/></td>
+			<td align="right"><input type='image'  id='proxima_habilidade' src='/static/imagens/icones/fastFoward24.png' title='Próxima Habilidade' onclick="mudar_habilidade('proxima')"/></td>
+		</tr>
+	{% end %}
+		<tr id="linha_habilidades_apontadas">
+		<td colspan="2" align="center"><b>Habilidade: </b>
+			<input name="nome_habilidade_nova" id="nome_habilidade_nova" type="text" size="20"/>
+		</td>
+		<td align="center">
+			<select id="nivel_habilidade_nova">
+			    <option value="" selected></option>
+				<option value="novato">Novato</option>
+				<option value="iniciante">Iniciante Avançado</option>
+				<option value="apto">Apto</option>
+				<option value="proficiente">Proficiente</option>
+				<option value="especialista">Especialista</option>
+			</select></td>
+		<td align="center"><input type="image"  id="confirmar_habilidade_nova" src="/static/imagens/icones/cleanCheck24.png" title="Confirmar Habilidade" onclick="validaHabilidade('nova')"/></td>
+		<td id="habilidade_enviada" style="color:green;display:none;" align="center"><b>Ok!</b></td>
+		</tr>
+	</table>
+			<script type="text/javascript">
+				$(document).ready(
+					function(){
+						$('#linha_habilidades_apontadas').toggle();
+						$('#nome_habilidade0').slideToggle();
+						/* A função abaixo testa se Enter é apertado na caixa de texto de habilidade nova, e faz o envio desta habilidade. */
+						$('#nome_habilidade_nova').keypress(function(e){
+							if(e.which == 13){
+							   validaHabilidade('nova');
+							}
+
+						});
+				});
+			</script>
+</div>

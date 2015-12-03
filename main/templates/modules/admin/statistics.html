@@ -1,0 +1,37 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {% if UNIDADES %}
+        <h1>Lista de usuários por unidade</h1>
+        <table>
+        <tr>
+    	<th class="tnmTabelaInterna">Unidade</th>
+        <th class="tnmTabelaInterna">Super Usuarios</th>
+    	<th class="tnmTabelaInterna">Docentes</th>
+        <th class="tnmTabelaInterna">Docentes Externos</th>
+        <th class="tnmTabelaInterna">Funcionários</th>
+        <th class="tnmTabelaInterna">Estagiários</th>
+        <th class="tnmTabelaInterna">Alunos</th>
+        <th class="tnmTabelaInterna">Alunos Exernos</th>
+        <th class="tnmTabelaInterna">Usuários Exernos</th>
+        <th class="tnmTabelaInterna">Comunidades</th>
+        </tr>
+    	{% for (unidade, unidade_data) in UNIDADES %}
+    	    <tr>
+    		<td class="tnmTabelaInterna">{{ escape(unidade["nome"]) }}</td>
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['super_usuario']))) if unidade_data['super_usuario'] else "" }}
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['docente']))) if unidade_data['docente'] else "" }}
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['docente_externo']))) if unidade_data['docente_externo'] else "" }}
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['funcionario']))) if unidade_data['funcionario'] else "" }}
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['estagiario']))) if unidade_data['estagiario'] else "" }}
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['aluno']))) if unidade_data['aluno'] else "" }}
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['aluno_externo']))) if unidade_data['aluno_externo'] else "" }}
+    	    <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['usuario_externo']))) if unidade_data['usuario_externo'] else "" }}
+            <td class="tnmTabelaInterna" align="center">{{ escape(str(len(unidade_data['comunidade']))) if unidade_data['comunidade'] else "" }}
+            </tr>
+    	{% end %}
+        </table>
+    {% else %}
+    	<p>Não existe escola cadastrada.</p>
+    {% end %}
+{% end %}

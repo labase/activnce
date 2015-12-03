@@ -1,0 +1,52 @@
+<div style="width:{{width}}px; height:{{height}}px; float:left; padding: 0px {{padd}}px; display: table; overflow:hidden">
+
+	{% if link != "" %}
+		<a href="{{link}}" title="{{alt}}">
+	{% end %}
+	
+	<div style="width:{{width}}px;height:{{height}}px;overflow:hidden;">
+	  <img src="{{src}}" width="{{width}}px" height="{{height}}px" alt="{{alt}}" title="{{alt}}" />
+	  {% if online or admin %}
+		   <div style="position:relative;top:-{{height+4}}px;z-index:20;float:right;">
+		    <table cellspacing="0" cellpadding="0" style="height:{{height}}px;border:none;">
+		     <tr>
+		      <td style="text-align:right;vertical-align:top;font-size:1px;padding:1px;">
+		       {% if online %}
+			        {% if chat %}
+			         	<a href="{{chat}}"><img src="/static/imagens/online.png" title="on-line"/></a>
+			        {% else %}
+			         	<img src="/static/imagens/online.png" title="on-line"/>
+			        {% end %}
+		       {% end %}
+		      </td>
+		     </tr>
+		     <tr>
+		      <td style="text-align:right;vertical-align:bottom;font-size:1px;">
+		       {% if admin %}
+		        	<img src="/static/imagens/chave.png"  title="administrador"/>
+		       {% end %}
+		      </td>
+		     </tr>
+		    </table>
+		   </div>
+	  {% end %} 
+	</div>
+	
+	{% if link != "" %}
+		</a>
+	{% end %}
+
+	{% if icone != "" %}
+	   {{ icone }}
+	{% end %}
+	 
+	{% if texto != "" %}
+	  <div style="width:{{width}}px; overflow:hidden; text-align:center; height:22px;" title="{{alt}}">
+	   {% if link != "" %}
+	   		<a href="{{link}}" title="{{alt}}" style="color:black"><span style="font-size:80%">{{texto}}</span></a>
+	   {% else %}
+	    	<span style="font-size:80%">{{texto}}</span>
+	   {% end %}
+	  </div>
+	{% end %}
+</div>

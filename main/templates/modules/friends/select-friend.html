@@ -1,0 +1,25 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	{{ modules.ShowMolduraInicio("", width="100%") }}
+	
+	{% if ENCONTRADOS %}
+		{% for amigo in ENCONTRADOS %}
+		    <div>
+			<a href="/user/{{escape(amigo)}}"><img src="/photo/{{escape(amigo)}}?size=M" width="45" height="60" /></a><br/>
+		    <h3>{{ ENCONTRADOS[amigo][0] }}<br/>
+		    ({{ amigo }})</h3>
+		    		    
+			{% if ENCONTRADOS[amigo][2] %}
+			    <a href="{{ ENCONTRADOS[amigo][2] }}">{{ ENCONTRADOS[amigo][1] }}</a><br/>
+			{% else %}
+			    {{ ENCONTRADOS[amigo][1] }}<br/>
+			{% end %}
+		    </div>
+		{% end %}
+	{% else %}
+		Nenhum usuário encontrado.
+	{% end %}
+	{{ modules.ShowMolduraFim() }}
+		
+{% end %}

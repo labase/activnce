@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+ <title>ActivUFRJ</title>
+ <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
+ <link rel="stylesheet" href="/static/tnm.css" type="text/css" />
+<script language="javascript">
+function Choice(file) {
+    var re = new RegExp('(?:[\?&]|&amp;)CKEditorFuncNum=([^&]+)', 'i');
+    var match = window.location.search.match(re);
+    var fn = (match && match.length > 1)?match[1]:'';
+    window.opener.CKEDITOR.tools.callFunction(fn,file);
+    window.close();
+}
+</script>
+</head>
+
+<body style="margin:5px">
+ <div class="tnmEstiloInterno">
+  {{ modules.ShowMolduraInicio("<h2 style='display:inline'>"+TITULO+" de "+escape(REGISTRY_ID)+"</h2>" ,"","100%") }}
+   {% if FILES %}
+       {% for arq in FILES %}
+            <div style="float:left">
+             {{ modules.ShowFoto(arq['icon'],escape(arq["file_id"].split("/")[1]),escape(arq["file_id"].split("/")[1]),"javascript:Choice('/"+escape(arq["service"])+"/"+escape(arq["file_id"])+"')",False)}}
+            </div>
+       {% end %}
+   {% else %}
+       Não tem nenhum arquivo.
+   {% end %}
+  {{ modules.ShowMolduraFim() }}
+ </div>
+</body>
+</html>

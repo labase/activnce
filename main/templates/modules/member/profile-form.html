@@ -1,0 +1,85 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<script type="text/javascript" src="/static/valida.js"></script>
+	<script type="text/javascript">
+	function CriticarForm(f)
+	{
+	  if (f.cpf.value) {
+	      if (!isInteger(f.cpf.value))
+	        return aviso(f.cpf,"Coloque apenas números no CPF.");
+	      if (f.cpf.value.length < 11)
+	        return aviso(f.cpf,"Informe o Cpf com 11 dígitos. Ex: 76543210011.");
+	      if (!check_cpf(f.cpf.value))
+	        return aviso(f.cpf,"Cpf inválido.");
+	  }
+	  else
+	      return true;
+	}
+	</script>
+{% end %}
+
+{% block body-right %}
+    <form name="cadastro" action="{{ request.path }}" method="post" enctype="multipart/form-data" onsubmit="return CriticarForm(this);">
+	{% raw xsrf_form_html() %}
+	{{modules.ShowMolduraInicio(escape("Cadastro de Usuário Convidado"))}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+                <div class="tnmMSG">
+                <h3>Se você é professor, funcionário ou aluno da UFRJ, você não precisa preencher este formulário. 
+                Acesse a <a href="http://intranet.ufrj.br">Intranet da UFRJ</a>, digite sua conta e senha, 
+                e clique no link "ActivUFRJ" na seção "Serviços" da página principal.</h3>
+				</div>
+				
+				
+                <h2 for="user">Login</h2>
+                <i>Escolha um nome pelo qual você será reconhecido na plataforma. Evite números como CPF, DRE, etc.</i>
+                <br/>
+                <input name="user" id="user" value="{{ escape(REGISTRYDATA["user"]) }}" type="text"/>
+
+                <h2 for="passwd">Senha</h2>
+                <input name="passwd" id="passwd" value="{{ escape(REGISTRYDATA["passwd"]) }}" type="password"/>
+                <h2 for="npasswd">Repita a Senha</h2>
+                <input name="npasswd" id="npasswd" value="{{ escape(REGISTRYDATA["passwd"]) }}" type="password"/>
+ 
+                <h2 for="name">Nome</h2>
+                <input name="name" id="name" value="{{ escape(REGISTRYDATA["name"]) }}" type="text" size="50"/>
+
+                <h2 for="lastname">Sobrenome</h2>
+                <input name="lastname" id="lastname" value="{{ escape(REGISTRYDATA["lastname"]) }}" type="text" size="50"/>
+
+                <h2 for="cpf">CPF (*)</h2>
+                <input name="cpf" id="cpf" value="{{ escape(REGISTRYDATA["cpf"]) }}" type="text" size="20" maxlength="11"/>
+
+                <h2 for="photo">Foto</h2>
+                <input id="photo" name="photo" type="file"/>
+
+                <h2 for="email">E-Mail</h2>
+                {% if INPUT_MKEY %}
+                    <input name="email" id="email" value="{{ escape(REGISTRYDATA["email"]) }}" type="text" size="50"/>
+                {% else %}
+                    {{ escape(EMAIL) }}
+                    <input name="email" value="{{ EMAIL }}" type="hidden"/>
+                {% end %}
+                
+                {% if INPUT_MKEY %}
+                    <h2 for="mkey">Chave Mágica</h2><h3>(A chave que você recebeu por email ao ser convidado)</h3>
+                    <input name="mkey" id="mkey" value="{{ MKEY }}" type="text" size="30"/>
+                {% else %}                    
+                    <input name="mkey" value="{{ MKEY }}" type="hidden"/>
+                {% end %}
+                <input name="input_mkey" value="{{ INPUT_MKEY }}" type="hidden"/>
+                
+                <br/><br/>
+                <input type="submit" value="Enviar" />
+                <br/><br/>
+                <div style="margin-right: 20%">
+                <b>(*) Por que preciso informar o meu CPF?</b>
+                <br/>
+                O preenchimento deste campo não é obrigatório. 
+                Entretanto, ele facilita a autenticação no ActivUFRJ através da Intranet da UFRJ.
+                </div>
+                
+		{{ modules.ShowMolduraFim() }}
+</form>
+
+{% end %}

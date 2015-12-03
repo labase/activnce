@@ -1,0 +1,26 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	{{ modules.ShowMolduraInicio("Gerenciar participantes") }}
+	{{ modules.ShowTabs(TABS) }}
+
+
+	{% if ENCONTRADOS %}
+		{% for pessoa in ENCONTRADOS %}
+		    <div>
+			<a href="/user/{{escape(pessoa)}}"><img src="/photo/{{escape(pessoa)}}?size=M" width="45" height="60" /></a><br/>
+		    <h3>{{ ENCONTRADOS[pessoa][0] }}<br/>
+		    ({{ pessoa }})</h3>
+		    {% if ENCONTRADOS[pessoa][2] %}
+		    	<a href="{{ ENCONTRADOS[pessoa][2] }}">{{ ENCONTRADOS[pessoa][1] }}</a><br/>
+		    {% else %}
+		    	{{ ENCONTRADOS[pessoa][1] }}<br/>
+			{% end %}			
+			</div>
+		{% end %}
+	{% else %}
+		Usuário não encontrado ou já convidado para esta comunidade.
+	{% end %}
+	{{ modules.ShowMolduraFim() }}
+		
+{% end %}

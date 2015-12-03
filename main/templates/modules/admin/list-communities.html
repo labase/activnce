@@ -1,0 +1,36 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+{% if MSG %}
+    <div class="tnmMSG">{{ MSG }}</div>
+{% else %}
+    {% if COMMUNITIES %}
+        <table border="1">
+            <tr><td>Comunidade</td>
+                <td>Descrição</td>
+                <td>Dono</td>
+                <td>Tipo/Privacidade</td>
+                <td></td>
+            </tr>
+                
+            {% for community in SORTEDKEYS(COMMUNITIES) %}
+                <tr>
+                    <td>{{ community }}</td>
+                    <td>{{ COMMUNITIES[community][0] }}</td>
+                    <td>{{ COMMUNITIES[community][1] }}</td>
+                    <td>{{ COMMUNITIES[community][2] }}/{{  COMMUNITIES[community][3]}}</td>
+                    <td>
+                    <a href="/admin/uploadquota/{{ community }}">alterar quota de upload</a>
+                    </td>                    
+                </tr>
+            {% end %}
+        </table>
+    {% else %}
+        <p>Nenhuma comunidade encontrada com estes critérios de busca.</p>
+    {% end %}
+
+{% end %}
+
+
+{% end %}

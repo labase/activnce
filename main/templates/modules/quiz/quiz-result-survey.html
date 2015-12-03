@@ -1,0 +1,36 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+	{{ modules.ShowMolduraInicio(u"Resultado da pesquisa de opinião: "+QUIZ['titulo'], width="100%", links=LINKS) }}
+
+{% for i in range(len(QUESTIONS)) %}
+	 	
+	    <h2>Questão {{i+1}}: &nbsp;&nbsp; {{ANSWERS["total"]}} realizações</h2>
+	    <p>{{QUESTIONS[i]["enunciado"] }}</p>
+
+<table>
+<tr>
+<td width=30></td>
+<td width=70 style="border-bottom: 1px solid #b0b0b0"><b>Frequência</b></td>
+<td width=600 style="border-bottom: 1px solid #b0b0b0"><b>Enunciado</b></td>
+</tr>
+		
+		{% for j in range (len(QUESTIONS[i]["respostas"])) %}
+
+
+
+<tr><td width=30></td>
+		<td width=70>{% if (QUESTIONS[i]["_id"], str(j)) in ANSWERS %} 
+					{{ANSWERS[(QUESTIONS[i]["_id"], str(j))][1]}} ({{ANSWERS[(QUESTIONS[i]["_id"], str(j))][0]}})   
+				{% else %}
+					0% (0/{{ANSWERS[ "total"]}})			
+				{% end %}</td>
+						
+		<td width=600><img src="/static/imagens/question/{{IMGLIST[j]}}" >{{ QUESTIONS[i]["respostas"][j] }}</td>
+
+</tr>
+{% end %}	
+</table>
+	{% end %}
+	{{ modules.ShowMolduraFim() }}
+{% end %}

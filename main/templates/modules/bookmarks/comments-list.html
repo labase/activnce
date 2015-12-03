@@ -1,0 +1,74 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+   {{modules.ShowMolduraInicio("Comentar este favorito", width="100%")}}
+    
+    
+    {% if BOOKMARK["title"] %}
+        <b><a href="{{BOOKMARK["url"]}}" target="_new">{{BOOKMARK["title"]}}</a></b><br/>
+        <span style="color:#999;font-size:small;">
+        {{BOOKMARK["url"]}}<br/>
+        </span>
+    {% else %}
+        <b><a href="{{BOOKMARK["url"]}}" target="_new">{{BOOKMARK["url"]}}</a></b><br/>
+    {% end %}
+    
+    {% if BOOKMARK["description"] %}
+       <br/>
+       <div style="background-color:#f0f0f0; padding:8px 8px; margin-right:40px; margin-left: 40px;">{{BOOKMARK["description"]}}</div>
+       <br/>
+    {% end %}
+    
+    {% if BOOKMARK["tags"] %}
+       <p><i>Tags:
+       {% for tag in BOOKMARK["tags"] %}
+           <a href="/bookmarks/{{ BOOKMARK["registry_id"] }}/{{ escape(tag) }}">{{ escape(tag) }}</a>
+       {% end %}
+       </i></p>
+    {% end %}
+    
+    {% if BOOKMARK["owner"] != BOOKMARK["registry_id"] %}
+     Criado por: {{ escape(BOOKMARK["owner"]) }}
+    {% end %}
+    
+    <span style="color:#999;font-size:small;">
+    {{ escape(BOOKMARK["alterado_por"]) }} em {{ escape(BOOKMARK["data_alt"]) }}
+    </span>
+    <br/><br/><br/>
+    
+    <a name="comment"></a>
+    
+    <h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+    {% for comment in BOOKMARK["comentarios"] %}
+    	<p>
+    	{{ comment["comment"] }}
+    	<br/><span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">{{ comment["owner"] }}</a> em {{ comment["data_fmt"] }}</span>
+            {% if comment["apagar"] %}
+                <a href="/bookmarks/comment/{{ BOOKMARK["registry_id"] }}/delete?id={{ BOOKMARK["_id"] }}&owner={{ comment['owner'] }}&data_cri={{ comment['data_cri'] }}" title="{{ _("Delete") }}">
+                <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+            {% end %}
+    	</p>
+    {% end %}
+    <br/><br/>
+    
+    {% if COMENTAR %}
+        <h2>{{ _("Post a comment") }}:</h2>
+        <form name="postcomment"  action="{{ request.path }}" method="post">
+        <input type="hidden" name="id" value="{{BOOKMARK['_id']}}" />
+    	{% raw xsrf_form_html() %}
+    
+    	<textarea rows="6" cols="70" name="comment"></textarea>
+    	{{ modules.ShowMolduraFim("postcomment") }}
+        </form>
+    {% else %}
+        {% if TIPO_REGISTRY=="member" %}
+            <span style="color:#999;font-size:small;">Somente os amigos de {{ REGISTRY_ID }} podem comentar.</span>
+        {% elif TIPO_REGISTRY=="community" %}
+            <span style="color:#999;font-size:small;">Somente os participantes de {{ REGISTRY_ID }} podem comentar.</span>
+        {% end %}
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+
+{% end %}
+

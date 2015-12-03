@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<agenda_to_no_mundo> 
+{% if EVENTS %}
+    {% for ano_mes in SORTEDKEYS(EVENTS) %}
+	<mes id="{{ ano_mes[4:].lstrip('0') }}" ano="{{ ano_mes[0:4] }}">
+            {% for dia in SORTEDKEYS(EVENTS[ano_mes]) %}
+                {% for item in EVENTS[ano_mes][dia] %}
+		<dia id="{{ dia }}">
+			<evento url='{{ item["url"] }}'>	
+				<titulo><![CDATA[{{ item["msg"] }}]]></titulo>
+			</evento>
+		</dia>
+                {% end %}
+            {% end %}		
+	</mes>
+    {% end %}	
+{% end %}
+</agenda_to_no_mundo>

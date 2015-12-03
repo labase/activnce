@@ -1,0 +1,101 @@
+{% extends "../base-foto.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="/css/{{ WIKIDATA['registry_id'] }}" type="text/css" />
+
+    {% if WIKIDATA["owner"]<>WIKIDATA["registry_id"] and WIKIDATA["nomepag_id"]=="home" %}
+        <!-- exibe pop-up de notícias na página home -->
+        <script type="text/javascript" src="/static/noticia.js"></script>
+    {% end %}
+
+{% end %}
+
+
+{% block body-left %}
+    <!-- página de índice, somente se houver usuário logado-->
+    {% if LOGADO %}
+        {{modules.ShowMolduraInicio(width="100%", titulo=INDEX["nomepag"], links=INDICE_LINKS)}}
+            <span style="color:#999;font-size:x-small;">
+                {{ INDEX["historico"][-1]["conteudo"] }}
+                <br/>
+            </span>
+        {{ modules.ShowMolduraFim() }}
+
+    {% end %}
+{% end %}
+
+{% block body-right %}
+    {% if WIKIDATA["owner"]<>WIKIDATA["registry_id"] and WIKIDATA["nomepag_id"]=="home" %}
+	    <script type="text/javascript">
+		    // lista de usuários online no chat de comunidades
+			var usuarios_no_chat = {{USUARIOS_NO_CHAT}};
+		    loadXMLNoticia("{{WIKIDATA["registry_id"]}}");
+	    </script>
+    {% end %}
+
+
+<!-- identificação da userpage utilizado para os testes. -->
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+
+    <br/>
+    {{ modules.ShowMolduraInicio(titulo=PATH, width="100%", links=LINKS) }}
+    {% if LOGADO %}
+    {{ modules.EditAvaliaArtefato(LOGADO, "wiki", WIKIDATA["registry_id"], WIKIDATA["nomepag_id"]) }}
+    {% end %}
+
+        <h1>{{ WIKIDATA["nomepag"] }}</h1>
+        <p>{{ WIKIDATA["conteudo"] }}</p>
+
+        <span style="color:#999;font-size:small;">
+        <p>{{ _("Created by") }} <a href="/user/{{ escape(WIKIDATA["owner"]) }}">{{ escape(WIKIDATA["owner"]) }}</a> {{ _("at") }} {{ WIKIDATA["data_cri_fmt"] }}</p>
+        {% if WIKIDATA["data_alt_fmt"] != WIKIDATA["data_cri_fmt"] %}
+            <p>{{ _("Updated by") }} <a href="/user/{{ escape(WIKIDATA["alterado_por"]) }}">{{ escape(WIKIDATA["alterado_por"]) }}</a> {{ _("at") }} {{ WIKIDATA["data_alt_fmt"] }}</p>
+        {% end %}
+        </span>
+
+        {% if WIKIDATA["tags"] %}
+           <i>Tags:</i><br/>
+           {{ modules.ShowTags(WIKIDATA["tags"]) }}
+        {% end %}
+
+        <br/><br/><br/>
+        <a name="comment"></a>
+
+        <h2><img src="/static/imagens/icones/comment16.png" /> {{ _("Comments") }}</h2>
+        {% if WIKIDATA["comentarios"] %}
+            {% for comment in WIKIDATA["comentarios"] %}
+                <p>
+                {{ comment["comment"] }}
+                <br/><span style="color:#999;font-size:small;">Comentado por <a href="/user/{{ comment["owner"] }}">{{ comment["owner"] }}</a> em {{ comment["data_fmt"] }}</span>
+                    {% if comment["apagar"] %}
+                    <a href="/wiki/comment/delete/{{ escape(WIKIDATA["pag"])}}?owner={{ comment['owner'] }}&data={{ comment['data_cri'] }}" title="apagar">
+                    <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" />
+                    </a>
+                    {% end %}
+                </p>
+            {% end %}
+        {% else %}
+            Nenhum comentário até o momento.
+        {% end %}
+        <br/><br/>
+
+    {% if WIKIDATA["comentar"] %}
+        <h2>{{ _("Post a comment") }}:</h2>
+        <form name="postcomment"  action="/wiki/comment/{{ escape(WIKIDATA["registry_id"]) }}/{{ escape(WIKIDATA["nomepag_id"]) }}" method="post">
+        {% raw xsrf_form_html() %}
+
+        <textarea rows="6" cols="70" name="comment"></textarea>
+        {{ modules.ShowMolduraFim("postcomment") }}
+        </form>
+    {% else %}
+        {% if TIPO_REGISTRY=="member" %}
+            <span style="color:#999;font-size:small;">Somente os amigos de {{ REGISTRY_ID }} podem comentar.</span>
+        {% elif TIPO_REGISTRY=="community" %}
+            <span style="color:#999;font-size:small;">Somente os participantes de {{ REGISTRY_ID }} podem comentar.</span>
+        {% end %}
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+
+
+{% end %}

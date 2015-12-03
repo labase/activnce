@@ -1,0 +1,27 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+    <form name="moverarquivo" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(titulo=u"Mover Pastas/Páginas")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div><br/>{% end %}
+    
+    <input type="hidden" name="filename" value="{{ escape(FILEDATA["filename"]) }}"/>
+    <input type="hidden" name="revision" value="{{ escape(FILEDATA["_rev"]) }}"/>
+    <h2>Localização atual:</h2>{{ PATH }}{% if FILEDATA["is_folder"] == "N" %}{{ escape(FILEDATA["filename"]) }}{% end %}
+    <br/><br/>
+
+    <h2>Mover para:</h2>
+    <select name="destino">
+    {% for folder in FOLDERS %}
+        {% if folder[0]==FILEDATA["parent_folder"] %}
+            <option value="{{folder[0]}}" selected="selected">{{folder[1]}}</option>
+        {% elif folder[0]!=FILEDATA["_id"].split("/")[1] %}
+            <option value="{{folder[0]}}">{{folder[1]}}</option>
+        {% end %}
+    {% end %}
+    </select>
+    
+    {{ modules.ShowMolduraFim("moverarquivo") }}
+   </form>
+{% end %}

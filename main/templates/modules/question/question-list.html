@@ -1,0 +1,53 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS, titulo=TITLE)}}
+    {% for question in QUESTIONS %}
+        <a href="/question/{{ escape(question["registry_id"]) }}?id={{ escape(question["_id"]) }}"><b>{{ escape(question["enunciado"]) }}</b></a>
+        <span style="color:#999;font-size:small;">
+        {%if question["subtype"] != "Survey" %}<p>{{ _("Nivel:") }} <a>{{ escape(question["nivel"]) }}</a> </p>{% end %} 
+        </p>        
+        <p>{{ _("Postado por") }} <a href="/user/{{ escape(question["owner"]) }}">{{ escape(question["owner"]) }}</a> {{ _("at") }} {{ question["data_fmt"] }}
+        </p>
+        {% if "alterado_por" in question and question["alterado_por"] %}
+            <p>{{ _("Alterado por") }} <a href="/user/{{ escape(question["alterado_por"]) }}">{{ escape(question["alterado_por"]) }}</a> {{ _("at") }} {{ question["data_alt"] }}</p>
+        {% end %}
+        </span>
+        
+        {% if question["tags"] %}
+            <i>{{ _("Tags") }}:</i><br/>
+           {{ modules.ShowTags(question["tags"]) }}            
+        {% end %}
+        <p>
+        {% if question["apagar"] %}
+        <a onclick="return confirm('{{ _("Realmente deseja apagar esta questão") }}?');" href="/question/delete/{{ escape(question["registry_id"]) }}?id={{ escape(question["_id"]) }}" title='{{ _("Deletar") }}'><img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a> 
+        {% end %}
+        {% if question["alterar"] %}
+        <a href="/question/edit/{{ escape(question["registry_id"]) }}?id={{ escape(question["_id"]) }}" title='{{ _("Editar") }}'><img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+        {% end %}
+        </p>
+        <br/><br/>
+    {% end %}
+    {% if not QUESTIONS %}
+        <p>Nenhuma questão encontrada.</p>
+        <br/>
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+    
+    {{ modules.Paginator(PAGE, PAGESIZE, QUESTIONS_COUNT) }}
+    <br/>
+    
+{% end %}
+{% block body-left %}
+	{% if TAGS %}
+        <br/><br/>
+        {{modules.ShowMolduraInicio(width="100%", titulo="Tags")}}
+        <table><tr><td>
+          <a href="/question/{{REGISTRY_ID}}">Todas</a> 
+          <br/><br/>
+          {{ modules.ShowTags(TAGS, link="/question/"+REGISTRY_ID+"/") }}
+          <br/>
+        </td></tr></table>
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}

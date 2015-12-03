@@ -1,0 +1,29 @@
+{% extends "../../base.html" %}
+
+{% block body %} 
+    <form name="moverpaginas" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(titulo=u"Mover todas as Pastas e Páginas selecionadas")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div><br/>{% end %}
+    <input type="hidden" name="folder" value="{{FOLDER}}"/>
+    
+    {% for item in ITEMS %}
+        <input type="hidden" name="items" value="{{item}}"/>
+    {% end %}
+    <h2>Localização atual:</h2>{{ PATH }}
+    <br/><br/>
+
+    <h2>Mover para:</h2>
+    <select name="destino">
+    {% for folder in FOLDERS %}
+        {% if folder[0]==FOLDER %}
+            <option value="{{folder[0]}}" selected="selected">{{folder[1]}}</option>
+        {% else %}
+            <option value="{{folder[0]}}">{{folder[1]}}</option>
+        {% end %}
+    {% end %}
+    </select>
+    
+    {{ modules.ShowMolduraFim("moverpaginas") }}
+   </form>
+{% end %}

@@ -1,0 +1,88 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+
+<form name="cadastro" action="{{ request.path }}" method="post" enctype="multipart/form-data">
+	{% raw xsrf_form_html() %}
+
+    {{ modules.ShowMolduraInicio("Criar comunidade") }}
+	{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+
+
+    <table cellpadding="8">
+	<tr><td valign="top">
+	<label for="name">Nome (*)</label>
+	</td>
+	<td>
+	<input name="name" id="name" value="{{ escape(REGISTRYDATA["name"]) }}" type="text" size="50"/>
+	<br/>
+	<i>Nome que identificará a comunidade. Deve ser uma única palavra composta de letras, números, sublinhado ou ponto.</i>
+	</td></tr>
+
+	<tr><td>
+	<label for="description">Descrição (*)</label>
+	</td>
+	<td>
+	<input name="description" id="description" value="{{ escape(REGISTRYDATA["description"]) }}" type="text" size="80"/><br/>
+	</td></tr>
+
+	<tr><td valign="top">
+	<label for="privacidade">Privacidade (*)</label>
+	</td>
+	<td>	
+	<input type="radio" name="privacidade" value="Pública" {% if REGISTRYDATA["privacidade"]==u"Pública" %} checked="checked" {% end %}/> <b>Pública</b> - 
+	<i>os conteúdos podem ser acessados por qualquer usuário do {{PLATAFORMA}}, a menos que suas permissões de acesso sejam individualmente alteradas</i>
+	<br/>
+	<input type="radio" name="privacidade" value="Privada" {% if REGISTRYDATA["privacidade"]=="Privada" %} checked="checked" {% end %}/> <b>Privada</b> - 
+	<i>Os conteúdos só podem ser acessados pelos participantes da comunidade.</i> 
+
+	
+	</td></tr>
+
+	<tr><td valign="top">
+	<label for="participacao">Forma de Participação (*)</label>
+	</td>
+	<td>	
+	<input type="radio" name="participacao" value="Mediante Convite" {% if REGISTRYDATA["participacao"]=="Mediante Convite" %} checked="checked" {% end %} /> <b>Mediante Convite</b> - 
+	<i>os usuários só poderão participar uma vez que recebam um convite enviado pelo dono da comunidade (ou por um dos seus administradores). O envio de um convite não garante que o usuário irá aceitá-lo.</i>
+	<br/>
+	<input type="radio" name="participacao" value="Voluntária" {% if REGISTRYDATA["participacao"]==u"Voluntária" %} checked="checked" {% end %} /> <b>Voluntária</b> - 
+	<i>os usuários poderão participar da comunidade por escolha própria, sem que haja necessidade de convites e sem nenhuma mediação por parte do dono da comunidade.</i>
+	<br/>
+	{% if IS_ADMIN %} 
+	<input type="radio" name="participacao" value="Obrigatória" {% if REGISTRYDATA["participacao"]==u"Obrigatória" %} checked="checked" {% end %} /> <b>Obrigatória</b> - 
+	<i>só podem ser criadas por administradores do sistema e servem para situações especiais onde um usuário seja incluído obrigatoriamente na comunidade, sem a possibilidade de recusa.</i>
+	
+	{% end %}
+	</td></tr>
+
+	<tr><td>
+	<label for="photo">Foto</label>
+	</td>
+	<td>	
+	<input id="photo" name="photo" type="file"/>
+	</td></tr>
+
+	<tr><td>
+	<label for="arquivo_css">Arquivo CSS</label>
+	</td>
+	<td>	
+	<input id="arquivo_css" name="arquivo_css" type="file"/>
+	</td></tr>
+	
+	<tr><td valign="top">
+	<label for="tags">Tags</label>
+	</td>
+	<td>
+		   {{ modules.InputTags(REGISTRYDATA["tags"]) }}
+			
+	</td></tr>	
+	
+	<tr><td colspan="2">(*) Campos obrigatórios</td></tr>
+	
+    </table>
+
+    {{ modules.ShowMolduraFim("cadastro") }}
+</form>
+
+{% end %}

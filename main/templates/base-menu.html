@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+ <title>{{ PAGETITLE }}</title>
+ <meta http-equiv="content-type" content="application/xml;charset=utf-8" />
+ <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+ 
+<!-- LISTA DE ARQUIVOS CSS -->
+<link rel="stylesheet" href="/static/activ/main.css" type="text/css" /> <!-- css geral da pagina -->
+<link rel="stylesheet" href="/static/activ/barra_governo.css" type="text/css" /> <!-- css da barra do governo federal -->
+<link rel="stylesheet" href="/static/activ/barra_ufrj.css" type="text/css" /> <!-- css da barra da UFRJ contendo o menu principal -->
+<link rel="stylesheet" href="/static/activ/barra_sequencia.css" type="text/css" /> <!-- css da barra da UFRJ contendo o menu principal -->
+<link rel="stylesheet" href="/static/activ/menu.css" type="text/css" /> <!-- css especifico do menu -->
+<link rel="stylesheet" href="/static/activ/center.css" type="text/css" /> <!-- css geral do meio da pagina canto + conteudo -->
+<link rel="stylesheet" href="/static/activ/conEsquerdo.css" type="text/css" /> <!-- css do canto vertical a esquerda -->
+<link rel="stylesheet" href="/static/activ/conDireito.css" type="text/css" /> <!-- css do conteudo principal -->
+<link rel="stylesheet" href="/static/activ/activ.css" type="text/css" /> <!-- css do design original do activ -->
+ 
+ {% block head %}{% end %}
+</head>
+
+<body>
+
+	<div id="all">
+		<!-- a pagina foi colocada no css para o minimo de 980 pixels -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<!-- XXXXXXXX   BARRAS NO TOPO DA PAGINA   XXXXXXXXXX -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<div id="top">
+			<!-- XXXXXXXXXX  declaracao da barra do governo brasileiro   XXXXXXXXXX -->
+			<!-- parece estar ao contrario mas as imagens estao alinhadas pela direita então a imagem a diretira da tela vem primeiro -->
+			<div id="barraGoverno">
+				<div id="logoGoverno"> 
+					<!-- imagem do acesso ao planato -->
+					<a target="_blank" href="http://www.brasil.gov.br"><img src="/static/imagens/logoGoverno.gif" align="left" alt="Portal Brasil" border="0"/></a> <!-- border nao funciona mais em html 5 mas sem ele o IE está pondo bordas nas imagens -->
+				</div>
+				<div id="logoAcesso" >
+					<!-- imagem do programa acesso a informacao -->
+					<a target="_blank" href="http://www.acessoainformacao.gov.br"><img src="/static/imagens/logoAcesso.gif" align="left" alt="Acesso à Informação" border="0"/></a>
+				</div>
+			</div>
+			<!-- XXXXXXXXXX   declaracao da barra cinza representando a UFRJ e contendo o menu principal   XXXXXXXXXX -->
+			<div id="barraUfrj">
+				<!-- Imagem da minerva apontada a esquerda da pagina -->
+				<div id="minerva">
+					<img src="/static/activ/minerva.png" width="90" height="45"/>
+				</div>
+
+				<!-- menu principal da pagina -->
+				{% if LOGADO %}
+					<!-- container para limitar o tamanho do menu -->
+					<div id="menu">
+						<!-- inicio da declaracao do menu -->
+						<div id='cssmenu'>
+						<ul>
+						   <!-- menu item N -->
+						   {% for item in MENU[TIPO_REGISTRY] %}
+							   <li class='has-sub'><a href='#'><span>{{item}}</span></a> 
+							      <ul>
+							         {% for servico in MENU[TIPO_REGISTRY][item] %}
+							            {% if ((not SERVICES[TIPO_REGISTRY][servico]["optional"]) or servico in USERDATA["services"]) and ((LOGADO==REGISTRY_ID and (SERVICES[TIPO_REGISTRY][servico]["hint"] or SERVICES[TIPO_REGISTRY][servico]["my_hint"])) or (LOGADO!=REGISTRY_ID and (SERVICES[TIPO_REGISTRY][servico]["hint"] or SERVICES[TIPO_REGISTRY][servico]["his_hint"]))) %}
+									         <li class='has-sub'><a href='{{SERVICES[TIPO_REGISTRY][servico]["link"]+REGISTRY_ID}}'><span>{{SERVICES[TIPO_REGISTRY][servico]["description"]}}</span></a>
+									            <ul>
+									               {% if SERVICES[TIPO_REGISTRY][servico]["hint"] %}
+									                  {% if "%s" in SERVICES[TIPO_REGISTRY][servico]["hint"] %}
+									                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["hint"]%REGISTRY_ID}}</span></a></li>
+									                  {% else %}
+									                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["hint"]}}</span></a></li>
+									                  {% end %}
+									               {% elif LOGADO==REGISTRY_ID %}
+									                  {% if SERVICES[TIPO_REGISTRY][servico]["my_hint"] %}
+										                  {% if "%s" in SERVICES[TIPO_REGISTRY][servico]["my_hint"] %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["my_hint"]%REGISTRY_ID}}</span></a></li>
+										                  {% else %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["my_hint"]}}</span></a></li>
+										                  {% end %}
+										              {% end %}
+									               {% else %}
+									                  {% if SERVICES[TIPO_REGISTRY][servico]["his_hint"] %}
+										                  {% if "%s" in SERVICES[TIPO_REGISTRY][servico]["his_hint"] %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["his_hint"]%REGISTRY_ID}}</span></a></li>
+										                  {% else %}
+										                     <li class='last'><a href='#'><span>{{SERVICES[TIPO_REGISTRY][servico]["his_hint"]}}</span></a></li>
+										                  {% end %}
+									                  {% end %}
+									               {% end %}
+									            </ul>
+									         </li>
+								        {% end %}
+							         {% end %}
+							      </ul>
+							{% end %}
+					
+						   <!-- menu ultimo item -->
+						   <li><a href='/logout'><span>Sair</span></a></li>
+						   	   
+						</ul>
+						</div>
+					
+					</div>  
+				
+				{% end %} 				
+	
+				<!-- Nome da universidade -->
+				<div id="UFRJ">
+				    <a href="http://www.ufrj.br" target="_blank">Universidade Federal do Rio de Janeiro</a>
+				</div>
+			</div>
+			
+
+		</div>
+
+		
+		
+		
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		<!-- XXXXXXXXXXXX   CONTEUDO CENTRAL   XXXXXXXXXXXXXX -->
+		<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+		
+		<div id="center">
+		    <div class="tnmEstiloInterno">
+			<!-- XXXXXXXXXX   declaracao da barra vertical denominando em que tipo de pagina voce esta   XXXXXXXXXX -->
+			<div id="localizacao">
+				<div id="rotate">
+				  {% if URL_RETORNO %}
+				    <a href="{{URL_RETORNO}}">{{NOMEPAG}}</a>
+				  {% else %}
+				    {{NOMEPAG}}
+				  {% end %}
+				</div>
+			</div>
+
+				<!-- XXXXXXXXXX   declaracao da area direita / central   XXXXXXXXXX -->
+				<div id="conDireito">
+					<div id="areaCentral">
+						<div style="line-height:40%">
+
+				        </div>
+    				    {% block body-right %}{% end %}
+
+						<div id="footer">
+	  						ActivUFRJ {{ _("version") }} {{ VERSAO_TNM }} - ©2010 <a href="http://www.nce.ufrj.br" target="_blank">NCE/UFRJ</a>		
+						</div>
+					</div>						
+				</div>
+				
+			</div>	
+			</div>
+	   </div>
+
+</body>
+</html>

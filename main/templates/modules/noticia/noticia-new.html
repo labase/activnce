@@ -1,0 +1,69 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	<!-- JQuery UI: internacionalização do datepicker -->
+	<script src="/static/jquery/jquery-ui-1.11.0/external/jquery.ui.datepicker-pt-BR.js"></script>
+	
+	<script type="text/javascript">
+    $(function() {
+        $.datepicker.setDefaults( $.datepicker.regional[ "pt-BR" ] );
+        $('#dt_validade').datepicker({
+            minDate: 0
+        });
+    });
+    </script>
+{% end %}
+
+
+{% block body-right %}
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+
+
+<form name="criarnoticia" action="{{ request.path }}" method="post">
+    <input name="id" value="{{ NOTICIA.id }}" type="hidden"/>
+	{% raw xsrf_form_html() %}
+	
+		{% if NOTICIA.id == -1 %}
+			{{ modules.ShowMolduraInicio(u"Incluir notícia", width="100%") }}
+		{% else %}
+			{{ modules.ShowMolduraInicio(u"Alterar notícia", width="100%") }}
+		{% end %}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+	
+		<p>{{ "Titulo: " }}<br/>
+		<input name="titulo" style="width: 99%" value="{{ NOTICIA.titulo }}" type="text"/></p>
+		<p>{{ "Resumo: " }}<br/>
+		<textarea name="resumo" style="width: 99%; height:50px">{{ NOTICIA.resumo }}</textarea></p>
+		<p>{{ "Fonte: " }}
+		<input name="fonte" style="width: 35%" value="{{ NOTICIA.fonte }}" type="text"/></p>
+        <br/>
+        <p><i>Utilize a data de validade para informar até quando a notícia deve ser visível para os participantes da comunidade.</i></p>
+        <p>{{ "Data validade: " }}
+		<input name="dt_validade" id="dt_validade" style="width: 15%" value="{{ NOTICIA.dt_validade }}" type="text"/><font style="font-size: smaller; color: gray">não preencha se esta notícia não tiver validade.</font></li>
+		</p>
+        <br/>
+        <p><input type="checkbox" name="popup" value="S" 
+        {% if NOTICIA.popup=="S" %}checked="checked"{% end %}
+        > Marque se esta notícia deve aparecer no pop-up da comunidade.</p>
+        <br/>
+        <p><i>A notícia pode estar numa URL externa ou num texto. Preencher apenas um dos campos abaixo.</i></p>
+		<p>{{ "URL: " }}<br/>
+		<input name="url" style="width: 99%" value="{{ NOTICIA.url }}" type="text"/></p>
+		<p>{{ "Texto: " }}<br/>
+		
+		<textarea name="texto">{{ NOTICIA.texto }}</textarea>
+
+		<script type="text/javascript">
+            CKEDITOR.replace( 'texto',
+             {
+                 allowedContent: true,
+                 filebrowserBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=wiki',
+                 filebrowserImageBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=image',
+                 filebrowserFlashBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=flash'
+             });                
+		</script>
+		</p>
+    {{ modules.ShowMolduraFim("criarnoticia") }}
+</form>
+
+{% end %}

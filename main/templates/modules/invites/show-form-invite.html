@@ -1,0 +1,29 @@
+{% extends "../../base-foto.html" %}
+{% block head %}
+    <link rel="stylesheet" href="/css/{{ FORMDATA['owner'] }}" type="text/css" />
+{% end %}
+{% block body-right %}
+    <form name="solicitacao" action="" method="post">
+        {% raw xsrf_form_html() %}
+        {{ modules.ShowMolduraInicio(FORMDATA['titulo'], width=621) }}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}<br/></div> {% end %}
+	    {{ FORMDATA['instrucoes'] }}
+        
+        <br/><br/>
+        <h2>Nome</h2>
+        <input name="nome" id="nome" type="text" size="50"/>
+        
+        <br/><br/>
+        <h2>Email</h2>
+        <input name="email" id="email" type="text" size="50"/>
+        
+        <br/><br/>
+        <h2>{{ FORMDATA['campolivre'] }}</h2>
+        <textarea name="campolivre" rows="5" cols="50"></textarea>
+        
+        <br/>
+    
+        {{ modules.ShowMolduraFim("solicitacao") }}
+    </form>
+    <br/>
+{% end %}

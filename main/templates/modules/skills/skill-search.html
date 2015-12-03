@@ -1,0 +1,79 @@
+{% extends "../../base-foto.html" %}
+
+{% block head %}
+	
+{% end %}
+
+{% block body-right %} 
+	{{modules.ShowMolduraInicio(escape("Busca de usuários por habilidades"))}}
+		{% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+		<form name="form_busca" id="form_busca" action="/skills/search" method="post">
+			{% raw xsrf_form_html() %}
+			<div class="input-group">
+				<input type="text" name="campo_busca" id="campo_busca" class="form-control autocomplete" aria-label="..." value="{{STR_BUSCA}}">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="submit" onclick="">
+						<i class="glyphicon glyphicon-search"></i>
+					</button>
+				</span>
+			</div>
+		</form>
+		
+				
+			{% if RESULTADO_BUSCA %}
+			<br/>
+	
+			<div id="resultados">
+				<p><b>Resultados da busca:</b></p>
+			
+				{% for item in RESULTADO_BUSCA %}
+					<ul>
+						<li>
+							<b>Habilidade: </b>{{item["nome_habilidade"]}}
+							<ul>
+								{% for user in item["usuarios"] %}
+									<li>
+										<h4><a href="/profile/{{user["nome_usuario"]}}">{{user["nome_usuario"]}}</a> -
+											{% if user["nivel"] == 1 %}
+												Novato</h4>
+											{% elif user["nivel"] == 2 %}
+												Iniciante Avançado</h4>
+											{% elif user["nivel"] == 3 %}
+												Apto</h4>
+											{% elif user["nivel"] == 4 %}
+												Proficiente</h4>
+											{% elif user["nivel"] == 5 %}
+												Especialista</h4>
+											{% end %}
+									</li>
+								{% end %}
+							</ul>
+						</li>
+					</ul>
+				{% end %}		
+			</div>
+			{% else %}
+				<br/>
+				<p><b>Sua busca não retornou resultados.</b></p>
+			{% end %}
+				
+		<script>
+			$(function () {
+				// Initialize autocomplete with local lookup
+				$('#campo_busca').autocomplete({
+					source: function(request, response) {																			
+							var results = $.ui.autocomplete.filter({{AUTOCOMPLETE_CONFIRMED_SKILLS}}, request.term);
+							// limita exibição em 5 itens
+							response(results.slice(0, 5));
+						},
+					
+					select: function (event, ui) {
+						$('#campo_busca').val(ui.item.value);
+						$('#form_busca').submit();
+					}
+	            });
+			});
+		</script>
+    {{ modules.ShowMolduraFim() }}
+
+{% end %}

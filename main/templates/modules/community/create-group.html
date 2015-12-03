@@ -1,0 +1,17 @@
+{% extends "../../base.html" %}
+{% block body %} 
+    <form name="creategroup" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(titulo=u"Criar grupo")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div><br/>{% end %}
+    Grupos existentes:
+    <br/>
+    {% for grupo in GROUPS %}
+        <li>{{ grupo }}</li>
+    {% end %}
+    <br/>
+    Nome do novo grupo: <input type="text" name="grupo", size="20", maxlength="20" />
+   
+    {{ modules.ShowMolduraFim("creategroup") }}
+   </form>
+{% end %}

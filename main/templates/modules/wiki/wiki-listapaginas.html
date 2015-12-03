@@ -1,0 +1,232 @@
+{% extends "../../base-foto.html" %}
+{% block head %}
+
+	
+	<script type="text/javascript">
+
+    
+    function toggle(name) {
+      checkboxes = document.getElementsByName(name);
+      for(var i=0; i<checkboxes.length; i++){
+        checkboxes[i].checked = !checkboxes[i].checked;
+      }
+        
+      return false;
+    }
+    
+    function deleteAll()
+    {
+        marcado = false;
+        checkboxes = document.getElementsByName("items");
+        for(var i=0; i<checkboxes.length; i++)
+            if (checkboxes[i].checked)
+                marcado = true;
+        
+        if (marcado) {
+            if (!confirm('Deseja realmente apagar todas as páginas e pastas marcadas?\nPastas que não estejam vazias não serão removidas.'))
+                return false;
+        
+            document.f.action = "/wiki/delete/{{REGISTRY_ID}}";
+            document.f.method = "POST";
+            document.f.submit();
+            return true;
+        }
+        else {
+            alert ("A operação não foi realizada.\nNenhum item selecionado.")
+            return false;
+        }
+    }
+    
+    function moveAll()
+    {
+        marcado = false;
+        checkboxes = document.getElementsByName("items");
+        
+        for(var i=0; i<checkboxes.length; i++){
+            if (checkboxes[i].checked)
+                marcado = true;
+        }
+        if (marcado) {
+            url = '/wiki/move/{{REGISTRY_ID}}?folder={{FOLDER}}'
+            // acrescenta parâmetros na query-string
+            for(var i in checkboxes)
+                if (checkboxes[i].checked)
+                    url = url + "&items=" + checkboxes[i].value;
+            
+			TINY.box.show({iframe:url,width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}});
+            //document.f.action = "/wiki/move/{{REGISTRY_ID}}";
+            //document.f.method = "GET";
+            //document.f.submit();
+            return true;
+        }
+        else {
+            alert ("A operação não foi realizada.\nNenhum item selecionado.")
+            return false;
+        }
+    }    
+</script>
+{% end %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(titulo="Pasta: "+PATH, width="100%", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    
+    <div>
+      <br/>
+        {% if PAGINAS %}
+            <form name="f" method="" action="">
+            {% raw xsrf_form_html() %}
+            <input type="hidden" name="folder" value="{{ FOLDER }}" />
+            <table border="0" cellspacing="10" width="100%" style="color: black;">
+                <tr>
+                      {% if SEL_MULTIPLA %}
+                          <td style="border-bottom: 1px solid" align="left" width="60">
+                          <a href="#" title="inverter marcação" onclick="return toggle('items');">
+                          <img src="/static/imagens/icones/tick16.png" alt="marcar/desmarcar tudo" border="0" />
+                          </a>
+                          <a href="#" onclick="return moveAll();" title="mover selecionados">
+                          <img src="/static/imagens/icones/move_16.png" alt="mover" border="0" />
+                          </a>
+                          <a href="#" onclick="return deleteAll();" title="apagar selecionados">
+                          <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" />
+                          </a>
+                          </td>
+                      {% end %}
+                      {% if TIPO_REGISTRY=="community" %}
+                      <td style="border-bottom: 1px solid" align="left"><b>Quem criou</b></td>
+                      {% end %}
+                      <td style="border-bottom: 1px solid" align="left"><b>Acesso</b></td>
+                      <td style="border-bottom: 1px solid" align="left"><b>Nome da página</b></td>
+                      <td style="border-bottom: 1px solid" align="left"><b>Avaliação</b></td>
+                      <td style="border-bottom: 1px solid" align="left"><b>Última alteração</b></td>
+                      <td style="border-bottom: 1px solid" align="right"> </td>
+                </tr>
+                {% for pag in PAGINAS %}
+                <tr>
+                     {% if SEL_MULTIPLA %}
+                         <td align="center">
+                         {% if pag["alterar"] and pag["mover"] and pag["nomepag_id"] not in ["home", "indice"] and pag["nomepag"] != ".." %}
+                         <input type="checkbox" name="items" value="{{ pag["nomepag_id"] }}" />
+                         {% end %}
+                         </td>
+                     {% end %}
+                     
+                     {% if TIPO_REGISTRY=="community" %}
+                        <td>{{ escape(pag['owner']) }}</td>
+                        
+                     {% end %}
+                     
+                    <td width="16">
+                    	{% if pag["mudarpermissao"] %}
+                        <a href="#" onclick="TINY.box.show({iframe:'/permission/wiki/{{ escape(pag["doc_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">                        
+                        {% end %}
+                        
+                        {% if pag["leitura"]["escopo"]=="acesso_publico" %}
+                            <img src="/static/imagens/icones/world16.png" alt="" border="0" title="acesso externo permitido" />
+                        {% elif pag["leitura"]["escopo"]=="acesso_activ" %}
+                            <img src="/static/imagens/icones/activ16.png" alt="" border="0" title="acesso aos usuários logados no {{PLATAFORMA}}" />
+                        {% elif pag["leitura"]["escopo"]=="acesso_comunidade" %}
+                            {% if TIPO_REGISTRY=="member" %}
+                            	<img src="/static/imagens/icones/friend16.png" width="16" alt="" border="0" title="acesso a todos os meus amigos" />
+                            {% elif TIPO_REGISTRY=="community" %}
+                            	<img src="/photo/{{REGISTRY_ID}}?size=P" width="16" alt="" border="0" title="acesso aos participantes da comunidade" />
+                            {% end %}
+                        {% elif pag["leitura"]["escopo"]=="acesso_grupos" %}
+                            <img src="/static/imagens/icones/group16.png" alt="" border="0" title="acesso aos grupos: {{pag['leitura']['grupos']}}" />
+                        {% elif pag["leitura"]["escopo"]=="acesso_privado" %}
+                            <img src="/photo/{{pag["owner"]}}?size=P" width="16" alt="" border="0" title="acesso privado" />
+                        {% end %}
+	                    
+                    	{% if pag["mudarpermissao"] %}                            
+                        </a>
+                        {% end %}
+                    </td>
+                        
+                     {% if pag["is_folder"]=="S" %}
+                     
+                        <!-- Opções de Pasta -->
+
+                        <td>
+                        {% if pag["nomepag"]==".." or pag["ler"] %}
+	                        <a href="/wiki/{{ escape(pag["registry_id"]) }}?folder={{ pag["nomepag_id"] }}">
+	                        <img src="/static/imagens/icones/folder_16x16.png" border="0" alt="" />
+	                        {{ escape(str_cut(pag["nomepag"], 80)) }}
+	                        </a> 
+                        {% else %}
+	                        <img src="/static/imagens/icones/folder_16x16.png" border="0" alt="" />
+	                        {{ escape(str_cut(pag["nomepag"], 80)) }}
+						{% end %}
+						
+                        {% if len(pag["folder_items"])>0 and pag["nomepag"]!=".." %}
+                            ({{len(pag["folder_items"])}})
+                        {% end %}
+                        </td>
+                        
+                        <td></td>
+                        
+                        {% if escape(pag["alterado_por"]) %}
+                            <td align="left">{{ escape(pag["alterado_por"]) }} em {{ escape(pag["data_alt"]) }}</td>
+                        {% end %}
+                        
+                        <td align="left">
+                           {% if pag["alterar"] and pag["mover"] %}
+                              <a href="#" title="mover" onclick="TINY.box.show({iframe:'/wiki/move/{{ escape(pag["doc_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                              <img src="/static/imagens/icones/move_16.png" alt="mover" border="0" /></a>
+                           {% end %}
+                           {% if pag["alterar"] %}
+                              <a href="#" title="renomear" onclick="TINY.box.show({iframe:'/wiki/rename/{{ escape(pag["doc_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                              <img src="/static/imagens/icones/rename16.png" alt="renomear" border="0" /></a>
+                           {% end %}
+                           {% if pag["apagar"] and len(pag["folder_items"])==0 %}
+                                <a onclick="return confirm('Deseja realmente apagar esta pasta?');" href="delete/{{ escape(pag["doc_id"]) }}" title="apagar">
+                                <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+                           {% end %}  
+                        </td>
+
+                     {% else %}
+                        <!-- Opções de Página -->
+                       
+                        <td>
+                        {% if pag["ler"] %}
+	                        <a href="{{ escape(pag["doc_id"]) }}">
+	                        <img src="/static/imagens/icones/document_16x16.png" border="0" alt="" />
+	                        {{ escape(str_cut(pag["nomepag"], 80)) }}
+	                        </a>
+                        {% else %}
+	                        <img src="/static/imagens/icones/document_16x16.png" border="0" alt="" />
+	                        {{ escape(str_cut(pag["nomepag"], 80)) }}
+                        {% end %}
+                        </td>
+                        
+                        <td>{{ modules.ShowAvaliaArtefato("wiki", pag["registry_id"], pag["nomepag_id"]) }}</td>
+                     
+                        <td align="left">{{ escape(pag["alterado_por"]) }} em {{ escape(pag["data_alt"]) }}</td>
+                        
+                        <td align="left">
+                           {% if pag["alterar"] and pag["mover"] and pag["nomepag_id"] not in ["home", "indice"] %}
+                              <!-- boxid:'frameless', -->
+                              <a href="#" title="mover" onclick="TINY.box.show({iframe:'/wiki/move/{{ escape(pag["doc_id"]) }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+                              <img src="/static/imagens/icones/move_16.png" alt="mover" border="0" /></a>
+                           {% end %}
+                           {% if pag["alterar"] %}
+                              <a href="/wiki/edit/{{ escape(pag["doc_id"])}}" title="alterar">
+                              <img src="/static/imagens/icones/edit16.png" alt="alterar" border="0" /></a>
+                           {% end %}
+                           {% if pag["apagar"] %}
+                                <a onclick="return confirm('Deseja realmente apagar esta página?');" href="delete/{{ escape(pag["doc_id"]) }}" title="apagar">
+                                <img src="/static/imagens/icones/delete16.png" alt="apagar" border="0" /></a>
+                           {% end %}  
+                        </td>
+                     {% end %}
+                     
+                 </tr>
+                 {% end %}
+            </table>
+            </form>
+        {% else %}
+            <p>{{ REGISTRY_ID }} ainda não possui nenhuma página.</p>
+        {% end %}
+    </div>
+    {{ modules.ShowMolduraFim() }}
+    {{ modules.Paginator(PAGE, PAGESIZE, PAG_COUNT) }}
+{% end %}

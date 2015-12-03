@@ -1,0 +1,51 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(u"Avaliações de "+REGISTRY_ID, width="100%", links=LINKS)}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> <br/>{% end %}
+    
+		{% if EVALUATIONDATA %}
+	        {% for aval in EVALUATIONDATA %}
+	            <h2>{% if aval[2]=="participantes" %}
+                    <img src="/static/imagens/icones/members32.png">
+                {% else %}
+                    <img src="/static/imagens/icones/wiki32.png">
+                {% end %}
+                {% if not aval[5] %}
+                    <a href="/evaluation/{{ escape(aval[0]) }}">{{ escape(aval[0].split("/")[1]) }}</a>
+                {% else %}
+                    {{ escape(aval[0].split("/")[1]) }}
+                {% end %}
+                </h2>
+                <p><i>
+                {% if aval[1] %}
+                    {{ escape(aval[1]) }}<br/>
+                {% end %}
+                {% if not aval[5] %}
+                    <a href="/evaluation/{{ escape(aval[0]) }}">Avalie agora!</a><br/>
+                {% end %}
+                
+                
+                {% if PERMISSION %}
+                    <div style="float:right">
+                        <a href="/evaluation/result/{{ escape(aval[0]) }}" title="Resultado">
+                        <img src="/static/imagens/icones/chart16.png" alt="Resultado" border="0" />
+                        </a>
+                        <a href="/evaluation/edit/{{ escape(aval[0]) }}" title="Alterar">
+                        <img src="/static/imagens/icones/edit16.png" alt="Alterar" border="0" />
+                        </a>
+                        <a onclick="return confirm('Deseja mesmo remover esta avaliação?');" href="/evaluation/delete/{{ escape(aval[0]) }}" title="Remover">
+                        <img src="/static/imagens/icones/delete16.png" alt="Remover" border="0" />
+                        </a>
+                    </div>
+                {% end %}
+                Período: {{ escape(aval[3]) }} até {{ escape(aval[4]) }}
+                </i>
+                </p>
+                <br/>
+	        {% end %}
+	    {% else %}
+	    	Não há avaliações nesta comunidade.
+	    {% end %}
+    {{ modules.ShowMolduraFim() }}
+{% end %}

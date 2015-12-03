@@ -1,0 +1,27 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}  
+    <script type="text/javascript" src="/static/ckeditor/ckeditor.js"></script>
+    <form name="alteraritemglossario" action="{{ request.path }}" method="post">
+    {% raw xsrf_form_html() %}
+    {{modules.ShowMolduraInicio(u"Alterar termo do glossário")}}
+    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+    <input type="hidden" name="item_id" value="{{ GLOSSARY["item_id"] }}" />
+        <p> <h1>{{ escape(GLOSSARY["term"]) }}</h1>
+        </p>
+        <p> <h2>Tags:</h2> {{ modules.InputTags(GLOSSARY["tags"]) }}
+        </p>
+
+    <textarea name="definition">{{ escape(GLOSSARY["definition"]) }}</textarea>
+    <script type="text/javascript">
+        CKEDITOR.replace( 'definition', {
+                                             allowedContent: true,
+							                 filebrowserBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=wiki',
+							                 filebrowserImageBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=image',
+							                 filebrowserFlashBrowseUrl : '/file/browser/{{REGISTRY_ID}}?filter=flash'
+                                         }
+                        );                
+    </script>
+    {{ modules.ShowMolduraFim("alteraritemglossario") }}
+    </form>
+{% end %}

@@ -1,0 +1,68 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio("Amigos de "+REGISTRY_ID, width="100%", links=LINKS)}}
+    {% if THIS_GROUP %}
+    	<h2>Grupo {{ THIS_GROUP }}:</h2>
+    {% end %}
+    
+    {% if FRIENDS %}
+      
+      <table border="0">
+      {% for amigo in FRIENDS %}
+      	    <tr>
+      	    <td width="80" style="border-bottom: 1px solid #b0b0b0">
+         	{{ modules.ShowFoto(src="/photo/"+escape(amigo[0])+"?size=P", link="/user/"+amigo[0], pequeno=True, online=amigo[2], chat=amigo[3]) }}       	
+      		</td>
+      		<td width="400" style="border-bottom: 1px solid #b0b0b0">
+      		<h3>{{ escape(amigo[1]) }}</h3>
+      		{{ escape(amigo[0]) }}
+      		</td>
+      		<td style="border-bottom: 1px solid #b0b0b0">
+            {% if LOGADO==REGISTRY_ID %}
+	          	{% if GROUPS %}
+	          		<a href="#" title="alterar grupos de '{{escape(amigo[0])}}'" onclick="TINY.box.show({iframe:'/groups/{{REGISTRY_ID}}?part={{amigo[0]}}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()} }); return false;">
+	          		<img src="/static/imagens/icones/group16.png" border="0" /></a>
+          		{% end %}
+          		{% if amigo[2] %}
+          			<a href="/chat/{{amigo[0]}}" title="iniciar Chat com {{amigo[0]}}"><img src="/static/imagens/icones/talk24.png" /></a>
+          		{% else %}
+          			<a href="/chat/{{amigo[0]}}" title="{{amigo[0]}} não está online. Deixe uma mensagem."><img src="/static/imagens/icones/nottalk24.png" /></a>
+          		{% end %}
+          	{% end %}
+      		</td>
+      		</tr>
+      {% end %}
+      </table>
+      
+            
+    {% else %}
+      {{ MSG }}
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+    {{ modules.Paginator(PAGE, PAGESIZE, FRIENDS_COUNT) }}
+{% end %}
+
+
+{% block body-left %}
+    {% if LOGADO==REGISTRY_ID %}
+	    
+	    {{modules.ShowMolduraInicio(width="100%", titulo="Grupos")}}
+	
+	    <p>
+	    {% for group in GROUPS %}
+	        <a href="/friends/{{ REGISTRY_ID }}?group={{ group }}" title="Grupo {{ group }}">{{ group }}</a>
+	        <br/>
+	    {% end %}
+	    
+	    <a href="/friends/{{ REGISTRY_ID }}" title="Todos os amigos">Todos</a>
+	    </p>
+	    
+
+	    <a href="#" title="criar novo grupo" onclick="TINY.box.show({iframe:'/groups/new/{{ REGISTRY_ID }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+	    +criar novo
+	    </a>
+	    
+	    {{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}

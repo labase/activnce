@@ -1,0 +1,14 @@
+<div class="tnmBotaoSup">
+ <div class="tnmImgBtnSup">
+  <img src="/static/imagens/botaosup/{{cor}}.png"
+   onmouseover="document.getElementById('ms{{cor}}').style.display='block';this.src='/static/imagens/botaosup/{{cor}}_over.png';" 
+   onmouseout ="document.getElementById('ms{{cor}}').style.display='none'; this.src='/static/imagens/botaosup/{{cor}}.png';"
+   onclick    ="document.getElementById('ms{{cor}}').style.display='none'; this.src='/static/imagens/botaosup/{{cor}}.png';{{click}}" />
+ </div>
+ <div id="ms{{cor}}" class="tnmBolhaSup">
+  <div class="tnmBolhaSupTxt tnm{{cor}}" style="background-image: url('/static/imagens/bolha/{{cor}}_inic.png')">
+   {{texto}}
+  </div>
+  <img src="/static/imagens/bolha/{{cor}}_fim.png" />
+ </div>
+</div>

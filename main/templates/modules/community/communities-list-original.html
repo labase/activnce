@@ -1,0 +1,48 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-right %}
+    {{modules.ShowMolduraInicio(width="100%", links=LINKS)}}
+    {% if THIS_GROUP %}
+    	<h2>Grupo {{ THIS_GROUP }}:</h2>
+    {% end %}
+
+    {% if COMMUNITIES %}
+        <table>
+        <tr><td>
+        {% for item in COMMUNITIES %}
+
+        	{% if GROUPS and LOGADO==REGISTRY_ID %}
+            	{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=M",escape(item[0]),escape(item[1]),"/community/"+escape(item[0]),False,False,item[2], icone='<a href="#" title="alterar grupos de ' + escape(item[0]) + '" onclick="TINY.box.show({iframe:\'/communitygroups/'+ REGISTRY_ID +'?part=' + item[0] +'\',width:640,height:300,fixed:false,maskid:\'bluemask\',maskopacity:40,closejs:function(){closeJS()} }); return false;"><img src="/static/imagens/icones/group16.png" border="0" /></a>') }}
+            {% else %}
+            	{{ modules.ShowFoto("/photo/"+escape(item[0])+"?size=M",escape(item[0]),escape(item[1]),"/community/"+escape(item[0]),False,False,item[2]) }}
+            {% end %}
+
+        {% end %}
+        </td></tr>
+        </table>
+    {% else %}
+        {{ MSG }}
+    {% end %}
+    {{ modules.ShowMolduraFim() }}
+    {{ modules.Paginator(PAGE, PAGESIZE, COMMUNITIES_COUNT) }}
+{% end %}
+
+{% block body-left %}
+    {% if LOGADO==REGISTRY_ID %}
+        {{modules.ShowMolduraInicio(width="100%", titulo="Grupos")}}
+
+        <p>
+        {% for group in GROUPS %}
+            <a href="/communities/{{ REGISTRY_ID }}?group={{ group }}" title="Grupo {{ group }}">{{ str_cut(group,12) }}</a>
+            <br/>
+        {% end %}
+        <a href="/communities/{{ REGISTRY_ID }}" title="Todas as comunidades">Todos</a>
+        </p>
+        {% if LOGADO==REGISTRY_ID %}
+	        <a href="#" title="Criar novo grupo" onclick="TINY.box.show({iframe:'/communitygroups/new/{{ REGISTRY_ID }}',width:640,height:300,fixed:false,maskid:'bluemask',maskopacity:40,closejs:function(){closeJS()}}); return false;">
+			+criar novo
+			</a>
+        {% end %}
+        {{ modules.ShowMolduraFim() }}
+    {% end %}
+{% end %}

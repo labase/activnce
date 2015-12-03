@@ -1,0 +1,48 @@
+{% extends "../../base-foto.html" %}
+
+{% block body-left %}
+    {% if LOGADO %}
+        {{modules.ShowMolduraInicio(width="100%")}}
+            {{ INDEX["nomepag"] }}<br/>
+            <span style="color:#999;font-size:x-small;">
+                {{ INDEX["historico"][-1]["conteudo"] }}
+                <br/>
+            </span>
+        {{ modules.ShowMolduraFim() }}
+        
+    {% end %}
+{% end %}
+
+{% block body-right %}
+
+    {{modules.ShowMolduraInicio(titulo=PATH, width="100%", links=LINKS)}}
+	    {% if MSG %} <div class="tnmMSG">{{ MSG }}</div> {% end %}
+        <br/>
+        <h1>Histórico da Página "{{ WIKIDATA["nomepag"] }}"</h1> 
+        <br/>
+        <table border="0" cellspacing="10" width="100%" style="color: black;">
+        <tr>
+        <td style="border-bottom: 1px solid" align="left" >Versão</td>
+        <td style="border-bottom: 1px solid" align="left" >Alterado por</td>
+        <td style="border-bottom: 1px solid" align="left" >Data da alteração</td>
+        <td style="border-bottom: 1px solid" align="left" ></td>
+        </tr>
+        <tr>
+        <td><a href="/wiki/{{ REGISTRY_ID }}/{{ WIKIDATA['nomepag_id'] }}"> {{ WIKIDATA['historico'][0]["versao"] }} (atual)</a></td>
+        <td><a href="/user/{{ escape(WIKIDATA['historico'][0]["alterado_por"]) }}">{{ escape(WIKIDATA['historico'][0]["alterado_por"]) }}</a></td>
+        <td>{{ escape(WIKIDATA['historico'][0]["data_alt"]) }}</td>
+        </tr>
+        {% for i in range(1,len(WIKIDATA["historico"])) %}
+            <tr>
+            <td><a href="/wiki/{{ REGISTRY_ID }}/{{ WIKIDATA['nomepag_id'] }}?versao={{ WIKIDATA['historico'][i]['versao'] }}"> {{ WIKIDATA['historico'][i]["versao"] }}</a></td>
+            <td><a href="/user/{{ escape(WIKIDATA['historico'][i]["alterado_por"]) }}">{{ escape(WIKIDATA['historico'][i]["alterado_por"]) }}</a></td>
+            <td>{{ escape(WIKIDATA['historico'][i]["data_alt"]) }}</td>
+            <td><a href="/wiki/restore/{{ REGISTRY_ID }}/{{ WIKIDATA['nomepag_id'] }}?versao={{ WIKIDATA['historico'][i]['versao'] }}" onclick="return confirm('Deseja restaurar esta versão do documento?');">restaurar</a></td>
+            </tr>
+        {% end %}
+        </table>
+        
+        <br/>
+        
+    {{ modules.ShowMolduraFim() }}
+   {% end %}

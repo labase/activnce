@@ -1,0 +1,43 @@
+/* barra UFRJ */
+
+/* definicoes da barra */
+#barraUfrj {
+	background: #e6e6e6; /* cinza menu */
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 45px; /* altura da barra */
+}
+
+/* imagem a esquerda */
+#minerva {
+position: relative;
+	float:left;
+	width:90px;
+}
+
+/* texto da universiadade a direita */
+#UFRJ {
+position: relative;
+	float:right;
+	font-family:Arial,Sans-serif;
+	font-size:1.3em;
+	color:#b0b0b0;
+	margin-top:18px;
+	margin-right:10px;
+}
+	
+#UFRJ a:link {
+color:#b0b0b0;
+}
+
+#UFRJ a:visited  {
+color:#b0b0b0;
+}
+#UFRJ a:hover {
+color:#b0b0b0;
+}
+#UFRJ a:active  {
+color:#b0b0b0;
+}
+	
